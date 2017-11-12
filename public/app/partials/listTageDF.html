@@ -1,0 +1,71 @@
+<h1>{{listTageDPController.wert}} {{listTageDPController.rows.title}}</h1>
+<br/>
+
+<button ng-show="listTageDPController.atTag" 
+ng-click="goMonatDP(listTageDPController.monat, listTageDPController.value)">Monat</button>
+
+<div style="position:relative;width:100%;">
+<canvas width="160" height="108"></canvas>
+<svg width='100%' viewBox="0 0 1600 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<g>
+
+
+<polyline ng-repeat="x in listTageDPController.rows.gridXPath" 
+   ng-attr-points="{{x}}"
+  style="fill:none;stroke:black;stroke-width:1" />
+
+<polyline ng-repeat="y in listTageDPController.rows.gridYPath" 
+   ng-attr-points="{{y}}"
+  style="fill:none;stroke:black;stroke-width:{{listTageDPController.rows.gridYStroke[$index]}}" />
+
+<rect ng-repeat="t in listTageDPController.rows.link"
+   ng-attr-x={{listTageDPController.rows.x[$index]}} ng-attr-y={{listTageDPController.rows.tickXy-20}}
+   ng-attr-width={{listTageDPController.rows.tickXwidth}} ng-attr-height={{listTageDPController.rows.tickXheight}}
+   fill='#ccc' ng-click="goTagDP(t,listTageDPController.value)" >
+</rect>
+
+<text  ng-repeat="tag in listTageDPController.rows.tickXTag"
+   ng-attr-x={{listTageDPController.rows.tickXx[$index]}} ng-attr-y={{listTageDPController.rows.tickXy}} 
+   fill='black' font-size="12pt" >
+  {{tag}}
+</text>
+
+<text  ng-repeat="tag in listTageDPController.rows.tickYTag"
+   ng-attr-x={{listTageDPController.rows.tickYx}} ng-attr-y={{listTageDPController.rows.tickYy[$index]}} 
+   fill='black' font-size="12pt" text-anchor="end">
+  {{tag}}
+</text>
+
+<rect ng-repeat="p in listTageDPController.rows['windf_max']"
+	ng-attr-x={{p.x}} ng-attr-y={{p.y}}
+	ng-attr-width={{listTageDPController.rows.xwidth}} ng-attr-height={{listTageDPController.rows.tickXy-p.y-20}}
+	fill='{{p.color}}' >
+</rect>
+
+<rect ng-repeat="p in listTageDPController.rows['windf']"
+	ng-attr-x={{p.x}} ng-attr-y={{p.y}}
+	ng-attr-width={{listTageDPController.rows.xwidth}} ng-attr-height={{listTageDPController.rows.tickXy-p.y-20}}
+	fill='{{p.color}}' >
+</rect>
+
+<circle ng-repeat="p in listTageDPController.rows['windf']"
+	ng-attr-cx={{p.x+listTageDPController.rows.xwidth*0.5}} 
+	ng-attr-cy={{listTageDPController.rows.tickXy-listTageDPController.rows.xwidth}}
+	ng-attr-r={{listTageDPController.rows.xwidth/2}} 	
+	stroke='black' fill='none'>
+</circle>
+
+<line ng-repeat="p in listTageDPController.rows['windf']"
+	ng-attr-x1={{p.x+listTageDPController.rows.xwidth*0.5}} 
+	ng-attr-y1={{listTageDPController.rows.tickXy-listTageDPController.rows.xwidth*(1.45-0.45*listTageDPController.rows.windv[$index])}}
+	ng-attr-x2={{p.x+listTageDPController.rows.xwidth*0.5}} 
+	ng-attr-y2={{listTageDPController.rows.tickXy-listTageDPController.rows.xwidth*1.5}}
+	ng-attr-transform='rotate({{listTageDPController.rows.windd[$index]}}, {{p.x+listTageDPController.rows.xwidth*0.5}}, {{listTageDPController.rows.tickXy-listTageDPController.rows.xwidth}})'
+	stroke='black' >
+</line>
+
+        
+   </g>
+    
+</svg>
+</div>

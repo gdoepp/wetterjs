@@ -1,0 +1,48 @@
+<h1>Wetter im Monat {{listTageController.monat}}</h1>
+<table border='1'>
+	<thead>
+	
+	  <tr>
+	    <th></th>
+	    <th colspan='4'>Temperatur</th>
+	    <th colspan='8'></th>
+	    <th colspan='1'>weiter</th>
+	  </tr>
+	  <tr>
+	    <th>Tag</th>
+	    <th>innen</th>
+	    <th>außen mittel</th>
+	    <th>außen min</th>
+	    <th>außen max</th>
+	    <th>Luftdruck</th>
+	    <th>rel. Feuchte</th>
+	    <th>Niederschlag</th>
+	    <th>Wolken</th>
+	    <th>Sonne</th>
+	    <th>Wind mittel</th>
+	    <th>Wind max</th>
+	    <th>Windrichtung</th>
+	    <th>alles</th>
+	  </tr>
+	</thead>
+	<tbody >	
+	<tr ng-repeat="tagwert in listTageController.rows.list">
+	  <td class='tab'>{{tagwert.tag}}</td>
+	  <td class='tab'>{{tagwert.temp_i}}°C</td>
+	  <td class='tab'>{{tagwert.temp_o}}°C</td>
+	  <td class='tab'>{{tagwert.temp_o_min}}°C</td>
+	  <td class='tab'>{{tagwert.temp_o_max}}°C</td>
+	  <td class='tab'>{{tagwert.pres}} hPa</td>
+	  <td class='tab'>{{tagwert.hum_o}}%</td>
+	  <td class='tab'>{{tagwert.precip}} mm</td>
+	  <td class='tab'>{{tagwert.cloud}} /8</td>
+	  <td class='tab'>{{tagwert.sun}} h</td>
+	  <td class='tab'>{{tagwert.windf}} m/s</td>
+	  <td class='tab'>{{tagwert.windf_max}} m/s</td>
+	  <td class='tab'>{{tagwert.windd}} °</td>
+	  
+	   <td class='tab'><a ui-sref="listTag({tag: tagwert.time_d, stat: data.stat})"
+	         class='button'>Liste</a></td>
+	  </tr>
+	</tbody>  	    
+</table>

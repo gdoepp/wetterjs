@@ -1,0 +1,28 @@
+<h1>Wetter in den letzten Stunden</h1>
+<br/>
+
+<h2>{{auswahlController.rows.tag}}</h2>
+<table border='1'>
+	<thead>
+	  <tr>
+	    <th>Zeit</th>
+	    <th>Temperatur innen</th>
+	    <th>Temperatur außen</th>
+	    <th>Luftdruck</th>
+	    <th>Feuchte</th>
+	    <th>Niederschlag</th>
+	    <th>Wolken</th>
+	  </tr>
+	</thead>
+	<tbody >	
+	<tr ng-repeat="tagwert in auswahlController.rows.list">
+	  <td >{{tagwert.time_t}}</td>
+	  <td class='tab'>{{tagwert.temp_i}}°C</td>
+	  <td class='tab'>{{tagwert.temp_o}}°C</td>
+	  <td class='tab'>{{tagwert.pres}}hPa</td>
+	  <td class='tab'>{{tagwert.hum_o}}%</td>
+	  <td class='tab'>{{tagwert.precip}}mm</td>
+	  <td class='tab'>{{tagwert.cloud}}/8</td>
+	  </tr>
+	</tbody>  	    
+</table>

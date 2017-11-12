@@ -1,0 +1,21 @@
+{
+  "name": "klimajs",
+  "version": "0.0.0",
+  "description": "Generated with Eclipse npm Tools",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'Error: no test specified' && exit 1"
+  },
+  "author": "Gerhard Döppert",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "fs": "0.0.1-security",
+    "ftp": "^0.3.10",
+    "jszip": "^3.1.4",
+    "node-schedule": "^1.2.5",
+    "pg": "^7.3.0",
+    "readline-stream": "^1.0.2"
+  }
+}

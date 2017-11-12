@@ -1,0 +1,52 @@
+<h1>Wetter im Jahresverlauf {{listMonateController.jahr}}</h1>
+<table border='1'>
+	<thead>
+	  <tr>
+	    <th></th>
+	    <th colspan='6'>Temperatur</th>
+	    <th colspan='8'></th>
+	    <th colspan='1'>weiter</th>
+	  </tr>
+	  <tr>
+	    <th>Monat</th>
+	    <th>innen</th>
+	    <th>außen mittel</th>
+	    <th>außen absmin</th>
+	    <th>außen min</th>
+	    <th>außen max</th>
+	    <th>außen absmax</th>
+	    <th>Luftdruck</th>
+	    <th>Feuchte</th>
+	    <th>Niederschlag</th>
+	    <th>Wolken</th>
+	    <th>Sonne</th>
+	    <th>Wind mittel</th>
+	    <th>Wind max</th>
+	    <th>Windrichtung</th>
+	    <th>alles</th>
+	  </tr>
+	</thead>
+	<tbody >	
+	<tr ng-repeat="monat in listMonateController.rows.list">
+	  <td class='tab'>{{monat.monat}}</td>
+	  <td class='tab'>{{monat.temp_i}}°C</td>
+	  <td class='tab'>{{monat.temp_o}}°C</td>
+	  <td class='tab'>{{monat.temp_o_absmin}}°C</td>
+	  <td class='tab'>{{monat.temp_o_min}}°C</td>
+	  <td class='tab'>{{monat.temp_o_max}}°C</td>
+	  <td class='tab'>{{monat.temp_o_absmax}}°C</td>
+	  <td class='tab'>{{monat.pres}} hPa</td>
+	  <td class='tab'>{{monat.hum_o}}%</td>
+	  <td class='tab'>{{monat.precip}} mm</td>
+	  <td class='tab'>{{monat.cloud}} /8</td>
+	  <td class='tab'>{{monat.sun}} h</td>
+	  <td class='tab'>{{monat.windf}} m/s</td>
+	  <td class='tab'>{{monat.windf_max}} m/s</td>
+	  <td class='tab'>{{monat.windd}} °</td>
+	  
+	  <td class='tab'><a ui-sref="listMonat({monat: monat.monat, stat: data.stat})"
+	         class='button'>Liste</a></td>
+	  
+	  </tr>
+	</tbody>  	    
+</table>

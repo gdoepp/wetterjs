@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="UTF-8">
+	<title>Wetter</title>
+	<script src="lib/angular.js"></script>
+	<script src="lib/angular-ui-router.js"></script>
+	<script src="lib/angular-resource.js"></script>
+	<script src="app/app.js"></script>
+	<script src="app/model.js"></script>
+	<script src="app/svgMaker.js"></script>	
+	<script src="app/controller.js"></script>	
+	 <link rel="stylesheet" href="styles.css">
+</head>
+
+<body ng-app="wetterDB">
+<div ng-controller='WetterController'>
+
+
+<h1>Wetter</h1>
+
+	<br/>
+    <br/>
+    <table>
+		<tr>
+		   <td>Jahr: </td><td><input type='text' size='4' ng-model='data.jahr'/></td>
+		</tr>
+	<tr>
+	  <td>Station: </td>
+	  <td><select ng-model='data.stat' ng-change="data.statChanged()">
+		<option ng-repeat='stat in data.stats' value='{{stat.id}}'>{{stat.name}}</option>
+		</select>
+		</td>
+	  </tr>
+	</table>
+	<br/>
+	<b>Die Rohdaten zu Wetterstationen stammen vom Deutschen Wetterdienst (<a href='https://www.dwd.de'>www.dwd.de</a>).</b> Die Aufbereitung
+	erfolgt mit eigenen Algorithmen.
+	<br>
+    <br/>
+    <h1>Einstieg mit</h1>
+  <table border='1'>
+    <thead>
+      <th/>
+      <th>alles</th>
+      <th>Temperatur</th>
+      <th>Luftdruck</th>
+      <th>rel. Feuchte</th>
+      <th>Niederschlag</th>
+      <th>Wolken</th>
+      <th>Sonne</th>
+      <th>Wind</th>
+     </thead>
+	<tbody>
+     
+	<tr>
+	  <td>Jahr</td>
+	  <td><button ng-click="goMonate(data.jahr)">Liste</button></td>
+	  <td><button ng-click="goMonateDT(data.jahr)">Diagramm</button></td>
+	  <td><button ng-click="goMonateDP(data.jahr, 'pres')">Diagramm</button></td>	  
+	  <td><button ng-click="goMonateDP(data.jahr, 'hum_o')">Diagramm</button></td>
+	  <td><button ng-click="goMonateDP(data.jahr, 'precip')">Diagramm</button></td>
+	  <td><button ng-click="goMonateDP(data.jahr, 'cloud')">Diagramm</button></td>
+	  <td><button ng-click="goMonateDP(data.jahr, 'sun')">Diagramm</button></td>
+	  <td><button ng-click="goMonateDP(data.jahr, 'windf')">Diagramm</button></td>
+	</tr>
+	<tr>
+	  <td>Heute</td>
+	  <td><button ng-click="goTag(0)">Liste</button></td>
+	  <td><button ng-click="goTagDT(0)">Diagramm</button></td>
+	  <td><button ng-click="goTagDP(0,'pres')">Diagramm</button></td>	  
+	  <td><button ng-click="goTagDP(0,'hum_o')">Diagramm</button></td>
+
+	</tr>
+	 <tr>
+	 <td><button ng-show='data.auswahl.admin' ng-click="update()">update</button></td>
+	 </tr>
+	</tbody>  	    
+</table>
+
+    <ui-view>
+       
+    </ui-view>
+    
+    </div>
+</body>
+
+</html>

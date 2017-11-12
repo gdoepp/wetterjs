@@ -1,0 +1,26 @@
+
+td.tab {
+      text-align: right;
+}
+
+
+canvas {
+    display: block;
+    width: 100%;
+    visibility: hidden;
+}
+
+svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+text {
+	pointer-events: none;
+}
+
+button, select {
+	height: 4em;
+}
