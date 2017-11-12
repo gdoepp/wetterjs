@@ -12,14 +12,14 @@ auswahlFactory.$inject = ['$http'];
 
 function auswahlFactory($http) {
 	return {
-		getAuswahl: function() {
+		getAuswahl: function(stat) {
 			var result = {};
-			$http.get('wetter/auswahl')
+			$http.get('wetter/auswahl?stat='+stat)
 			.then( function success(resp) {
 				result.list=resp.data.rows;
 				result.admin=resp.data.admin;			
 				if (result.list.length > 0) {
-					var t = new Date(result.list[0].time_d);
+					var t = new Date(result.list[0].mtime);
 					result.tag = t.getDate() + '.' + (t.getMonth()+1) + '.' + t.getFullYear();
 				}
 			}, function error(resp) {

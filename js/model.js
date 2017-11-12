@@ -25,17 +25,27 @@ const pool = new pg.Pool(
 		});
 
 
-function auswahl() {
+function auswahl(stat) {
+
+	console.log("stat: " + stat);
 
 	return new Promise(function(resolve, reject) {
+		var tab = 'dwd_data';
+		if (stat==='00000') {
+			tab='data';
+		}
 		
-		pool.query('SELECT time_d, time_t, temp_i, temp_o, '+				
+		pool.query('SELECT mtime, temp_i, temp_o, '+				
 				'hum_o, pres, precip, cloud, windf, windd '+
-				" from wetter_home.data "  
-				+" order by time_d desc,time_t desc limit 8")
+				" from wetter_home."+tab+
+				" where stat=$1 " +
+				" order by mtime desc limit 8", [stat])
 		.then(
 			(res) => {
-				
+				for (var j=0; j<res.rows.length; j++) {
+					res.rows[j].time_d = res.rows[j].mtime.toLocaleDateString();
+					res.rows[j].time_t = res.rows[j].mtime.toLocaleTimeString();
+				}
 				resolve(res.rows); 
 			}
 		)

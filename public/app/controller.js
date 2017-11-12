@@ -44,8 +44,11 @@ function WetterController($scope, $state, auswahlFactory) {
     }
    };
       
-   $scope.data.auswahl = auswahlFactory.getAuswahl();
+   $scope.data.auswahl = auswahlFactory.getAuswahl($scope.data.stat);
    
+   $scope.goAuswahl = function(state) {
+	   $state.go('auswahl',{tag: state, stat:$scope.data.stat}, {reload:true});
+   }
    $scope.goTag = function(state) {
 	   $state.go('listTag',{tag: state, stat:$scope.data.stat}, {reload:true});
    }
@@ -205,10 +208,10 @@ function prepareList(data) {
 }
 
 
-AuswahlController.$inject = ['auswahlFactory'];
+AuswahlController.$inject = [ "$state", "$stateParams", 'auswahlFactory'];
 
-function AuswahlController(auswahlFactory) {
-	this.rows = auswahlFactory.getAuswahl();
+function AuswahlController($state, $stateParams, auswahlFactory) {
+	this.rows = auswahlFactory.getAuswahl($stateParams.stat);
 }
 
 ListMonateController.$inject = ['$state', '$stateParams', 'listMonateFactory'];

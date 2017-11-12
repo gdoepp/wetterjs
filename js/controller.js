@@ -21,8 +21,8 @@ function checkCert(req) {
 }
 
 function auswahl(req, res) {
-
-	wetter.auswahl()
+	console.log("contr: ausw " + req.query.stat);
+	wetter.auswahl(req.query.stat)
 	.then(function success(data) {
 
 		var result = {};

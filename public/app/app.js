@@ -12,11 +12,11 @@ function configFn($stateProvider, $urlRouterProvider) {
 	
 	console.log("in configFn");
 	
-	$urlRouterProvider.otherwise("/auswahl");
+	$urlRouterProvider.otherwise("/auswahl/00000");
 	
 	$stateProvider
 	  .state('auswahl', {
-		url: "/auswahl",
+		url: "/auswahl/:stat",
 		templateUrl: 'app/partials/auswahl.html',
 		controller: 'AuswahlController',
 		controllerAs: 'auswahlController'
