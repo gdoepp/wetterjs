@@ -1,3 +1,5 @@
+// (c) Gerhard Döppert, 2017
+
 var JSZip = require("jszip");
 var fs = require('fs');
 var ReadlineStream = require('readline-stream');

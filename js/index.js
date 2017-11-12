@@ -1,3 +1,5 @@
+// (c) Gerhard Döppert, 2017
+
 var express = require('express');
 
 var app = express();

@@ -1,3 +1,5 @@
+//  (c) Gerhard Döppert, 2017 
+
 'use strict';
 angular.module('wetterDB')
  .factory('svgMakerFactory', svgMakerFactory);

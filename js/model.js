@@ -1,3 +1,5 @@
+// (c) Gerhard Döppert, 2017
+
 var pg = require('pg');
 
 var env = process.env.NODE_ENV || 'dev';

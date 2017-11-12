@@ -1,3 +1,5 @@
+// (c) Gerhard Döppert, 2017
+
 var wetter = require('./model');
 
 var updater = require('./updater');
