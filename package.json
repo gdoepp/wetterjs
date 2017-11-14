@@ -16,6 +16,7 @@
     "jszip": "^3.1.4",
     "node-schedule": "^1.2.5",
     "pg": "^7.3.0",
-    "readline-stream": "^1.0.2"
+    "readline-stream": "^1.0.2",
+    "stream-buffers": "^3.0.1"
   }
 }

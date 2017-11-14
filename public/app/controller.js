@@ -18,7 +18,7 @@ angular.module('wetterDB')
   .controller('ListTagDFController', ListTagDFController)
   .controller('UpdateController', UpdateController);
   
-WetterController.$inject = ['$scope', '$state', 'auswahlFactory'];
+WetterController.$inject = ['$scope', '$state', 'statsFactory'];
 
 var values={'pres': {name:'Luftdruck', func:'P', offset: 0.5}, 
 		    'hum_o': {name:'rel. Luftfeuchte', func:'H', offset: 0.5}, 
@@ -29,57 +29,55 @@ var values={'pres': {name:'Luftdruck', func:'P', offset: 0.5},
 };
 
 
-function WetterController($scope, $state, auswahlFactory) {
+function WetterController($scope, $state, statsFactory) {
    $scope.data = {
     jahr: '2017',
     monat: 1,
     tag: 1,
-    state: 'auswahl',
-    stat: '00000',
-    stats: [{id:'00000',name:'HHH'},{id:'04928', name:'Stuttgart'},{id:'01420', name:'Frankfurt'},
-    	{id:'03379', name:'München'}, {id:'01975', name:'Hamburg'}, {id:'00433', name:'Berlin'} ],
+    state: 'auswahl',    
+    stats: {stat:'', stats:[], admin:0},
     statChanged: function() {
-    	console.log("stat changed: " + $scope.data.stat);
-    	$state.go('.', {stat:$scope.data.stat});
+    	console.log("stat changed: " + $scope.data.stats.stat);
+    	$state.go('.', {stat:$scope.data.stats.stat});
     }
    };
       
-   $scope.data.auswahl = auswahlFactory.getAuswahl($scope.data.stat);
+   $scope.data.stats = statsFactory.getStats(); 
    
    $scope.goAuswahl = function(state) {
-	   $state.go('auswahl',{tag: state, stat:$scope.data.stat}, {reload:true});
+	   $state.go('auswahl',{tag: state, stat:$scope.data.stats.stat}, {reload:true});
    }
    $scope.goTag = function(state) {
-	   $state.go('listTag',{tag: state, stat:$scope.data.stat}, {reload:true});
+	   $state.go('listTag',{tag: state, stat:$scope.data.stats.stat}, {reload:true});
    }
    $scope.goTagDT = function(state) {
-	   $state.go('listTagDT',{tag: state, stat:$scope.data.stat}, {reload:true});
+	   $state.go('listTagDT',{tag: state, stat:$scope.data.stats.stat}, {reload:true});
    }
    $scope.goTagDP = function(state, value) {
-	   $state.go('listTagD'+values[value].func,{tag: state, stat:$scope.data.stat}, {reload:true});
+	   $state.go('listTagD'+values[value].func,{tag: state, stat:$scope.data.stats.stat}, {reload:true});
    }
    
    $scope.goMonat = function(state) {
-	   $state.go('listMonat',{monat: state, stat:$scope.data.stat});
+	   $state.go('listMonat',{monat: state, stat:$scope.data.stats.stat});
    }
    $scope.goMonatDT = function(state) {
-	   $state.go('listMonatDT',{monat: state, stat:$scope.data.stat});
+	   $state.go('listMonatDT',{monat: state, stat:$scope.data.stats.stat});
    }
    $scope.goMonatDP = function(state, value) {
-	   $state.go('listMonatD'+values[value].func,{monat: state, stat:$scope.data.stat});
+	   $state.go('listMonatD'+values[value].func,{monat: state, stat:$scope.data.stats.stat});
    }
    
    $scope.goMonate = function(state) {
-	   $state.go('listMonate',{jahr: state, stat:$scope.data.stat});
+	   $state.go('listMonate',{jahr: state, stat:$scope.data.stats.stat});
    }
    $scope.goMonateDT = function(state) {
-	   $state.go('listMonateDT',{jahr: state, stat:$scope.data.stat});
+	   $state.go('listMonateDT',{jahr: state, stat:$scope.data.stats.stat});
    }
    $scope.goMonateDP = function(state, value) {
-	   $state.go('listMonateD'+values[value].func,{jahr: state, stat:$scope.data.stat});
+	   $state.go('listMonateD'+values[value].func,{jahr: state, stat:$scope.data.stats.stat});
    }
    $scope.update = function(state, value) {
-	   $state.go('update',{stat:$scope.data.stat});
+	   $state.go('update',{stat:$scope.data.stats.stat});
    }
 } 
 

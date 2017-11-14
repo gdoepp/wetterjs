@@ -9,7 +9,7 @@ const env = process.env.NODE_ENV || 'dev';
 console.log(env);
 
 function checkCert(req) {
-	if (env !== 'dev' && (req.headers['ssl_client_verify'] !== 'SUCCESS' || 
+	if (env !== 'dev1' && (req.headers['ssl_client_verify'] !== 'SUCCESS' || 
 		!req.headers['ssl_client_s_dn'] || !req.headers['ssl_client_i_dn'] || 
 		req.headers['ssl_client_s_dn'].indexOf('CN=gdoeppert.de') == -1 ||
 		req.headers['ssl_client_i_dn'].indexOf('CN=gdoeppert.de') == -1)) {
@@ -20,37 +20,46 @@ function checkCert(req) {
 	}
 }
 
+function stats(req, res) {
+	var admin = 0;
+	if (checkCert(req))	 {
+		 admin=1; 
+	} 
+	var result = {};		
+	
+	result.stats = updater.stats.slice();
+	result.stats.unshift({id: '00000', name: 'Home'});
+	result.admin=admin;
+	result.stat=result.stats[0].id;
+		
+	res.send(result);
+}
+
 function auswahl(req, res) {
-	console.log("contr: ausw " + req.query.stat);
-	wetter.auswahl(req.query.stat)
+	var admin = 0;
+	if (checkCert(req))	 {
+		 admin=1; 
+	} 
+	
+	wetter.auswahl(req.query.stat, admin)
 	.then(function success(data) {
 
-		var result = {};
-		
-		if (checkCert(req))	 {
-			 result.admin=1; 
-		} 
+		var result = {};		
 	
 		result.rows = data;
 		res.send(result);
+		
 	}, function failure(err) {
 		res.send(err);
 	});
 }
 
 function listMonate(req, res) {
-	
-	wetter.listMonate(req.query.jahr, req.query.stat)
-	.then(function success(data) {
-		res.send(data);
-	}, function failure(err) {
-		res.send(err);
-	});
-}
-
-function listMonateWind(req, res) {
-	
-	wetter.listMonateWind(req.query.jahr, req.query.stat)
+	var admin = 0;
+	if (checkCert(req))	 {
+		 admin=1; 
+	} 
+	wetter.listMonate(req.query.jahr, req.query.stat, admin)
 	.then(function success(data) {
 		res.send(data);
 	}, function failure(err) {
@@ -59,8 +68,11 @@ function listMonateWind(req, res) {
 }
 
 function listMonat(req, res) {
-	
-	wetter.listMonat(req.query.monat, req.query.stat)
+	var admin = 0;
+	if (checkCert(req))	 {
+		 admin=1; 
+	} 
+	wetter.listMonat(req.query.monat, req.query.stat, admin)
 	.then(function success(data) {
 		res.send(data);
 	}, function failure(err) {
@@ -69,8 +81,11 @@ function listMonat(req, res) {
 }
 
 function listTag(req, res) {
-	
-	wetter.listTag(req.query.tag, req.query.stat)
+	var admin = 0;
+	if (checkCert(req))	 {
+		 admin=1; 
+	} 
+	wetter.listTag(req.query.tag, req.query.stat, admin)
 	.then(function success(data) {
 		res.send(data);
 	}, function failure(err) {
@@ -122,10 +137,10 @@ function update(req, res) {
 
 module.exports = {
 		listMonate: listMonate,
-		listMonateWind: listMonateWind,
 		listMonat: listMonat,
 		listTag: listTag,
 		update: update,
-		auswahl: auswahl
+		auswahl: auswahl,
+		stats: stats
 };
 

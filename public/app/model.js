@@ -2,11 +2,32 @@
 
 'use strict';
 angular.module('wetterDB')
+ .factory('statsFactory', statsFactory)
  .factory('auswahlFactory', auswahlFactory)
  .factory('listMonateFactory', listMonateFactory)
  .factory('listMonatFactory', listMonatFactory)
  .factory('listTagFactory', listTagFactory)
  .factory('updateFactory', updateFactory);
+
+statsFactory.$inject = ['$http'];
+
+function statsFactory($http) {
+	return {
+		getStats: function() {
+			var result = {};
+			$http.get('wetter/stats')
+			.then( function success(resp) {
+				result.admin=resp.data.admin;			
+				result.stats=resp.data.stats;
+				result.stat=resp.data.stat;
+			}, function error(resp) {
+				result.stats = undefined;
+				result.admin = 0;
+			});
+			return result;
+		}
+	}	
+}
 
 auswahlFactory.$inject = ['$http'];
 
@@ -17,13 +38,12 @@ function auswahlFactory($http) {
 			$http.get('wetter/auswahl?stat='+stat)
 			.then( function success(resp) {
 				result.list=resp.data.rows;
-				result.admin=resp.data.admin;			
 				if (result.list.length > 0) {
 					var t = new Date(result.list[0].mtime);
 					result.tag = t.getDate() + '.' + (t.getMonth()+1) + '.' + t.getFullYear();
 				}
 			}, function error(resp) {
-				result.auswahl = undefined;
+				result.list = undefined;
 			});
 			return result;
 		}

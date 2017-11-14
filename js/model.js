@@ -25,7 +25,7 @@ const pool = new pg.Pool(
 		});
 
 
-function auswahl(stat) {
+function auswahl(stat, admin) {
 
 	console.log("stat: " + stat);
 
@@ -34,8 +34,11 @@ function auswahl(stat) {
 		if (stat==='00000') {
 			tab='data';
 		}
-		
-		pool.query('SELECT mtime, temp_i, temp_o, '+				
+		var home = "";
+		if (admin) {
+			home = ',temp_i';
+		}
+		pool.query('SELECT mtime'+home+', temp_o, '+				
 				'hum_o, pres, precip, cloud, windf, windd '+
 				" from wetter_home."+tab+
 				" where stat=$1 " +
@@ -55,7 +58,7 @@ function auswahl(stat) {
 	});	
 }
 
-function listMonate(jahr, stat) {
+function listMonate(jahr, stat, admin) {
 
 	return new Promise(function(resolve, reject) {
 
@@ -65,8 +68,13 @@ function listMonate(jahr, stat) {
 		if (stat==='00000') {
 			tab='data';
 		}
+		var home = "";
+		if (admin) {
+			home = "round(avg(temp_i),1) as temp_i, ";
+		}
+		
 		var query = "SELECT extract(month from t.time_d) || '.' || $1 as monat, extract(month from t.time_d) as month, "+
-		'round(avg(t.temp_i),1) as temp_i, round(avg(t.temp_o),1) as temp_o, '+
+		home+ ' round(avg(t.temp_o),1) as temp_o, '+
 		'round(avg(temp_o_min),1) as temp_o_min, round(avg(temp_o_max),1) as temp_o_max,'+
 		'round(min(temp_o_min),1) as temp_o_absmin, round(max(temp_o_max),1) as temp_o_absmax,'+
 		'round(avg(hum_o)) as hum_o, round(avg(pres),1) as pres, round(sum(precip),1) as precip,'+
@@ -93,7 +101,7 @@ function listMonate(jahr, stat) {
 	});	
 }
 
-function listMonat(monat, stat) {
+function listMonat(monat, stat, admin) {
 
 	return new Promise(function(resolve, reject) {
 
@@ -108,8 +116,13 @@ function listMonat(monat, stat) {
 		if (stat==='00000') {
 			tab='data';
 		}
+		var home = "";
+		if (admin) {
+			home = "round(avg(temp_i),1) as temp_i, ";
+		}
 
-		pool.query("SELECT date_trunc('day', mtime) as time_d, extract(day from date_trunc('day', mtime)) as tag, round(avg(temp_i),1) as temp_i, round(avg(temp_o),1) as temp_o, "+
+		pool.query("SELECT date_trunc('day', mtime) as time_d, extract(day from date_trunc('day', mtime)) as tag, "+
+				 home+"round(avg(temp_o),1) as temp_o, "+
 				'round(min(temp_o),1) as temp_o_min, round(max(temp_o),1) as temp_o_max, round(sum(sun)/60,1) as sun, '+
 				'round(avg(hum_o)) as hum_o, round(avg(pres),1) as pres, round(sum(precip),1) as precip, round(avg(cloud),1) as cloud, '+
 				' round(avg(windf),1) as windf, max(windf) as windf_max, arc_avg2(ARRAY[windf, windd]) as windd ' +
@@ -131,7 +144,7 @@ function listMonat(monat, stat) {
 }
 
 
-function listTag(tag, stat) {
+function listTag(tag, stat, admin) {
 
 	return new Promise(function(resolve, reject) {		
 		var t = tag;
@@ -145,8 +158,12 @@ function listTag(tag, stat) {
 		if (stat==='00000') {
 			tab='data';
 		}
+		var home = "";
+		if (admin) {
+			home = ',temp_i';
+		}
 
-		pool.query('SELECT mtime as time_t, temp_i, temp_o, '+				
+		pool.query('SELECT mtime as time_t '+home+', temp_o, '+				
 				'hum_o, pres, precip, cloud, sun, windf, ARRAY[windf,windd] as windd '+
 				" from wetter_home."+tab+" where date_trunc('day', mtime)=$1 and stat=$2" + 
 				" order by time_t", [t, stat])

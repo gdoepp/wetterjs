@@ -29,14 +29,14 @@
 		</tr>
 	<tr>
 	  <td>Station: </td>
-	  <td><select ng-model='data.stat' ng-change="data.statChanged()">
-		<option ng-repeat='stat in data.stats' value='{{stat.id}}'>{{stat.name}}</option>
+	  <td><select ng-model='data.stats.stat' ng-change="data.statChanged()">
+		<option ng-repeat='stat in data.stats.stats' value='{{stat.id}}'>{{stat.name}}</option>
 		</select>
 		</td>
 	  </tr>
 	</table>
 	<br/>
-	<b>Die Rohdaten zu Wetterstationen stammen vom Deutschen Wetterdienst (<a href='https://www.dwd.de'>www.dwd.de</a>).</b> Die Aufbereitung
+	<b>Die Rohdaten zu den Wetterstationen stammen vom Deutschen Wetterdienst (<a href='https://www.dwd.de'>www.dwd.de</a>).</b> Die Aufbereitung
 	erfolgt mit eigenen Algorithmen.
 	<br>
     <br/>
@@ -75,7 +75,7 @@
 
 	</tr>
 	 <tr>
-	 <td><button ng-show='data.auswahl.admin' ng-click="update()">update</button></td>
+	 <td><button ng-show='data.stats.admin' ng-click="update()" style='background: red'>update</button></td>	 	 
 	 </tr>
 	</tbody>  	    
 </table>

@@ -3,6 +3,7 @@
 var JSZip = require("jszip");
 var fs = require('fs');
 var ReadlineStream = require('readline-stream');
+var StreamBuffers = require('stream-buffers');
 var pg = require('pg');
 var FTP = require('ftp');
 var env = process.env.NODE_ENV || 'dev';
@@ -54,7 +55,7 @@ function insertSonne(data) {
 			data.slice(0,3));
 }
  function insertNm(data) {
-	data.splice(3,1);
+	data.splice(2,1);
 	return pool.query('insert into wetter_home.dwd_data (stat, mtime, cloud) values($1, $2, $3) '+
 				'on conflict(stat, mtime) do update set cloud=excluded.cloud',				
 			data.slice(0,3));
@@ -70,6 +71,10 @@ var funcs = {'RR': insertRs, 'TU' : insertTempRf, 'P0': insertPres, 'N': insertN
 var paths = {'RR': 'precipitation', 'TU' : 'air_temperature', 'P0': 'pressure', 
 			 'N': 'cloudiness', 'FF': 'wind', 'SD': 'sun'};
 
+var stats= [{id:'04928', name:'Stuttgart'},{id:'01420', name:'Frankfurt'},
+	{id:'03379', name:'München'}, {id:'01975', name:'Hamburg'}, {id:'00433', name:'Berlin'} ];  
+
+
 function update(statid, value) {
 
 	if (statid == '00000') return;  // home data, no dwd
@@ -79,17 +84,23 @@ function update(statid, value) {
 		var path='/pub/CDC/observations_germany/climate/hourly/'+paths[value]+'/recent/';
 		 var c = new FTP();
 		  c.on('ready', function() {
+			var myWritableStreamBuffer = new StreamBuffers.WritableStreamBuffer({
+		    	    initialSize: (100 * 1024),   
+		    	    incrementAmount: (10 * 1024) 
+			});
+			  
 		    c.get(path+"stundenwerte_"+value+"_"+statid+"_akt.zip", function(err, stream) {
 		      if (err) { reject(err); }
 		      if (stream) {
 			      stream.once('close', function() { 
 			    	  c.end();
 			    	  try {
-			    		  insert(statid, value, resolve, reject);
+			    		  insert(statid, value, resolve, reject, myWritableStreamBuffer.getContents());
 			    	  } catch(ex) { reject(ex); }
 			    	  console.log("downloaded: " + statid + ", ", value);
 			    	  });
-			      stream.pipe(fs.createWriteStream("/tmp/stundenwerte_"+value+"_"+statid+"_akt.zip"));
+			      			      
+			      stream.pipe(myWritableStreamBuffer);
 		      }
 		    });
 		  });
@@ -98,21 +109,11 @@ function update(statid, value) {
 	});
 }
 
-function insert(statid, value, resolve0, reject0) {
+function insert(statid, value, resolve0, reject0, data) {
 	
 	console.log("insert: " + statid + ", ", value);
 	
-	new JSZip.external.Promise(function (resolve, reject) {
-	    fs.readFile("/tmp/stundenwerte_"+value+"_"+statid+"_akt.zip", function(err, data) {
-	        if (err) {
-	            reject(e);
-	        } else {
-	            resolve(data);
-	        }
-	    });
-	}).then(function (data) {
-	    return JSZip.loadAsync(data);
-	})
+	JSZip.loadAsync(data)
 	.then(function (zip) {
 		zip.forEach(function(path,file) {
 			if (path.startsWith('produkt_')) {
@@ -126,7 +127,7 @@ function insert(statid, value, resolve0, reject0) {
 						var [stat, zeit, qn, v1, v2, rest] = c.split(';');
 						if (stat !=='STATIONS_ID' && v1 != -999) {
 							var mtime = zeit.substr(0,4)+"-"+ zeit.substr(4,2)+"-"+zeit.substr(6,2) +
-							 zeit.substr(8,2) + ":00:00.00Z";							
+							 		'T'+zeit.substr(8,2) + ":00:00.00Z";							
 							var p = funcs[value]([stat, mtime, v1, v2]);
 							p.then(function () { n++; } );  // await
 							//n++;
@@ -136,15 +137,14 @@ function insert(statid, value, resolve0, reject0) {
 				lstream.on('end', function() {
 					resolve0(n);  // ready to continue with next file...
 				});
-			}
-				
+			}				
 		});	
-	
 	});
 }
 
 module.exports = { 
 		update: update,
-		values: paths
+		values: paths,
+		stats: stats
 		
 };
