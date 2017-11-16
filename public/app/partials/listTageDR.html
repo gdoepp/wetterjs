@@ -3,9 +3,6 @@
 <h1>{{listTageDPController.wert}} {{listTageDPController.rows.title}}</h1>
 <br/>
 
-<button ng-show="listTageDPController.atTag" 
-ng-click="goMonatDP(listTageDPController.monat, listTageDPController.value)">Monat</button>
-
 <div style="position:relative;width:100%;">
 <canvas width="160" height="108"></canvas>
 <svg width='100%' viewBox="0 0 1600 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -23,7 +20,7 @@ ng-click="goMonatDP(listTageDPController.monat, listTageDPController.value)">Mon
 <rect ng-repeat="t in listTageDPController.rows.link"
    ng-attr-x={{listTageDPController.rows.x[$index]}} ng-attr-y={{listTageDPController.rows.tickXy-20}}
    ng-attr-width={{listTageDPController.rows.tickXwidth}} ng-attr-height={{listTageDPController.rows.tickXheight}}
-   fill='#ccc' ng-click="goTagDP(t,listTageDPController.value)" >
+   fill='#ccc' ng-click="goDP(t,listTageDPController.value, 'Tag')" >
 </rect>
 
 <text  ng-repeat="tag in listTageDPController.rows.tickXTag"
@@ -49,3 +46,12 @@ ng-click="goMonatDP(listTageDPController.monat, listTageDPController.value)">Mon
     
 </svg>
 </div>
+<br/>
+<button ng-show="listTageDPController.time=='Tag'" 
+ng-click="goDP(listTageDPController.monat, listTageDPController.value, 'Monat')">Monat</button>
+
+<button  
+ng-click="goDP(listTageDPController.vorher, listTageDPController.value, listTageDPController.time)">-</button>
+
+<button  
+ng-click="goDP(listTageDPController.nachher, listTageDPController.value, listTageDPController.time)">+</button>

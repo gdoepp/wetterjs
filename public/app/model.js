@@ -38,8 +38,8 @@ function auswahlFactory($http) {
 			$http.get('wetter/auswahl?stat='+stat)
 			.then( function success(resp) {
 				result.list=resp.data.rows;
-				if (result.list.length > 0) {
-					var t = new Date(result.list[0].mtime);
+				if (result.list.length > 2) {
+					var t = new Date(result.list[1].mtime);
 					result.tag = t.getDate() + '.' + (t.getMonth()+1) + '.' + t.getFullYear();
 				}
 			}, function error(resp) {

@@ -20,7 +20,8 @@ angular.module('wetterDB')
   
 WetterController.$inject = ['$scope', '$state', 'statsFactory'];
 
-var values={'pres': {name:'Luftdruck', func:'P', offset: 0.5}, 
+var values={'temp': {name:'Temperatur', func:'T', offset: 0.5}, 
+			'pres': {name:'Luftdruck', func:'P', offset: 0.5},
 		    'hum_o': {name:'rel. Luftfeuchte', func:'H', offset: 0.5}, 
 		    'precip': {name:'Niederschlag', func:'R', offset: 0},
 		    'cloud': {name:'Wolken', func:'N', offset: 0},
@@ -34,10 +35,12 @@ function WetterController($scope, $state, statsFactory) {
     jahr: '2017',
     monat: 1,
     tag: 1,
-    state: 'auswahl',    
+    time: '2017',
+    value: 'auswahl',
+    per: 'Monate',
     stats: {stat:'', stats:[], admin:0},
     statChanged: function() {
-    	console.log("stat changed: " + $scope.data.stats.stat);
+    	//console.log("stat changed: " + $scope.data.stats.stat);
     	$state.go('.', {stat:$scope.data.stats.stat});
     }
    };
@@ -48,33 +51,30 @@ function WetterController($scope, $state, statsFactory) {
 	   $state.go('auswahl',{tag: state, stat:$scope.data.stats.stat}, {reload:true});
    }
    $scope.goTag = function(state) {
-	   $state.go('listTag',{tag: state, stat:$scope.data.stats.stat}, {reload:true});
+	   $scope.data.time = state;
+	   $scope.data.per = 'Tag';
+	   $scope.data.value = '';
+	   $state.go('listTag',{time: state, stat:$scope.data.stats.stat}, {reload:true});
    }
-   $scope.goTagDT = function(state) {
-	   $state.go('listTagDT',{tag: state, stat:$scope.data.stats.stat}, {reload:true});
+   $scope.goMonate = function(state) {
+	   $scope.data.time = state;
+	   $scope.data.per = 'Monate';
+	   $scope.data.value = '';
+	   $state.go('listMonate',{time: state, stat:$scope.data.stats.stat});
    }
-   $scope.goTagDP = function(state, value) {
-	   $state.go('listTagD'+values[value].func,{tag: state, stat:$scope.data.stats.stat}, {reload:true});
+
+   $scope.goDP = function(time, value, per) {
+	   $scope.data.value = value;
+	   $scope.data.time = time;
+	   $scope.data.per = per;
+	   $state.go('list'+per+'D'+values[value].func,{time: time, stat:$scope.data.stats.stat}, {reload:true});
    }
    
    $scope.goMonat = function(state) {
-	   $state.go('listMonat',{monat: state, stat:$scope.data.stats.stat});
-   }
-   $scope.goMonatDT = function(state) {
-	   $state.go('listMonatDT',{monat: state, stat:$scope.data.stats.stat});
-   }
-   $scope.goMonatDP = function(state, value) {
-	   $state.go('listMonatD'+values[value].func,{monat: state, stat:$scope.data.stats.stat});
-   }
-   
-   $scope.goMonate = function(state) {
-	   $state.go('listMonate',{jahr: state, stat:$scope.data.stats.stat});
-   }
-   $scope.goMonateDT = function(state) {
-	   $state.go('listMonateDT',{jahr: state, stat:$scope.data.stats.stat});
-   }
-   $scope.goMonateDP = function(state, value) {
-	   $state.go('listMonateD'+values[value].func,{jahr: state, stat:$scope.data.stats.stat});
+	   $scope.data.time = state;
+	   $scope.data.per = 'Monat';
+	   $scope.data.value = '';
+	   $state.go('listMonat',{time: state, stat:$scope.data.stats.stat});
    }
    $scope.update = function(state, value) {
 	   $state.go('update',{stat:$scope.data.stats.stat});
@@ -123,9 +123,9 @@ function Jahr(jahr) {
 
 function Monat (monjahr) {
 		
-		var mon = monjahr.split(".");
-		var monat=mon[0];
-		var jahr=mon[1];
+		var mon = monjahr.trim().split(".");
+		var monat=Number(mon[0]);
+		var jahr=Number(mon[1]);
 		
 		Zeit(this, jahr);
 		
@@ -137,6 +137,15 @@ function Monat (monjahr) {
 		}
 		x.push(this.monlen[monat-1]);
 		
+		var monat1 = monat-1;
+		var jahr1 = jahr;
+		if (monat1==0) { jahr1--; monat1 = 12; }
+		var vormonat = monat1 + '.' + jahr1;
+		jahr1 = jahr;
+		monat1 = monat+1;
+		if (monat1==13) { monat1 = 1; jahr1++; }
+		var nmonat = monat1 + '.' + jahr1;
+		
 		return {
 			index: function(tv, offset) {  // x-Koordinate in Welt-Einheiten
 				if (!offset) offset=0;
@@ -146,6 +155,8 @@ function Monat (monjahr) {
 				return x;       // 0.5, 1.5, ...
 			},
 			xaxis: tage,
+			vormonat: vormonat,
+			nmonat: nmonat,
 			title: 'im Monatsverlauf ' + this.monName[monat-1] + " " + jahr,
 			index0: 0,  // x-Koordinate von 0
 			indexn: this.monlen[monat-1],   // bis Monatslänge
@@ -172,6 +183,11 @@ function Tag(tag, offset) {
 		} else {
 			tag = new Date();
 		}
+		
+		var gestern = new Date(tag);
+		gestern.setDate(tag.getDate()-1);
+		var morgen = new Date(tag);
+		morgen.setDate(tag.getDate()+1);
 			
 		return {
 			
@@ -191,10 +207,12 @@ function Tag(tag, offset) {
 			},
 			xaxis: x,
 			title: 'im Tagesverlauf ' + tag.getDate() + "." + (tag.getMonth()+1)+ "." + (tag.getFullYear()),
+			gestern: gestern.getDate() + "." + (gestern.getMonth()+1)+ "." + (gestern.getFullYear()),
+			morgen: morgen.getDate() + "." + (morgen.getMonth()+1)+ "." + (morgen.getFullYear()),
 			index0: 0,      // Intervall x-Koordinaten 0 bis
 			indexn: 24*4,   // ... 24*4
 			items: 24*4,
-			monat: (tag.getMonth()+1) + "." + (tag.getFullYear()) + "."
+			monat: (tag.getMonth()+1) + "." + (tag.getFullYear())
 		}	
 }
 
@@ -215,108 +233,134 @@ function AuswahlController($state, $stateParams, auswahlFactory) {
 ListMonateController.$inject = ['$state', '$stateParams', 'listMonateFactory'];
 
 function ListMonateController($state, $stateParams, listMonateFactory) {
-	this.rows = listMonateFactory.getListMonate($stateParams.jahr,$stateParams.stat, prepareList);
+	this.rows = listMonateFactory.getListMonate($stateParams.time,$stateParams.stat, prepareList);
+	this.time='Monate';
 }
 
 ListMonateDTController.$inject = ['$state', '$stateParams', 'listMonateFactory', 'svgMakerFactory'];
 
 function ListMonateDTController($state, $stateParams, listMonateFactory, svgMakerFactory) {
-	this.rows = listMonateFactory.getListMonate($stateParams.jahr,$stateParams.stat, svgMakerFactory.prepareTemp, 
-			new Jahr($stateParams.jahr, 0.5));
+	this.rows = listMonateFactory.getListMonate($stateParams.time,$stateParams.stat, svgMakerFactory.prepareTemp, 
+			new Jahr($stateParams.time, 0.5));
+	this.value=$state.current.data;
+	this.time='Monate';
 }
 
 ListMonateDPController.$inject = ['$state', '$stateParams', 'listMonateFactory', 'svgMakerFactory'];
 
 function ListMonateDPController($state, $stateParams, listMonateFactory, svgMakerFactory) {
 	this.value=$state.current.data;
-	this.rows = listMonateFactory.getListMonate($stateParams.jahr,$stateParams.stat, svgMakerFactory.preparePhen, 
-			new Jahr($stateParams.jahr, values[this.value].offset), $state.current.data);
+	this.rows = listMonateFactory.getListMonate($stateParams.time,$stateParams.stat, svgMakerFactory.preparePhen, 
+			new Jahr($stateParams.time, values[this.value].offset), $state.current.data);
 	this.wert= values[this.value].name;
+	this.time='Monate';
 }
 
 ListMonateDFController.$inject = ['$state', '$stateParams', 'listMonateFactory', 'svgMakerFactory'];
 
 function ListMonateDFController($state, $stateParams, listMonateFactory, svgMakerFactory) {
-	this.rows = listMonateFactory.getListMonate($stateParams.jahr,$stateParams.stat, svgMakerFactory.prepareWind, 
-			new Jahr($stateParams.jahr, 0), $state.current.data);
+	this.rows = listMonateFactory.getListMonate($stateParams.time,$stateParams.stat, svgMakerFactory.prepareWind, 
+			new Jahr($stateParams.time, 0), $state.current.data);
 	this.value=$state.current.data;
 	this.wert= values[this.value].name;
+	this.time='Monate';
 }
 
 ListMonatController.$inject = ['$state', '$stateParams', 'listMonatFactory'];
 
 function ListMonatController($state, $stateParams, listMonatFactory) {
-	this.rows = listMonatFactory.getListMonat($stateParams.monat,$stateParams.stat, prepareList);
-	this.monat=$stateParams.monat;	
+	this.rows = listMonatFactory.getListMonat($stateParams.time,$stateParams.stat, prepareList);
+	this.monat=$stateParams.time;	
+	this.time='Monat';
 }
 
 ListMonatDTController.$inject = ['$state', '$stateParams', 'listMonatFactory', 'svgMakerFactory'];
 
 function ListMonatDTController($state, $stateParams, listMonatFactory, svgMakerFactory) {
-	this.rows = listMonatFactory.getListMonat($stateParams.monat,$stateParams.stat, svgMakerFactory.prepareTemp, 
-			new Monat($stateParams.monat, 0.5));
+	var monat = new Monat($stateParams.time, 0.5);
+	this.rows = listMonatFactory.getListMonat($stateParams.time,$stateParams.stat, svgMakerFactory.prepareTemp, 
+			monat);
+	this.value=$state.current.data;
 	this.monat=$stateParams.monat;
+	this.vorher= monat.vormonat;
+	this.nachher=monat.nmonat;
+	this.time='Monat';
 }
 
 ListMonatDPController.$inject = ['$state', '$stateParams', 'listMonatFactory', 'svgMakerFactory'];
 
 function ListMonatDPController($state, $stateParams, listMonatFactory, svgMakerFactory) {
 	this.value=$state.current.data;
-	this.rows = listMonatFactory.getListMonat($stateParams.monat,$stateParams.stat, svgMakerFactory.preparePhen, 
-			new Monat($stateParams.monat, values[this.value].offset), $state.current.data);
+	var monat = new Monat($stateParams.time, values[this.value].offset);
+	this.rows = listMonatFactory.getListMonat($stateParams.time,$stateParams.stat, svgMakerFactory.preparePhen, 
+			monat, $state.current.data);
 	this.monat=$stateParams.monat;
+	this.vorher= monat.vormonat;
+	this.nachher=monat.nmonat;
 	this.wert= values[this.value].name;
+	this.time='Monat';
 }
 
 ListMonatDFController.$inject = ['$state', '$stateParams', 'listMonatFactory', 'svgMakerFactory'];
 
 function ListMonatDFController($state, $stateParams, listMonatFactory, svgMakerFactory) {
-	this.rows = listMonatFactory.getListMonat($stateParams.monat,$stateParams.stat, svgMakerFactory.prepareWind, 
-			new Monat($stateParams.monat, 0), $state.current.data);
+	var monat = new Monat($stateParams.time, 0);
+	this.rows = listMonatFactory.getListMonat($stateParams.time,$stateParams.stat, svgMakerFactory.prepareWind, 
+			monat, $state.current.data);
 	this.monat=$stateParams.monat;
+	this.vorher= monat.vormonat;
+	this.nachher=monat.nmonat;
 	this.value=$state.current.data;
 	this.wert= values[this.value].name;
+	this.time='Monat';
 }
 
 ListTagController.$inject = ['$state', '$stateParams', 'listTagFactory'];
 
 function ListTagController($state, $stateParams, listTagFactory) {
-	this.rows = listTagFactory.getListTag($stateParams.tag,$stateParams.stat, prepareList);
-	var tag = new Tag($stateParams.tag, 0);
+	this.rows = listTagFactory.getListTag($stateParams.time, $stateParams.stat, prepareList);
+	var tag = new Tag($stateParams.time, 0);
 	this.title = tag.title;
 	this.monat=tag.monat;
-	this.atTag=1;
+	this.time='Tag';
 }
 
 ListTagDTController.$inject = ['$state', '$stateParams', 'listTagFactory', 'svgMakerFactory'];
 
 function ListTagDTController($state, $stateParams, listTagFactory, svgMakerFactory) {
-	var tag = new Tag($stateParams.tag, 0.5);
-	this.rows = listTagFactory.getListTag($stateParams.tag,$stateParams.stat, svgMakerFactory.prepareTemp, tag);
+	var tag = new Tag($stateParams.time, 0.5);
+	this.rows = listTagFactory.getListTag($stateParams.time, $stateParams.stat, svgMakerFactory.prepareTemp, tag);
 	this.monat=tag.monat;
-	this.atTag=1;
+	this.value=$state.current.data;
+	this.vorher=tag.gestern;
+	this.nachher=tag.morgen;
+	this.time='Tag';
 }
 
 ListTagDPController.$inject = ['$state', '$stateParams', 'listTagFactory', 'svgMakerFactory'];
 
 function ListTagDPController($state, $stateParams, listTagFactory, svgMakerFactory) {
 	this.value=$state.current.data;
-	var tag = new Tag($stateParams.tag, values[this.value].offset);
-	this.rows = listTagFactory.getListTag($stateParams.tag,$stateParams.stat, svgMakerFactory.preparePhen, tag, $state.current.data);
+	var tag = new Tag($stateParams.time, values[this.value].offset);
+	this.rows = listTagFactory.getListTag($stateParams.time, $stateParams.stat, svgMakerFactory.preparePhen, tag, $state.current.data);
 	this.monat=tag.monat;
+	this.vorher=tag.gestern;
+	this.nachher=tag.morgen;
 	this.wert= values[this.value].name;
-	this.atTag=1;
+	this.time='Tag';
 }
 
 ListTagDFController.$inject = ['$state', '$stateParams', 'listTagFactory', 'svgMakerFactory'];
 
 function ListTagDFController($state, $stateParams, listTagFactory, svgMakerFactory) {
-	var tag = new Tag($stateParams.tag, 0);
-	this.rows = listTagFactory.getListTag($stateParams.tag,$stateParams.stat, svgMakerFactory.prepareWind, tag, $state.current.data);
+	var tag = new Tag($stateParams.time, 0);
+	this.rows = listTagFactory.getListTag($stateParams.time, $stateParams.stat, svgMakerFactory.prepareWind, tag, $state.current.data);
 	this.monat=tag.monat;
+	this.vorher=tag.gestern;
+	this.nachher=tag.morgen;
 	this.value=$state.current.data;
 	this.wert= values[this.value].name;
-	this.atTag=1;
+	this.time='Tag';
 }
 
 UpdateController.$inject = ['$state', '$stateParams', 'updateFactory'];

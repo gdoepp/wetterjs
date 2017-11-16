@@ -19,7 +19,7 @@
 <rect ng-repeat="t in listMonateDPController.rows.link"
    ng-attr-x={{listMonateDPController.rows.x[$index]}} ng-attr-y={{listMonateDPController.rows.tickXy-20}}
    ng-attr-width={{listMonateDPController.rows.tickXwidth}} ng-attr-height={{listMonateDPController.rows.tickXheight}}
-   fill='#ccc' ng-click="goMonatDP(t,listMonateDPController.value)" >
+   fill='#ccc' ng-click="goDP(t,listMonateDPController.value, 'Monat')" >
 </rect>
 
 <text  ng-repeat="tag in listMonateDPController.rows.tickXTag"

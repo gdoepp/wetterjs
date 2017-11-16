@@ -24,7 +24,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	
 	$stateProvider
 	  .state('listMonate', {
-		url: "/listMonate/:jahr/:stat",
+		url: "/listMonate/:time/:stat",
 		templateUrl: 'app/partials/listMonate.html',
 		controller: 'ListMonateController',
 		controllerAs: 'listMonateController'
@@ -32,15 +32,16 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonateDT', {
-		url: "/listMonateDT/:jahr/:stat",
+		url: "/listMonateDT/:time/:stat",
 		templateUrl: 'app/partials/listMonateDT.html',
 		controller: 'ListMonateDTController',
-		controllerAs: 'listMonateDTController'
+		controllerAs: 'listMonateDTController',
+		data: 'temp' 
 	  });
 	
 	$stateProvider
 	  .state('listMonateDP', {
-		url: "/listMonteDP/:jahr/:stat",
+		url: "/listMonteDP/:time/:stat",
 		templateUrl: 'app/partials/listMonateDP.html',
 		controller: 'ListMonateDPController',
 		controllerAs: 'listMonateDPController',
@@ -49,7 +50,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonateDH', {
-		url: "/listMonteDH/:jahr/:stat",
+		url: "/listMonteDH/:time/:stat",
 		templateUrl: 'app/partials/listMonateDP.html',
 		controller: 'ListMonateDPController',
 		controllerAs: 'listMonateDPController',
@@ -58,7 +59,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	
 	$stateProvider
 	  .state('listMonateDN', {
-		url: "/listMonteDN/:jahr/:stat",
+		url: "/listMonteDN/:time/:stat",
 		templateUrl: 'app/partials/listMonateDR.html',
 		controller: 'ListMonateDPController',
 		controllerAs: 'listMonateDPController',
@@ -67,7 +68,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonateDS', {
-		url: "/listMonteDS/:jahr/:stat",
+		url: "/listMonteDS/:time/:stat",
 		templateUrl: 'app/partials/listMonateDR.html',
 		controller: 'ListMonateDPController',
 		controllerAs: 'listMonateDPController',
@@ -76,7 +77,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonateDR', {
-		url: "/listMonteDR/:jahr/:stat",
+		url: "/listMonteDR/:time/:stat",
 		templateUrl: 'app/partials/listMonateDR.html',
 		controller: 'ListMonateDPController',
 		controllerAs: 'listMonateDPController',
@@ -85,7 +86,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonateDF', {
-		url: "/listMonteDF/:jahr/:stat",
+		url: "/listMonteDF/:time/:stat",
 		templateUrl: 'app/partials/listMonateDF.html',
 		controller: 'ListMonateDFController',
 		controllerAs: 'listMonateDPController',
@@ -95,7 +96,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	
 	$stateProvider
 	  .state('listMonat', {
-		url: "/listMonat/:monat/:stat",
+		url: "/listMonat/:time/:stat",
 		templateUrl: 'app/partials/listMonat.html',
 		controller: 'ListMonatController',
 		controllerAs: 'listTageController'
@@ -103,15 +104,16 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonatDT', {
-		url: "/listMonatDT/:monat/:stat",
+		url: "/listMonatDT/:time/:stat",
 		templateUrl: 'app/partials/listTageDT.html',
 		controller: 'ListMonatDTController',
-		controllerAs: 'listTageDTController'
+		controllerAs: 'listTageDTController',
+		data: 'temp' 
 	  });
 	
 	$stateProvider
 	  .state('listMonatDP', {
-		url: "/listMonatDP/:monat/:stat",
+		url: "/listMonatDP/:time/:stat",
 		templateUrl: 'app/partials/listTageDP.html',
 		controller: 'ListMonatDPController',
 		controllerAs: 'listTageDPController',
@@ -120,7 +122,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonatDH', {
-		url: "/listMonatDH/:monat/:stat",
+		url: "/listMonatDH/:time/:stat",
 		templateUrl: 'app/partials/listTageDP.html',
 		controller: 'ListMonatDPController',
 		controllerAs: 'listTageDPController',
@@ -129,7 +131,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	
 	$stateProvider
 	  .state('listMonatDN', {
-		url: "/listMonatDN/:monat/:stat",
+		url: "/listMonatDN/:time/:stat",
 		templateUrl: 'app/partials/listTageDR.html',
 		controller: 'ListMonatDPController',
 		controllerAs: 'listTageDPController',
@@ -138,7 +140,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonatDS', {
-		url: "/listMonatDS/:monat/:stat",
+		url: "/listMonatDS/:time/:stat",
 		templateUrl: 'app/partials/listTageDR.html',
 		controller: 'ListMonatDPController',
 		controllerAs: 'listTageDPController',
@@ -147,7 +149,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonatDR', {
-		url: "/listMonatDR/:monat/:stat",
+		url: "/listMonatDR/:time/:stat",
 		templateUrl: 'app/partials/listTageDR.html',
 		controller: 'ListMonatDPController',
 		controllerAs: 'listTageDPController',
@@ -156,7 +158,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonatDF', {
-		url: "/listMonatDF/:monat/:stat",
+		url: "/listMonatDF/:time/:stat",
 		templateUrl: 'app/partials/listTageDF.html',
 		controller: 'ListMonatDFController',
 		controllerAs: 'listTageDPController',
@@ -166,7 +168,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	
 	$stateProvider
 	  .state('listTag', {
-		url: "/listTag/:tag/:stat",
+		url: "/listTag/:time/:stat",
 		templateUrl: 'app/partials/listTag.html',
 		controller: 'ListTagController',
 		controllerAs: 'listTagController'
@@ -174,15 +176,16 @@ function configFn($stateProvider, $urlRouterProvider) {
 	
 	$stateProvider
 	  .state('listTagDT', {
-		url: "/listTagDT/:tag/:stat",
+		url: "/listTagDT/:time/:stat",
 		templateUrl: 'app/partials/listTageDT.html',
 		controller: 'ListTagDTController',
-		controllerAs: 'listTageDTController'
+		controllerAs: 'listTageDTController',
+		data: 'temp' 
 	  });	
 
 	$stateProvider
 	  .state('listTagDP', {
-		url: "/listTagDP/:tag/:stat",
+		url: "/listTagDP/:time/:stat",
 		templateUrl: 'app/partials/listTageDP.html',
 		controller: 'ListTagDPController',
 		controllerAs: 'listTageDPController',
@@ -191,7 +194,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listTagDH', {
-		url: "/listTagDH/:tag/:stat",
+		url: "/listTagDH/:time/:stat",
 		templateUrl: 'app/partials/listTageDP.html',
 		controller: 'ListTagDPController',
 		controllerAs: 'listTageDPController',
@@ -200,7 +203,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listTagDN', {
-		url: "/listTagDN/:tag/:stat",
+		url: "/listTagDN/:time/:stat",
 		templateUrl: 'app/partials/listTageDR.html',
 		controller: 'ListTagDPController',
 		controllerAs: 'listTageDPController',
@@ -209,7 +212,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listTagDS', {
-		url: "/listTagDS/:tag/:stat",
+		url: "/listTagDS/:time/:stat",
 		templateUrl: 'app/partials/listTageDR.html',
 		controller: 'ListTagDPController',
 		controllerAs: 'listTageDPController',
@@ -218,7 +221,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listTagDR', {
-		url: "/listTagDR/:tag/:stat",
+		url: "/listTagDR/:time/:stat",
 		templateUrl: 'app/partials/listTageDR.html',
 		controller: 'ListTagDPController',
 		controllerAs: 'listTageDPController',
@@ -227,7 +230,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	
 	$stateProvider
 	  .state('listTagDF', {
-		url: "/listTagDF/:tag/:stat",
+		url: "/listTagDF/:time/:stat",
 		templateUrl: 'app/partials/listTageDF.html',
 		controller: 'ListTagDFController',
 		controllerAs: 'listTageDPController',
