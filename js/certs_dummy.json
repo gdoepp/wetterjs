@@ -1,0 +1,5 @@
+
+[
+	{"subjectString": "CN=home.beispiel.de", "issuerString": "CN=ca.beispiel.de"},
+	{"subjectString": "CN=mobil.beispiel.de", "issuerString": "CN=ca.beispiel.de"}
+]

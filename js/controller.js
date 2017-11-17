@@ -4,20 +4,30 @@ var wetter = require('./model');
 
 var updater = require('./updater');
 
+var certsAllowed = require('./certs.json');
+
 const env = process.env.NODE_ENV || 'dev';
 
 console.log(env);
 
 function checkCert(req) {
-	if (env !== 'dev1' && (req.headers['ssl_client_verify'] !== 'SUCCESS' || 
-		!req.headers['ssl_client_s_dn'] || !req.headers['ssl_client_i_dn'] || 
-		req.headers['ssl_client_s_dn'].indexOf('CN=gdoeppert.de') == -1 ||
-		req.headers['ssl_client_i_dn'].indexOf('CN=gdoeppert.de') == -1)) {
-	  console.log("not admin");
-	  return false; 
-	} else {
-	  return true;
+	
+	if (env === 'dev') return true;
+	
+	if (req.headers['ssl_client_verify'] !== 'SUCCESS' || 
+		!req.headers['ssl_client_s_dn'] || !req.headers['ssl_client_i_dn']) {
+		return false;
 	}
+	
+	for (var j=0; j < certsAllowed.length; j++) {
+		var cert = certsAllowed[j];
+		if (req.headers['ssl_client_s_dn'].indexOf(cert.subjectString) >= 0 &&
+		    req.headers['ssl_client_i_dn'].indexOf(cert.issuerString) >= 0) {
+			console.log("admin");
+			return true; 
+		}
+	}
+	return false;
 }
 
 function stats(req, res) {

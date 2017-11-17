@@ -1,4 +1,4 @@
-//  (c) Gerhard Döppert, 2017
+//  (c) Gerhard Döppert, 2017, GNU GPL 3
 
 'use strict';
 angular.module('wetterDB', ['ui.router', 'ngResource'])
