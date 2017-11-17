@@ -17,7 +17,8 @@ CREATE FUNCTION arc_accum(agg_state double precision[], el double precision[]) R
     LANGUAGE plpgsql IMMUTABLE
     AS $$ 
     begin 
-	  	if (el[1] is not null and el[2] is not null) then                                                                      
+	  	if (el[1] is not null and el[2] is not null) 
+	  	then                                                                      
 			agg_state[1] := agg_state[1]+el[1]*cos(3.14159*el[2]/180);
 			agg_state[2] := agg_state[2]+el[1]*sin(3.14159*el[2]/180);
 			agg_state[3] := agg_state[3]+1; 
@@ -41,7 +42,9 @@ CREATE FUNCTION arc_avg2_final(agg_state double precision[]) RETURNS double prec
       then 
         r := sqrt(agg_state[1]^2+agg_state[2]^2)/agg_state[3]; 
         t := 360+180*atan2(agg_state[2], agg_state[1])/3.14159; 
-        return ARRAY[r, t - (360 * trunc(t/360))]; else return ARRAY[0,0]; 
+        return ARRAY[r, t - (360 * trunc(t/360))]; 
+      else 
+      	return ARRAY[0,0]; 
       end if;
 	end;
 $$;
