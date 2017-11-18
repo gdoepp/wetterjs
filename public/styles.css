@@ -24,3 +24,12 @@ text {
 button, select {
 	height: 4em;
 }
+
+.adminbutton {
+	background: #ec462c;
+	transition-duration: 0.2s;
+}
+
+.adminbutton:hover {
+	background: red;
+}

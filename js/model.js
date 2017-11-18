@@ -27,8 +27,6 @@ const pool = new pg.Pool(
 
 function auswahl(stat, admin) {
 
-	console.log("stat: " + stat);
-
 	return new Promise(function(resolve, reject) {
 		var tab = 'dwd_data';
 		if (stat==='00000') {
@@ -62,8 +60,6 @@ function listMonate(jahr, stat, admin) {
 
 	return new Promise(function(resolve, reject) {
 
-		console.log("jahr: " + jahr);
-		console.log("stat: " + stat);
 		var tab = 'dwd_data';
 		if (stat==='00000') {
 			tab='data';
@@ -110,8 +106,6 @@ function listMonat(monat, stat, admin) {
 		var mon=m[0];
 		var year = m[1];
 		
-		console.log("monat: " + m);
-		console.log("stat: " + stat);
 		var tab = 'dwd_data';
 		if (stat==='00000') {
 			tab='data';
@@ -152,8 +146,6 @@ function listTag(tag, stat, admin) {
 			var heute = new Date();
 			t = heute.toISOString().split('T')[0];			
 		}		
-		console.log("tag: " + t);
-		console.log("stat: " + stat);
 		var tab = 'dwd_data';
 		if (stat==='00000') {
 			tab='data';

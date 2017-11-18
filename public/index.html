@@ -19,7 +19,7 @@
 <div ng-controller='WetterController'>
 
 
-<h1>Wetter</h1>
+<h1>Wetter Rückblick</h1>
 
 	<br/>
     <br/>
@@ -91,7 +91,9 @@
 	  <td><button ng-click="goDP(0, 'windf', 'Tag')">Diagramm</button></td>
 	</tr>
 	 <tr>
-	 <td><button ng-show='data.stats.admin' ng-click="update()" style='background: red'>update</button></td>	 	 
+	 <td><button ng-show='data.stats.admin' ng-click="update()" class='adminbutton'>update</button></td>
+	 
+	 UpdateController	 	 
 	 </tr>
 	</tbody>  	    
 </table>

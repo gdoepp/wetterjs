@@ -240,7 +240,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	$stateProvider
 	  .state('update', {
 		url: "/update/:stat",
-		templateUrl: 'app/partials/auswahl.html',
+		templateUrl: 'app/partials/update.html',
 		controller: 'UpdateController',
 		controllerAs: 'updateController'
 	  });	

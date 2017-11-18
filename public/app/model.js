@@ -122,9 +122,9 @@ function updateFactory($http) {
 			var result = {};
 			$http.post('wetter/update/'+statid)
 			.then( function success(resp) {
-				result.list=resp.result;
+				result.result = resp.data;
 			}, function error(resp) {
-				result.list = undefined;
+				result.result = { update: -2 };
 			});
 			return result;
 		}				

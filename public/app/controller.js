@@ -367,5 +367,6 @@ UpdateController.$inject = ['$state', '$stateParams', 'updateFactory'];
 
 function UpdateController($state, $stateParams, updateFactory) {
 	this.result = updateFactory.update($stateParams.stat);
+	this.result.result = {update:2};
 }
 

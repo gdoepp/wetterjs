@@ -10,7 +10,7 @@ const env = process.env.NODE_ENV || 'dev';
 
 console.log(env);
 
-function checkCert(req) {
+function checkCert(req) {  // checking certificates is done by Apache, result is forwarded via headers 
 	
 	if (env === 'dev') return true;
 	
@@ -107,11 +107,11 @@ function update(req, res) {
 	
 	var statid = req.params.stat;
 
-	if (statid=='00000') { res.send("OK"); return; }
+	if (statid=='00000') { res.send('{"update":0}'); return; }
 	
 	if (!checkCert(req)) {
 		 console.log("update not allowed");
-		 res.send("OK"); return; 
+		 res.send('{"update":-1}'); return; 
 	}
 	
 	console.log("update: id="+statid);
@@ -119,30 +119,9 @@ function update(req, res) {
 	// download and process files sequentially
 	
 	try {
-	
-		updater.update(statid, "P0")
-		.then(function (n) {
-			console.log("n: "+n);
-			return updater.update(statid, "TU");
-		}, function (e) { console.log(e);} )
-		.then(function (n) {
-			console.log("n: "+n);
-			return updater.update(statid, "RR");		
-		}, function (e) {  console.log(e); })
-		.then(function (n) {
-			console.log("n: "+n);
-			return updater.update(statid, "N");		
-		}, function fail(e) {console.log(e); })
-		.then(function (n) {
-			console.log("n: "+n);
-			return updater.update(statid, "FF");
-		}, function (e) {  console.log(e); return updater.update(statid, "FF"); })
-		.then(function (n) {
-			console.log("n: "+n);
-		}, function (e) {  console.log(e); });
-	} catch(ex) { res.send("NOK")}
-	console.log("ready");
-	res.send("OK");
+		updater.updateAllValues(statid, () => { res.send('{"update":1}');});
+	} catch(ex) { console.log(ex); res.send('{"update":-2}'); }	
+	//res.send('{"update":1}');
 }
 
 module.exports = {
