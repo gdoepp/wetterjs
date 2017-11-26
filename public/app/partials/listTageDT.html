@@ -8,7 +8,7 @@
 <div style="position:relative;width:100%;">
 <canvas width="160" height="108"></canvas>
 
-<svg width='100%' viewBox="0 0 1600 1048" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg width='100%' viewBox="0 0 1600 1068" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <g>
 
 
@@ -22,7 +22,7 @@
 
 <rect ng-repeat="t in listTageDTController.rows.link"
    ng-attr-x={{listTageDTController.rows.x[$index]}} ng-attr-y={{listTageDTController.rows.tickXy-20}}
-   ng-attr-width={{listTageDTController.rows.tickXwidth}} ng-attr-height={{listTageDTController.rows.tickXheight}}
+   ng-attr-width={{listTageDTController.rows.tickXwidth}} ng-attr-height={{listTageDTController.rows.tickXheight*2}}
    fill='#ccc'  ng-click="goDP(t, listTageDTController.value, 'Tag')" >
 </rect>
 
@@ -50,12 +50,12 @@
   style="fill:none;stroke:orange;stroke-width:3" />
 
     
-    <text x='90' y='1040' font-size='12pt' fill='green'>T_o</text>          
-    <text x='190' y='1040' font-size='12pt' fill='green'>T_o_avg</text>      
-    <text x='390' y='1040' font-size='12pt' fill='blue'>T_o_min</text> 
-    <text x='590' y='1040' font-size='12pt' fill='red'>T_o_max</text>
+    <text x='90' y='1060' font-size='12pt' fill='green'>T_o</text>          
+    <text x='190' y='1060' font-size='12pt' fill='green'>T_o_avg</text>      
+    <text x='390' y='1060' font-size='12pt' fill='blue'>T_o_min</text> 
+    <text x='590' y='1060' font-size='12pt' fill='red'>T_o_max</text>
         
-    <text x='890' y='1040' font-size='12pt' fill='orange'>T_i</text>
+    <text x='890' y='1060' font-size='12pt' fill='orange'>T_i</text>
     
    </g>
     
@@ -65,8 +65,8 @@
 <button ng-show="listTageDTController.time=='Tag'" 
 ng-click="goDP(listTageDTController.monat, listTageDTController.value, 'Monat')">Monat</button>
 
-<button  
-ng-click="goDP(listTageDTController.vorher, listTageDTController.value, listTageDTController.time)">-</button>
+<button   class='dirbutton'
+ng-click="goDP(listTageDTController.vorher, listTageDTController.value, listTageDTController.time)">&lt;</button>
 
-<button  
-ng-click="goDP(listTageDTController.nachher, listTageDTController.value, listTageDTController.time)">+</button>
+<button   class='dirbutton'
+ng-click="goDP(listTageDTController.nachher, listTageDTController.value, listTageDTController.time)">&gt;</button>

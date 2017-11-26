@@ -8,6 +8,8 @@ var certsAllowed = require('./certs.json');
 
 const env = process.env.NODE_ENV || 'dev';
 
+var expired = 0
+
 console.log(env);
 
 function checkCert(req) {  // checking certificates is done by Apache, result is forwarded via headers 
@@ -57,6 +59,11 @@ function auswahl(req, res) {
 		var result = {};		
 	
 		result.rows = data;
+		var heute = new Date();
+		var expires = new Date(heute.getTime()+60*1000);
+		res.set({"Cache-Control": "public",
+		"Expires": expires.toUTCString()});
+		
 		res.send(result);
 		
 	}, function failure(err) {
@@ -69,8 +76,20 @@ function listMonate(req, res) {
 	if (checkCert(req))	 {
 		 admin=1; 
 	} 
+	var mod = req.headers['if-modified-since'];
+	var heute = new Date();
+	var expires = new Date(heute.getTime()+60*60*1000); // 1h
+	if (mod) {
+		var modTime = new Date(mod);
+		if (heute.getTime()-modTime.getTime() < 24*60*60*1000) {  // 24h
+			res.status(304);
+		}
+	}
 	wetter.listMonate(req.query.jahr, req.query.stat, admin)
 	.then(function success(data) {
+		res.set({"Cache-Control": "public",
+			"Last-Modified": heute.toUTCString(),
+			"Expires": expires.toUTCString()});
 		res.send(data);
 	}, function failure(err) {
 		res.send(err);
@@ -82,8 +101,20 @@ function listMonat(req, res) {
 	if (checkCert(req))	 {
 		 admin=1; 
 	} 
-	wetter.listMonat(req.query.monat, req.query.stat, admin)
+	var mod = req.headers['if-modified-since'];
+	var heute = new Date();
+	var expires = new Date(heute.getTime()+60*60*1000);  // 1h
+	if (mod) {
+		var modTime = new Date(mod);
+		if (heute.getTime()-modTime.getTime() < 60*60*1000) {  // 1h
+			res.status(304);
+		}
+	}
+wetter.listMonat(req.query.monat, req.query.stat, admin)
 	.then(function success(data) {
+		res.set({"Cache-Control": "public",
+			"Last-Modified": heute.toUTCString(),
+			"Expires": expires.toUTCString()});
 		res.send(data);
 	}, function failure(err) {
 		res.send(err);
@@ -95,8 +126,22 @@ function listTag(req, res) {
 	if (checkCert(req))	 {
 		 admin=1; 
 	} 
+	var mod = req.headers['if-modified-since'];
+	var heute = new Date();
+	var minutes = (req.query.stat>0 ? 60 : 1);
+	var expires = new Date(heute.getTime()+minutes*60*1000);
+
+	if (mod) {
+		var modTime = new Date(mod);
+		if (heute.getTime()-modTime.getTime() < minutes*60*1000) { // 1min - 1h
+			res.status(304);
+		}
+	}
 	wetter.listTag(req.query.tag, req.query.stat, admin)
 	.then(function success(data) {
+		res.set({"Cache-Control": "public",
+			"Last-Modified": heute.toUTCString(),
+			"Expires": expires.toUTCString()});
 		res.send(data);
 	}, function failure(err) {
 		res.send(err);
@@ -130,6 +175,7 @@ module.exports = {
 		listTag: listTag,
 		update: update,
 		auswahl: auswahl,
-		stats: stats
+		stats: stats,
+		expired: expired
 };
 

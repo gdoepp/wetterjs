@@ -9,7 +9,7 @@ var router = require('./router');
 var updater = require('./updater');
 
 var cron = require('node-schedule');
-
+5
 var s = 0;
 var v = 0;
 
@@ -23,6 +23,7 @@ cron.scheduleJob('10-39 10 * * *', () => {
 	.then( (n) => {
 			console.log("rows: "+n);
 			console.log('time taken: ' + (Date.now()-t1) + "ms");
+			
 		          },  
 		 (err) => { console.log(err);} 
 	);

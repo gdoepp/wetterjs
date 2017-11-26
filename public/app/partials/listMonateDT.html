@@ -5,7 +5,7 @@
 <div style="position:relative;width:100%;">
 <canvas width="160" height="108"></canvas>
 
-<svg width='100%' viewBox="0 0 1600 1048" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg width='100%' viewBox="0 0 1600 1068" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <g>
 
 
@@ -19,7 +19,7 @@
 
 <rect ng-repeat="t in listMonateDTController.rows.link"
    ng-attr-x={{listMonateDTController.rows.x[$index]}} ng-attr-y={{listMonateDTController.rows.tickXy-20}}
-   ng-attr-width={{listMonateDTController.rows.tickXwidth}} ng-attr-height={{listMonateDTController.rows.tickXheight}}
+   ng-attr-width={{listMonateDTController.rows.tickXwidth}} ng-attr-height={{listMonateDTController.rows.tickXheight*2}}
    fill='#ccc' ng-click="goDP(t, listMonateDTController.value, 'Monat')" >
 </rect>
 
@@ -53,13 +53,13 @@
   style="fill:none;stroke:orange;stroke-width:3" />
 
         
-    <text x='90' y='1040' font-size='12pt' fill='green'>T_o_avg</text>        
-    <text x='290' y='1040' font-size='12pt' fill='violet'>T_o_absmin</text>
-    <text x='490' y='1040' font-size='12pt' fill='blue'>T_o_min</text> 
-    <text x='690' y='1040' font-size='12pt' fill='red'>T_o_max</text>
-    <text x='890' y='1040' font-size='12pt' fill='brown'>T_o_absmax</text> 
+    <text x='90' y='1060' font-size='12pt' fill='green'>T_o_avg</text>        
+    <text x='290' y='1060' font-size='12pt' fill='violet'>T_o_absmin</text>
+    <text x='490' y='1060' font-size='12pt' fill='blue'>T_o_min</text> 
+    <text x='690' y='1060' font-size='12pt' fill='red'>T_o_max</text>
+    <text x='890' y='1060' font-size='12pt' fill='brown'>T_o_absmax</text> 
         
-    <text x='1190' y='1040' font-size='12pt' fill='orange'>T_i</text>
+    <text x='1190' y='1060' font-size='12pt' fill='orange'>T_i</text>
     
    </g>
     

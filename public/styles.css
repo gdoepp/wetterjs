@@ -22,14 +22,19 @@ text {
 }
 
 button, select {
-	height: 4em;
+	font-size: 120%;
+	height: 80px;
+	min-width: 100px;
+}
+button.dirbutton {
+	font-size: 24px;
 }
 
-.adminbutton {
+button.adminbutton {
 	background: #ec462c;
 	transition-duration: 0.2s;
 }
 
-.adminbutton:hover {
+button.adminbutton:hover {
 	background: red;
 }
