@@ -7,4 +7,6 @@ Definition einer eigenen Aggregationsfunktion zur Mittelbildung über die Windri
 
 Es können auch Daten aus einer eigenen Wetterstation ausgewertet werden. Das Einspielen muss je nach Technik mit eigenen Skripten (bspw. PHP und Python) vorgenommen werden. Die Speicherung erfolgt hier in einer getrennten Tabelle.
 
+Eine passende Variante von angular.ja muss sich in public/lib/ befinden.
+
 Stand: alpha/Demo, keine Gewährleistung für die technische oder fachliche Korrektheit oder für irgendeine Nutzbarkeit.
