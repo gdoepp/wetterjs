@@ -1,13 +1,13 @@
 //  (c) Gerhard Döppert, 2017, GNU GPL 3
 
 'use strict';
-angular.module('wetterDB', ['ui.router', 'ngResource'])
-.config(configFn);
 
-console.log("config app");
+var module = angular.module('wetterDB', ['ui.router', 'ngResource']);
+
+module.config(configFn);
+
 
 configFn.$inject= ['$stateProvider', '$urlRouterProvider'];
-
 function configFn($stateProvider, $urlRouterProvider) {
 	
 	console.log("in configFn");
@@ -16,233 +16,181 @@ function configFn($stateProvider, $urlRouterProvider) {
 	
 	$stateProvider
 	  .state('auswahl', {
-		url: "/auswahl/:stat",
-		templateUrl: 'app/partials/auswahl.html',
-		controller: 'AuswahlController',
-		controllerAs: 'auswahlController'
+		url: "/auswahl/:stat",	
+		component: 'auswahlTable' 
 	  });
 	
 	$stateProvider
 	  .state('listMonate', {
 		url: "/listMonate/:time/:stat",
-		templateUrl: 'app/partials/listMonate.html',
-		controller: 'ListMonateController',
-		controllerAs: 'listMonateController'
+		component: 'monateTable' 
 	  });
 
 	$stateProvider
 	  .state('listMonateDT', {
 		url: "/listMonateDT/:time/:stat",
-		templateUrl: 'app/partials/listMonateDT.html',
-		controller: 'ListMonateDTController',
-		controllerAs: 'listMonateDTController',
+		component: 'monateDT',
 		data: 'temp' 
 	  });
 	
 	$stateProvider
 	  .state('listMonateDP', {
 		url: "/listMonteDP/:time/:stat",
-		templateUrl: 'app/partials/listMonateDP.html',
-		controller: 'ListMonateDPController',
-		controllerAs: 'listMonateDPController',
+		component: 'monateDP',
 		data: 'pres' 
 	  });
 
 	$stateProvider
 	  .state('listMonateDH', {
 		url: "/listMonteDH/:time/:stat",
-		templateUrl: 'app/partials/listMonateDP.html',
-		controller: 'ListMonateDPController',
-		controllerAs: 'listMonateDPController',
+		component: 'monateDP',
 		data: 'hum_o' 
 	  });
 	
 	$stateProvider
 	  .state('listMonateDN', {
 		url: "/listMonteDN/:time/:stat",
-		templateUrl: 'app/partials/listMonateDR.html',
-		controller: 'ListMonateDPController',
-		controllerAs: 'listMonateDPController',
+		component: 'monateDR',
 		data: 'cloud' 
 	  });
 
 	$stateProvider
 	  .state('listMonateDS', {
 		url: "/listMonteDS/:time/:stat",
-		templateUrl: 'app/partials/listMonateDR.html',
-		controller: 'ListMonateDPController',
-		controllerAs: 'listMonateDPController',
+		component: 'monateDR',
 		data: 'sun' 
 	  });
 
 	$stateProvider
 	  .state('listMonateDR', {
 		url: "/listMonteDR/:time/:stat",
-		templateUrl: 'app/partials/listMonateDR.html',
-		controller: 'ListMonateDPController',
-		controllerAs: 'listMonateDPController',
+		component: 'monateDR',
 		data: 'precip' 
 	  });
 
 	$stateProvider
 	  .state('listMonateDF', {
 		url: "/listMonteDF/:time/:stat",
-		templateUrl: 'app/partials/listMonateDF.html',
-		controller: 'ListMonateDFController',
-		controllerAs: 'listMonateDPController',
+		component: 'monateDF',
 		data: 'windf' 
 	  });
-
 	
 	$stateProvider
 	  .state('listMonat', {
 		url: "/listMonat/:time/:stat",
-		templateUrl: 'app/partials/listMonat.html',
-		controller: 'ListMonatController',
-		controllerAs: 'listTageController'
+		component: 'monatTable' 
 	  });
 
 	$stateProvider
 	  .state('listMonatDT', {
 		url: "/listMonatDT/:time/:stat",
-		templateUrl: 'app/partials/listTageDT.html',
-		controller: 'ListMonatDTController',
-		controllerAs: 'listTageDTController',
+		component: 'monatDT',
 		data: 'temp' 
 	  });
 	
 	$stateProvider
 	  .state('listMonatDP', {
 		url: "/listMonatDP/:time/:stat",
-		templateUrl: 'app/partials/listTageDP.html',
-		controller: 'ListMonatDPController',
-		controllerAs: 'listTageDPController',
+		component: 'monatDP',
 		data: 'pres' 
 	  });
 
 	$stateProvider
 	  .state('listMonatDH', {
 		url: "/listMonatDH/:time/:stat",
-		templateUrl: 'app/partials/listTageDP.html',
-		controller: 'ListMonatDPController',
-		controllerAs: 'listTageDPController',
+		component: 'monatDP',
 		data: 'hum_o' 
 	  });
 	
 	$stateProvider
 	  .state('listMonatDN', {
 		url: "/listMonatDN/:time/:stat",
-		templateUrl: 'app/partials/listTageDR.html',
-		controller: 'ListMonatDPController',
-		controllerAs: 'listTageDPController',
+		component: 'monatDR',
 		data: 'cloud' 
 	  });
 
 	$stateProvider
 	  .state('listMonatDS', {
 		url: "/listMonatDS/:time/:stat",
-		templateUrl: 'app/partials/listTageDR.html',
-		controller: 'ListMonatDPController',
-		controllerAs: 'listTageDPController',
+		component: 'monatDR',
 		data: 'sun' 
 	  });
 
 	$stateProvider
 	  .state('listMonatDR', {
 		url: "/listMonatDR/:time/:stat",
-		templateUrl: 'app/partials/listTageDR.html',
-		controller: 'ListMonatDPController',
-		controllerAs: 'listTageDPController',
+		component: 'monatDR',
 		data: 'precip' 
 	  });
 
 	$stateProvider
 	  .state('listMonatDF', {
-		url: "/listMonatDF/:time/:stat",
-		templateUrl: 'app/partials/listTageDF.html',
-		controller: 'ListMonatDFController',
-		controllerAs: 'listTageDPController',
+		url: "/listMonatDF/:time/:stat",		
+		component: 'monatDF',	
 		data: 'windf' 
 	  });
-
 	
 	$stateProvider
 	  .state('listTag', {
 		url: "/listTag/:time/:stat",
-		templateUrl: 'app/partials/listTag.html',
-		controller: 'ListTagController',
-		controllerAs: 'listTagController'
+		component: 'tagTable' 
 	  });	
 	
 	$stateProvider
 	  .state('listTagDT', {
 		url: "/listTagDT/:time/:stat",
-		templateUrl: 'app/partials/listTageDT.html',
-		controller: 'ListTagDTController',
-		controllerAs: 'listTageDTController',
+		component: 'tagDT',
 		data: 'temp' 
 	  });	
 
 	$stateProvider
 	  .state('listTagDP', {
 		url: "/listTagDP/:time/:stat",
-		templateUrl: 'app/partials/listTageDP.html',
-		controller: 'ListTagDPController',
-		controllerAs: 'listTageDPController',
+		component: 'tagDP',
 		data: 'pres' 
 	  });	
 
 	$stateProvider
 	  .state('listTagDH', {
 		url: "/listTagDH/:time/:stat",
-		templateUrl: 'app/partials/listTageDP.html',
-		controller: 'ListTagDPController',
-		controllerAs: 'listTageDPController',
+		component: 'tagDP',		
 		data: 'hum_o' 
 	  });	
 
 	$stateProvider
 	  .state('listTagDN', {
 		url: "/listTagDN/:time/:stat",
-		templateUrl: 'app/partials/listTageDR.html',
-		controller: 'ListTagDPController',
-		controllerAs: 'listTageDPController',
+		component: 'tagDR',
 		data: 'cloud' 
 	  });	
 
 	$stateProvider
 	  .state('listTagDS', {
 		url: "/listTagDS/:time/:stat",
-		templateUrl: 'app/partials/listTageDR.html',
-		controller: 'ListTagDPController',
-		controllerAs: 'listTageDPController',
+		component: 'tagDR',
 		data: 'sun' 
 	  });	
 
 	$stateProvider
 	  .state('listTagDR', {
 		url: "/listTagDR/:time/:stat",
-		templateUrl: 'app/partials/listTageDR.html',
-		controller: 'ListTagDPController',
-		controllerAs: 'listTageDPController',
+		component: 'tagDR',
 		data: 'precip' 
 	  });	
 	
 	$stateProvider
 	  .state('listTagDF', {
 		url: "/listTagDF/:time/:stat",
-		templateUrl: 'app/partials/listTageDF.html',
-		controller: 'ListTagDFController',
-		controllerAs: 'listTageDPController',
+		component: 'tagDF',
 		data: 'windf' 
 	  });	
+
+	
 	
 	$stateProvider
 	  .state('update', {
 		url: "/update/:stat",
-		templateUrl: 'app/partials/update.html',
-		controller: 'UpdateController',
-		controllerAs: 'updateController'
+		component: 'updateResult'
 	  });	
 
 }

@@ -137,7 +137,12 @@ function listTag(req, res) {
 			res.status(304);
 		}
 	}
-	wetter.listTag(req.query.tag, req.query.stat, admin)
+	if (!req.query.tag1) {
+		req.query.tag1 = req.query.tag;
+		req.query.tag2 = req.query.tag;
+	}
+
+	wetter.listTag(req.query.tag1, req.query.tag2, req.query.stat, admin)
 	.then(function success(data) {
 		res.set({"Cache-Control": "public",
 			"Last-Modified": heute.toUTCString(),

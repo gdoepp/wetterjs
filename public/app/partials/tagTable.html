@@ -1,11 +1,11 @@
 <!--  (c) Gerhard Döppert, 2017 -->
 
-<h1>Wetter {{listTagController.title}}</h1>
+<h1>Wetter {{$ctrl.title}}</h1>
 <br/>
 
 
 <button  
-ng-click="goMonat(listTagController.monat)">Monat</button>
+ng-click="$ctrl.parent.myScope.goMonat($ctrl.monat)">Monat</button>
 
 <table border='1'>
 	<thead>
@@ -23,7 +23,7 @@ ng-click="goMonat(listTagController.monat)">Monat</button>
 	  </tr>
 	</thead>
 	<tbody >	
-	<tr ng-repeat="tagwert in listTagController.rows.list">
+	<tr ng-repeat="tagwert in $ctrl.data.list">
 	  <td >{{tagwert.time_t}}</td>
 	  <td class='tab'>{{tagwert.temp_i}}°C</td>
 	  <td class='tab'>{{tagwert.temp_o}}°C</td>

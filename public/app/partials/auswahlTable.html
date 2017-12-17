@@ -2,7 +2,7 @@
 
 <h1>Wetter in den letzten Stunden</h1>
 
-<h2>{{auswahlController.rows.tag}}</h2>
+<h2>{{$ctrl.data.tag}}</h2>
 <table border='1'>
 	<thead>
 	  <tr>
@@ -14,7 +14,7 @@
 	  </tr>
 	</thead>
 	<tbody >	
-	<tr ng-repeat="tagwert in auswahlController.rows.list">
+	<tr ng-repeat="tagwert in $ctrl.data.list">
 	  <td >{{tagwert.time_t}}</td>
 	  <td class='tab'>{{tagwert.temp_i}}°C</td>
 	  <td class='tab'>{{tagwert.temp_o}}°C</td>

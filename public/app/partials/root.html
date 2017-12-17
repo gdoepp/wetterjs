@@ -1,0 +1,86 @@
+
+<h1>Wetter Rückblick</h1>
+
+	<br/>
+    <br/>
+    <table>
+		<tr>
+		   <td>Jahr: </td><td><input type='text' size='4' ng-model='data.jahr'/></td>
+		</tr>
+	<tr>
+	  <td>Station: </td>
+	  <td><select ng-model='data.stats.stat' ng-change="data.statChanged()">
+		<option ng-repeat='stat in data.stats.stats' value='{{stat.id}}'>{{stat.name}}</option>
+		</select>
+		</td>
+	  </tr>
+	</table>
+	<br/>
+	<b>Die Rohdaten zu den Wetterstationen stammen vom Deutschen Wetterdienst (<a href='https://www.dwd.de'>www.dwd.de</a>).</b> Die Aufbereitung
+	erfolgt mit eigenen Algorithmen.
+	<br>
+    <br/>
+    <h1>Auswertung von</h1>
+  <table border='1'>
+    <thead>
+    <tr>
+      <th></th>
+      <th>alles</th>
+      <th>Temperatur</th>
+      <th>Luftdruck</th>
+      <th>rel. Feuchte</th>
+      <th>Niederschlag</th>
+      <th>Wolken</th>
+      <th>Sonne</th>
+      <th>Wind</th>
+      </tr>
+     </thead>
+	<tbody>
+     
+	<tr>
+	  <td>Einstieg Jahr</td>
+	  <td><button ng-click="goMonate(data.jahr)">Liste</button></td>
+	  <td><button ng-click="goDP(data.jahr, 'temp', 'Monate')"><img src='diagr_c.png'/></button></td>
+	  <td><button ng-click="goDP(data.jahr, 'pres', 'Monate')"><img src='diagr_c1.png'/></button></td>	  
+	  <td><button ng-click="goDP(data.jahr, 'hum_o', 'Monate')"><img src='diagr_c1.png'/></button></td>
+	  <td><button ng-click="goDP(data.jahr, 'precip', 'Monate')"><img src='diagr_rb.png'/></button></td>
+	  <td><button ng-click="goDP(data.jahr, 'cloud', 'Monate')"><img src='diagr_rg.png'/></button></td>
+	  <td><button ng-click="goDP(data.jahr, 'sun', 'Monate')"><img src='diagr_ry.png'/></button></td>
+	  <td><button ng-click="goDP(data.jahr, 'windf', 'Monate')"><img src='diagr_rv.png'/></button></td>
+	</tr>
+	<tr>
+	  <td>Umschalten nach</td>
+	  <td></td>
+	  <td><button ng-click="goDP(data.time, 'temp', data.per)"><img src='diagr_c.png'/></button></td>
+	  <td><button ng-click="goDP(data.time, 'pres', data.per)"><img src='diagr_c1.png'/></button></td>	  
+	  <td><button ng-click="goDP(data.time, 'hum_o', data.per)"><img src='diagr_c1.png'/></button></td>
+	  <td><button ng-click="goDP(data.time, 'precip', data.per)"><img src='diagr_rb.png'/></button></td>
+	  <td><button ng-click="goDP(data.time, 'cloud', data.per)"><img src='diagr_rg.png'/></button></td>
+	  <td><button ng-click="goDP(data.time, 'sun', data.per)"><img src='diagr_ry.png'/></button></td>
+	  <td><button ng-click="goDP(data.time, 'windf', data.per)"><img src='diagr_rv.png'/></button></td>
+	</tr>
+	<tr >
+	  <td>Heute</td>
+	  <td><button ng-click="goTag(0)">Liste</button></td>
+	  <td><button ng-click="goDP(0, 'temp', 'Tag')"><img src='diagr_c.png'/></button></td>
+	  <td><button ng-click="goDP(0,'pres', 'Tag')"><img src='diagr_c1.png'/></button></td>	  
+	  <td><button ng-click="goDP(0,'hum_o', 'Tag')"><img src='diagr_c1.png'/></button></td>
+	  <td><button ng-click="goDP(0, 'precip', 'Tag')"><img src='diagr_rb.png'/></button></td>
+	  <td><button ng-click="goDP(0, 'cloud', 'Tag')"><img src='diagr_rg.png'/></button></td>
+	  <td><button ng-click="goDP(0, 'sun', 'Tag')"><img src='diagr_ry.png'/></button></td>
+	  <td><button ng-click="goDP(0, 'windf', 'Tag')"><img src='diagr_rv.png'/></button></td>
+	</tr>
+	 
+	 
+	</tbody>  	    
+</table>
+<button ng-show='data.stats.admin' ng-click="$ctrl.myScope.update()" class='adminbutton'>update</button>
+<div ng-show='!data.stats.admin' class='adminbutton'>Eingeschränkter Modus: Gast</div>
+
+ 
+
+<br/>
+    <ui-view>
+       
+    </ui-view>
+    

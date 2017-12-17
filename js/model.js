@@ -36,6 +36,9 @@ function auswahl(stat, admin) {
 		if (admin) {
 			home = ',temp_i';
 		}
+		
+		console.log("auswahl: " + stat)
+		
 		pool.query('SELECT mtime'+home+', temp_o, '+				
 				'hum_o, pres, precip, cloud, windf, windd '+
 				" from wetter_home."+tab+
@@ -137,14 +140,15 @@ function listMonat(monat, stat, admin) {
 	});	
 }
 
-
-function listTag(tag, stat, admin) {
-
+function listTag(tag1, tag2, stat, admin) {
+	
 	return new Promise(function(resolve, reject) {		
-		var t = tag;
-		if (typeof t === 'undefined' || t === 'undefined' || t==0) { 
+		var t1 = tag1;
+		var t2 = tag2;
+		if (typeof t1 === 'undefined' || t1 === 'undefined' || t1==0) { 
 			var heute = new Date();
-			t = heute.toISOString().split('T')[0];			
+			t1 = heute.toISOString().split('T')[0];
+			t2 = t1;
 		}		
 		var tab = 'dwd_data';
 		if (stat==='00000') {
@@ -154,11 +158,11 @@ function listTag(tag, stat, admin) {
 		if (admin) {
 			home = ',temp_i';
 		}
-
-		pool.query('SELECT mtime as time_t '+home+', temp_o, '+				
+		
+		pool.query("SELECT date_trunc('day', mtime) as day, mtime as time_t "+home+', temp_o, '+				
 				'hum_o, pres, precip, cloud, sun, windf, ARRAY[windf,windd] as windd '+
-				" from wetter_home."+tab+" where date_trunc('day', mtime)=$1 and stat=$2" + 
-				" order by time_t", [t, stat])
+				" from wetter_home."+tab+" where date_trunc('day', mtime) between $1 and $2 and stat=$3" + 
+				" order by time_t", [t1, t2, stat])
 		.then(
 			(res) => {
 				for (var j=0; j<res.rows.length; j++) {

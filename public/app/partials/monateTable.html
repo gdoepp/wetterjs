@@ -1,6 +1,6 @@
 <!--  (c) Gerhard Döppert, 2017 -->
 
-<h1>Wetter im Jahresverlauf {{listMonateController.jahr}}</h1>
+<h1>Wetter im Jahresverlauf {{$ctrl.jahr}}</h1>
 <table border='1'>
 	<thead>
 	  <tr>
@@ -29,7 +29,7 @@
 	  </tr>
 	</thead>
 	<tbody >	
-	<tr ng-repeat="monat in listMonateController.rows.list">
+	<tr ng-repeat="monat in $ctrl.data.list">
 	  <td class='tab'>{{monat.monat}}</td>
 	  <td class='tab'>{{monat.temp_i}}°C</td>
 	  <td class='tab'>{{monat.temp_o}}°C</td>
@@ -46,7 +46,7 @@
 	  <td class='tab'>{{monat.windf_max}} m/s</td>
 	  <td class='tab'>{{monat.windd}} °</td>
 	  
-	  <td class='tab'><a ui-sref="listMonat({time: monat.monat, stat: data.stats.stat})"
+	  <td class='tab'><a ui-sref="listMonat({time: monat.monat, stat: $ctrl.stat})"
 	         class='button'>Liste</a></td>
 	  
 	  </tr>

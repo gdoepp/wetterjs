@@ -4,4 +4,4 @@
 <h1>Update</h1>
 <br/>
 Ergebnis:
-<div ng-show='data.stats.admin'>{{['Fehler', 'Verboten', 'keine Station', 'Durchgeführt', 'in Arbeit'][updateController.result.result.update+2]}}</div>
+<div ng-show='$ctrl.parent.myScope.data.stats.admin'>{{['Fehler', 'Verboten', 'keine Station', 'Durchgeführt', 'in Arbeit'][$ctrl.result.result.update+2]}}</div>

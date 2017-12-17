@@ -1,6 +1,6 @@
 <!--  (c) Gerhard Döppert, 2017 -->
 
-<h1>Wetter im Monat {{listTageController.monat}}</h1>
+<h1>Wetter im Monat {{$ctrl.monat}}</h1>
 <table border='1'>
 	<thead>
 	
@@ -28,7 +28,7 @@
 	  </tr>
 	</thead>
 	<tbody >	
-	<tr ng-repeat="tagwert in listTageController.rows.list">
+	<tr ng-repeat="tagwert in $ctrl.data.list">
 	  <td class='tab'>{{tagwert.tag}}</td>
 	  <td class='tab'>{{tagwert.temp_i}}°C</td>
 	  <td class='tab'>{{tagwert.temp_o}}°C</td>
@@ -43,7 +43,7 @@
 	  <td class='tab'>{{tagwert.windf_max}} m/s</td>
 	  <td class='tab'>{{tagwert.windd}} °</td>
 	  
-	   <td class='tab'><a ui-sref="listTag({time: tagwert.time_d, stat: data.stats.stat})"
+	   <td class='tab'><a ui-sref="listTag({time: tagwert.time_d, stat: $ctrl.stat})"
 	         class='button'>Liste</a></td>
 	  </tr>
 	</tbody>  	    

@@ -9,7 +9,10 @@
   "author": "Gerhard Döppert",
   "license": "ISC",
   "dependencies": {
+    "angular": "^1.6.7",
+    "angularjs": "0.0.1",
     "body-parser": "^1.17.2",
+    "bower": "^1.8.2",
     "express": "^4.15.3",
     "fs": "0.0.1-security",
     "ftp": "^0.3.10",

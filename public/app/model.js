@@ -15,6 +15,7 @@ function statsFactory($http) {
 	return {
 		getStats: function() {
 			var result = {};
+			console.log("get stats")
 			$http.get('wetter/stats')
 			.then( function success(resp) {
 				result.admin=resp.data.admin;			
@@ -100,7 +101,7 @@ function listTagFactory($http) {
 	return {
 		getListTag: function(tag, stat, prepare, typ, feld) {
 			var result = {};
-			$http.get('wetter/listTag?tag='+tag+'&stat='+stat)
+			$http.get('wetter/listTag?tag='+tag +'&stat='+stat)
 			.then( function success(resp) {
 				result.list=resp.data;
 				if (prepare) {
