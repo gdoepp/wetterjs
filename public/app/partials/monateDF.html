@@ -4,6 +4,7 @@
 
 <div style="position:relative;width:100%;">
 <canvas width="160" height="108"></canvas>
+
 <svg width='100%' viewBox="0 0 1600 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <g>
 
@@ -19,7 +20,7 @@
 <rect ng-repeat="t in $ctrl.data.link"
    ng-attr-x={{$ctrl.data.x[$index]}} ng-attr-y={{$ctrl.data.tickXy-20}}
    ng-attr-width={{$ctrl.data.tickXwidth}} ng-attr-height={{$ctrl.data.tickXheight*2}}
-   fill='#ccc' ng-click="$ctrl.parent.myScope.goDP(t,$ctrl.value, 'Monat')" >
+   ng-attr-fill='#ccc' ng-click="$ctrl.parent.myScope.goDP(t,$ctrl.value, 'Monat')" >
 </rect>
 
 <text  ng-repeat="tag in $ctrl.data.tickXTag"
@@ -37,20 +38,21 @@
 <rect ng-repeat="p in $ctrl.data['windf_max']"
 	ng-attr-x={{p.x}} ng-attr-y={{p.y}}
 	ng-attr-width={{$ctrl.data.xwidth}} ng-attr-height={{$ctrl.data.tickXy-p.y-20}}
-	fill='{{p.color}}' >
+	ng-attr-fill='{{p.color}}' >
 </rect>
 
 <rect ng-repeat="p in $ctrl.data['windf']"
 	ng-attr-x={{p.x}} ng-attr-y={{p.y}}
 	ng-attr-width={{$ctrl.data.xwidth}} ng-attr-height={{$ctrl.data.tickXy-p.y-20}}
-	fill='{{p.color}}' >
+	ng-attr-fill='{{p.color}}' >
 </rect>
 
 <circle ng-repeat="p in $ctrl.data['windf']"
 	ng-attr-cx={{p.x+$ctrl.data.xwidth*0.5}} 
 	ng-attr-cy={{$ctrl.data.tickXy-$ctrl.data.xwidth}}
 	ng-attr-r={{$ctrl.data.xwidth*0.5}} 	
-	stroke='black' fill='none'>
+	ng-attr-stroke='black'
+	ng-attr-fill='none' >
 </circle>
 
 <line ng-repeat="p in $ctrl.data['windf']"
@@ -58,7 +60,7 @@
 	ng-attr-y1={{$ctrl.data.tickXy-$ctrl.data.xwidth*(1.45-0.45*$ctrl.data.windv[$index])}}
 	ng-attr-x2={{p.x+$ctrl.data.xwidth*0.5}} 
 	ng-attr-y2={{$ctrl.data.tickXy-$ctrl.data.xwidth*1.5}}
-	transform='rotate({{$ctrl.data.windd[$index]}}, {{p.x+$ctrl.data.xwidth*0.5}}, {{$ctrl.data.tickXy-$ctrl.data.xwidth}})'
+	ng-attr-transform='rotate({{$ctrl.data.windd[$index]}}, {{p.x+$ctrl.data.xwidth*0.5}}, {{$ctrl.data.tickXy-$ctrl.data.xwidth}})'
 	stroke='black' >
 </line>
 

@@ -39,13 +39,13 @@
 <rect ng-repeat="p in $ctrl.data['windf_max']"
 	ng-attr-x={{p.x}} ng-attr-y={{p.y}}
 	ng-attr-width={{$ctrl.data.xwidth}} ng-attr-height={{$ctrl.data.tickXy-p.y-20}}
-	fill='{{p.color}}' >
+	ng-attr-fill='{{p.color}}' >
 </rect>
 
 <rect ng-repeat="p in $ctrl.data['windf']"
 	ng-attr-x={{p.x}} ng-attr-y={{p.y}}
 	ng-attr-width={{$ctrl.data.xwidth}} ng-attr-height={{$ctrl.data.tickXy-p.y-20}}
-	fill='{{p.color}}' >
+	ng-attr-fill='{{p.color}}' >
 </rect>
 
 <circle ng-repeat="p in $ctrl.data['windf']"

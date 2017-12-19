@@ -28,38 +28,28 @@ function WetterController($scope, $state, statsFactory) {
     	$state.go('.', {stat:$scope.data.stats.stat});
     }
    };
+   
       
    $scope.data.stats = statsFactory.getStats(); 
    
    $scope.goAuswahl = function(state) {
 	   $state.go('auswahl',{tag: state, stat:$scope.data.stats.stat}, {reload:true});
    }
-   $scope.goTag = function(state) {
-	   $scope.data.time = state;
-	   $scope.data.per = 'Tag';
-	   $scope.data.value = '';
-	   $state.go('listTag',{time: state, stat:$scope.data.stats.stat}, {reload:true});
-   }
-   $scope.goMonate = function(state) {
-	   $scope.data.time = state;
-	   $scope.data.per = 'Monate';
-	   $scope.data.value = '';
-	   $state.go('listMonate',{time: state, stat:$scope.data.stats.stat});
-   }
-
+  
    $scope.goDP = function(time, value, per) {
 	   $scope.data.value = value;
 	   $scope.data.time = time;
 	   $scope.data.per = per;
 	   $state.go('list'+per+'D'+values[value].func,{time: time, stat:$scope.data.stats.stat}, {reload:true});
    }
-   
-   $scope.goMonat = function(state) {
-	   $scope.data.time = state;
-	   $scope.data.per = 'Monat';
+  
+   $scope.goList = function(time, per) {
+	   $scope.data.time = time;
+	   $scope.data.per = per;
 	   $scope.data.value = '';
-	   $state.go('listMonat',{time: state, stat:$scope.data.stats.stat});
+	   $state.go('list'+per, {time: time, stat:$scope.data.stats.stat});
    }
+   
    $scope.update = function(state, value) {
 	   $state.go('update',{stat:$scope.data.stats.stat});
    }

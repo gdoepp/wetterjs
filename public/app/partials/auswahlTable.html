@@ -3,18 +3,18 @@
 <h1>Wetter in den letzten Stunden</h1>
 
 <h2>{{$ctrl.data.tag}}</h2>
-<table border='1'>
+<table border='1' ts-wrapper>
 	<thead>
 	  <tr>
-	    <th>Zeit</th>
-	    <th>Temperatur innen</th>
-	    <th>Temperatur außen</th>
-	    <th>Luftdruck</th>
-	    <th>Feuchte</th>
+	    <th ts-criteria="time_t|parseTime">Zeit</th>
+	    <th ts-criteria="temp_i|parseFloat">Temperatur innen</th>
+	    <th ts-criteria="temp_o|parseFloat">Temperatur außen</th>
+	    <th ts-criteria="pres|parseFloat">Luftdruck</th>
+	    <th ts-criteria="hum_o|parseFloat">Feuchte</th>
 	  </tr>
 	</thead>
 	<tbody >	
-	<tr ng-repeat="tagwert in $ctrl.data.list">
+	<tr ng-repeat="tagwert in $ctrl.data.list"  ts-repeat>
 	  <td >{{tagwert.time_t}}</td>
 	  <td class='tab'>{{tagwert.temp_i}}°C</td>
 	  <td class='tab'>{{tagwert.temp_o}}°C</td>

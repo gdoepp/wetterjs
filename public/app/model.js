@@ -39,6 +39,7 @@ function auswahlFactory($http) {
 			$http.get('wetter/auswahl?stat='+stat)
 			.then( function success(resp) {
 				result.list=resp.data.rows;
+				
 				if (result.list.length > 2) {
 					var t = new Date(result.list[1].mtime);
 					result.tag = t.getDate() + '.' + (t.getMonth()+1) + '.' + t.getFullYear();
@@ -47,8 +48,11 @@ function auswahlFactory($http) {
 				result.list = undefined;
 			});
 			return result;
+		},
+		getAuswahlP: function(stat) {
+			return $http.get('wetter/auswahl?stat='+stat);
 		}
-	}	
+	}
 }
 
 

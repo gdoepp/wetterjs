@@ -2,7 +2,7 @@
 
 'use strict';
 
-var module = angular.module('wetterDB', ['ui.router', 'ngResource']);
+var module = angular.module('wetterDB', ['ui.router', 'ngResource', 'tableSort']);
 
 module.config(configFn);
 

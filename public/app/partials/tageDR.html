@@ -20,7 +20,7 @@
 <rect ng-repeat="t in $ctrl.data.link"
    ng-attr-x={{$ctrl.data.x[$index]}} ng-attr-y={{$ctrl.data.tickXy-20}}
    ng-attr-width={{$ctrl.data.tickXwidth}} ng-attr-height={{$ctrl.data.tickXheight*2}}
-   fill='#ccc' ng-click="$ctrl.parent.myScope.goDP(t,$ctrl.value, 'Tag')" >
+   ng-attr-fill='#ccc' ng-click="$ctrl.parent.myScope.goDP(t,$ctrl.value, 'Tag')" >
 </rect>
 
 <text  ng-repeat="tag in $ctrl.data.tickXTag"
@@ -39,7 +39,7 @@
 <rect ng-repeat="p in $ctrl.data[$ctrl.value]"
 	ng-attr-x={{p.x}} ng-attr-y={{p.y}}
 	ng-attr-width={{$ctrl.data.xwidth}} ng-attr-height={{$ctrl.data.tickXy-p.y-20}}
-	fill='{{p.color}}'  >
+	ng-attr-fill='{{p.color}}'  >
 </rect>
         
    </g>

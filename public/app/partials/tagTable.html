@@ -3,27 +3,24 @@
 <h1>Wetter {{$ctrl.title}}</h1>
 <br/>
 
-
-<button  
-ng-click="$ctrl.parent.myScope.goMonat($ctrl.monat)">Monat</button>
-
-<table border='1'>
+<table border='1' ts-wrapper>
 	<thead>
 	  <tr>
-	    <th>Zeit</th>
-	    <th>Temperatur innen</th>
-	    <th>Temperatur außen</th>
-	    <th>Luftdruck</th>
-	    <th>Feuchte</th>
-	    <th>Niederschlag</th>
-	    <th>Wolken</th>
-	    <th>Sonne</th>
-	    <th>Windstärke</th>
-	    <th>Windrichtung</th>
+ 	    <th ts-criteria="monat|parseTime"> Zeit</th>
+	    <th ts-criteria="temp_i|parseFloat">Temperatur innen</th>
+	    <th ts-criteria="temp_o|parseFloat">Temperatur außen</th>
+	    <th ts-criteria="pres|parseFloat">Luftdruck</th>
+	    <th ts-criteria="hum_o|parseFloat">Feuchte</th>
+	    <th ts-criteria="precip|parseFloat">Niederschlag</th>
+	    <th ts-criteria="cloud|parseFloat">Wolken</th>
+	    <th ts-criteria="sun|parseFloat">Sonne</th>
+	    <th ts-criteria="windf|parseFloat">mittel</th>
+	    <th ts-criteria="windd|parseFloat">Richtung</th>
+	    
 	  </tr>
 	</thead>
 	<tbody >	
-	<tr ng-repeat="tagwert in $ctrl.data.list">
+	<tr ng-repeat="tagwert in $ctrl.data.list" ts-repeat>
 	  <td >{{tagwert.time_t}}</td>
 	  <td class='tab'>{{tagwert.temp_i}}°C</td>
 	  <td class='tab'>{{tagwert.temp_o}}°C</td>
@@ -37,3 +34,13 @@ ng-click="$ctrl.parent.myScope.goMonat($ctrl.monat)">Monat</button>
 	  </tr>
 	</tbody>  	    
 </table>
+
+<button 
+ng-click="$ctrl.parent.myScope.goList($ctrl.monat,  'Monat')">Monat</button>
+
+<button   class='dirbutton'
+ng-click="$ctrl.parent.myScope.goList($ctrl.vorher,  $ctrl.time)">&lt;</button>
+
+<button   class='dirbutton'
+ng-click="$ctrl.parent.myScope.goList($ctrl.nachher,  $ctrl.time)">&gt;</button>
+

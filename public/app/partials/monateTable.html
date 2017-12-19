@@ -1,35 +1,36 @@
 <!--  (c) Gerhard Döppert, 2017 -->
 
 <h1>Wetter im Jahresverlauf {{$ctrl.jahr}}</h1>
-<table border='1'>
+<table border='1' ts-wrapper>
 	<thead>
 	  <tr>
 	    <th></th>
 	    <th colspan='6'>Temperatur</th>
-	    <th colspan='8'></th>
+	    <th colspan='5'></th>
+	    <th colspan='3'>Wind</th>
 	    <th colspan='1'>weiter</th>
 	  </tr>
 	  <tr>
-	    <th>Monat</th>
-	    <th>innen</th>
-	    <th>außen mittel</th>
-	    <th>außen absmin</th>
-	    <th>außen min</th>
-	    <th>außen max</th>
-	    <th>außen absmax</th>
-	    <th>Luftdruck</th>
-	    <th>Feuchte</th>
-	    <th>Niederschlag</th>
-	    <th>Wolken</th>
-	    <th>Sonne</th>
-	    <th>Wind mittel</th>
-	    <th>Wind max</th>
-	    <th>Windrichtung</th>
+	    <th ts-criteria="monat|parseInt"> Monat</th>
+	    <th ts-criteria="temp_i|parseFloat">innen</th>
+	    <th ts-criteria="temp_o|parseFloat">außen mittel</th>
+	    <th ts-criteria="temp_o_absmin|parseFloat">außen absmin</th>
+	    <th ts-criteria="temp_o_min|parseFloat">außen min</th>
+	    <th ts-criteria="temp_o_max|parseFloat">außen max</th>
+	    <th ts-criteria="temp_o_absmax|parseFloat">außen absmax</th>
+	    <th ts-criteria="pres|parseFloat">Luftdruck</th>
+	    <th ts-criteria="hum_o|parseFloat">Feuchte</th>
+	    <th ts-criteria="precip|parseFloat">Niederschlag</th>
+	    <th ts-criteria="cloud|parseFloat">Wolken</th>
+	    <th ts-criteria="sun|parseFloat">Sonne</th>
+	    <th ts-criteria="windf|parseFloat">mittel</th>
+	    <th ts-criteria="windf_max|parseFloat">max</th>
+	    <th ts-criteria="windd|parseFloat">Richtung</th>
 	    <th>alles</th>
 	  </tr>
 	</thead>
 	<tbody >	
-	<tr ng-repeat="monat in $ctrl.data.list">
+	<tr ng-repeat="monat in $ctrl.data.list" ts-repeat>
 	  <td class='tab'>{{monat.monat}}</td>
 	  <td class='tab'>{{monat.temp_i}}°C</td>
 	  <td class='tab'>{{monat.temp_o}}°C</td>
@@ -46,8 +47,8 @@
 	  <td class='tab'>{{monat.windf_max}} m/s</td>
 	  <td class='tab'>{{monat.windd}} °</td>
 	  
-	  <td class='tab'><a ui-sref="listMonat({time: monat.monat, stat: $ctrl.stat})"
-	         class='button'>Liste</a></td>
+	  <td class='tab'><button ng-click="$ctrl.parent.myScope.goList(monat.monat,'Monat')"
+	         class='button-small'>Liste</button></td>
 	  
 	  </tr>
 	</tbody>  	    
