@@ -24,12 +24,25 @@ function WetterController($scope, $state, statsFactory) {
     per: 'Monate',
     stats: {stat:'', stats:[], admin:0},
     statChanged: function() {
-    	//console.log("stat changed: " + $scope.data.stats.stat);
     	$state.go('.', {stat:$scope.data.stats.stat});
+    },
+    jahrChanged: function() {
+    	$scope.data.time=$scope.data.time.replace(/[0-9]{4}/, $scope.data.jahr);    	
+    	$state.go('.', {time:$scope.data.time});
     }
    };
+
+   var checkTime = (time) => {
+	   if (time == 0) {
+		   var h = new Date();
+		   if ($scope.data.stats.stat !== '00000') {
+			   h.setDate(h.getDate()-1);
+		   }
+		   time = h.getDate() + "." + (h.getMonth()+1)+ "." + (h.getFullYear());	   
+	   }
+	   return time;
+   }
    
-      
    $scope.data.stats = statsFactory.getStats(); 
    
    $scope.goAuswahl = function(state) {
@@ -38,12 +51,14 @@ function WetterController($scope, $state, statsFactory) {
   
    $scope.goDP = function(time, value, per) {
 	   $scope.data.value = value;
-	   $scope.data.time = time;
+	   time = checkTime(time);
+	   $scope.data.time = time;	   
 	   $scope.data.per = per;
 	   $state.go('list'+per+'D'+values[value].func,{time: time, stat:$scope.data.stats.stat}, {reload:true});
    }
   
    $scope.goList = function(time, per) {
+	   time = checkTime(time);
 	   $scope.data.time = time;
 	   $scope.data.per = per;
 	   $scope.data.value = '';
@@ -140,6 +155,20 @@ function Monat (monjahr) {
 	
 }
 
+function toDay(tag)
+{
+	if (tag && tag !== 'undefined' && tag != 0) {
+		var tg = tag.split('.');
+		if (tg.length != 3) { tg = tag.split("-"); tag = new Date(tg[0], tg[1]-1, tg[2])}
+		else {
+			tag=new Date(tg[2], tg[1]-1, tg[0]);
+		}
+	} else {
+		tag = new Date();
+	}
+	return tag;
+}
+
 function Tag(tag, offset) {
 			
 		var x = [];
@@ -148,20 +177,13 @@ function Tag(tag, offset) {
 		
 		for (var j=0; j<=24-offset; j++) { x.push(j); }
 		
-		if (tag && tag !== 'undefined' && tag != 0) {
-			var tg = tag.split('.');
-			if (tg.length != 3) { tg = tag.split("-"); tag = new Date(tg[0], tg[1]-1, tg[2])}
-			else {
-				tag=new Date(tg[2], tg[1]-1, tg[0]);
-			}
-		} else {
-			tag = new Date();
-		}
+		tag = toDay(tag);
 		
 		var gestern = new Date(tag);
 		gestern.setDate(tag.getDate()-1);
 		var morgen = new Date(tag);
 		morgen.setDate(tag.getDate()+1);
+		var heute = tag.getDate() + "." + (tag.getMonth()+1)+ "." + (tag.getFullYear());
 			
 		return {
 			
@@ -180,7 +202,8 @@ function Tag(tag, offset) {
 			    return res;
 			},
 			xaxis: x,
-			title: 'im Tagesverlauf ' + tag.getDate() + "." + (tag.getMonth()+1)+ "." + (tag.getFullYear()),
+			heute: heute,
+			title: 'im Tagesverlauf ' + heute,
 			gestern: gestern.getDate() + "." + (gestern.getMonth()+1)+ "." + (gestern.getFullYear()),
 			morgen: morgen.getDate() + "." + (morgen.getMonth()+1)+ "." + (morgen.getFullYear()),
 			index0: 0,      // Intervall x-Koordinaten 0 bis
@@ -189,6 +212,7 @@ function Tag(tag, offset) {
 			monat: (tag.getMonth()+1) + "." + (tag.getFullYear())
 		}	
 }
+
 
 
 function UpdateController($state, $stateParams, updateFactory) {

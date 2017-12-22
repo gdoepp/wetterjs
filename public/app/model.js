@@ -21,6 +21,8 @@ function statsFactory($http) {
 				result.admin=resp.data.admin;			
 				result.stats=resp.data.stats;
 				result.stat=resp.data.stat;
+				result.years=resp.data.rows;
+				result.jahr=resp.data.rows[0];
 			}, function error(resp) {
 				result.stats = undefined;
 				result.admin = 0;
@@ -77,8 +79,6 @@ function listMonateFactory($http) {
 }
 
 
-
-
 listMonatFactory.$inject = ['$http'];
 
 function listMonatFactory($http) {
@@ -105,6 +105,7 @@ function listTagFactory($http) {
 	return {
 		getListTag: function(tag, stat, prepare, typ, feld) {
 			var result = {};
+			
 			$http.get('wetter/listTag?tag='+tag +'&stat='+stat)
 			.then( function success(resp) {
 				result.list=resp.data;

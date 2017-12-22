@@ -162,18 +162,19 @@ function svgMakerFactory() {
 			
 			var data = obj.list;
 		    obj.list = undefined;
-		    if (data.length==0) return;
 		    
-		    if (!data[0]["temp_o_absmin"]) {
-		    	values=values.slice(0,4);
-		    } 
-		    if (!data[0]["temp_o_min"]) {
-		    	values=values.slice(0,2);
-		    } 
+		    if (data.length > 0) {
+			    
+			    if (!data[0]["temp_o_absmin"]) {
+			    	values=values.slice(0,4);
+			    } 
+			    if (!data[0]["temp_o_min"]) {
+			    	values=values.slice(0,2);
+			    } 
+		    }
+//			console.log("d.len:"+data.length);
 			
-			console.log("d.len:"+data.length);
-			
-			var dims={height: 1000, width: 1600, x1: 90};
+			var dims={height: 900, width: 1600, x1: 90};
 	        
 	        makeRange(dims, data, values, typ);
 	       
@@ -193,7 +194,7 @@ function svgMakerFactory() {
 			
 			console.log("d.len:"+data.length);
 			
-			var dims={height: 970, width: 1600, x1: 90};
+			var dims={height: 870, width: 1600, x1: 90};
 	        
 			var col = 'green';
 	        
@@ -222,7 +223,7 @@ function svgMakerFactory() {
 			
 			console.log("d.len:"+data.length);
 			
-			var dims={height: 970, width: 1600, x1: 90};
+			var dims={height: 870, width: 1600, x1: 90};
 	        
 			dims.mny=0;
 			

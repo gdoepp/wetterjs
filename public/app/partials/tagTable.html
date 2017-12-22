@@ -6,15 +6,21 @@
 <table border='1' ts-wrapper>
 	<thead>
 	  <tr>
+	    <th></th>
+	    <th colspan='2'>Temperatur</th>
+	    <th colspan='5'></th>
+	    <th colspan='2'>Wind</th>
+	  </tr>
+	  <tr>
  	    <th ts-criteria="monat|parseTime"> Zeit</th>
-	    <th ts-criteria="temp_i|parseFloat">Temperatur innen</th>
-	    <th ts-criteria="temp_o|parseFloat">Temperatur außen</th>
+	    <th ts-criteria="temp_i|parseFloat">innen</th>
+	    <th ts-criteria="temp_o|parseFloat">außen</th>
 	    <th ts-criteria="pres|parseFloat">Luftdruck</th>
 	    <th ts-criteria="hum_o|parseFloat">Feuchte</th>
 	    <th ts-criteria="precip|parseFloat">Niederschlag</th>
 	    <th ts-criteria="cloud|parseFloat">Wolken</th>
 	    <th ts-criteria="sun|parseFloat">Sonne</th>
-	    <th ts-criteria="windf|parseFloat">mittel</th>
+	    <th ts-criteria="windf|parseFloat">Stärke</th>
 	    <th ts-criteria="windd|parseFloat">Richtung</th>
 	    
 	  </tr>

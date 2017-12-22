@@ -25,6 +25,27 @@ const pool = new pg.Pool(
 		});
 
 
+function years() {
+
+	return new Promise(function(resolve, reject) {
+		
+		pool.query("SELECT distinct(date_trunc('year', mtime)) as year"+
+				" from wetter_home.dwd_data order by year desc")
+		.then(
+			(res) => {
+				for (var j=0; j<res.rows.length; j++) {
+					res.rows[j].year = res.rows[j].year.getFullYear();
+				}
+				resolve(res.rows); 
+			}
+		)
+		.catch(
+				(err) => { console.log(err.stack); reject(err); }
+				);
+	});	
+}
+
+
 function auswahl(stat, admin) {
 
 	return new Promise(function(resolve, reject) {
@@ -147,6 +168,9 @@ function listTag(tag1, tag2, stat, admin) {
 		var t2 = tag2;
 		if (typeof t1 === 'undefined' || t1 === 'undefined' || t1==0) { 
 			var heute = new Date();
+			if (stat !=='00000') {
+				//heute.setDate(heute.getDate()-1);
+			}
 			t1 = heute.toISOString().split('T')[0];
 			t2 = t1;
 		}		
@@ -181,5 +205,6 @@ module.exports = {
 		listMonate: listMonate,
 		listMonat: listMonat,
 		listTag: listTag,
-		auswahl: auswahl
+		auswahl: auswahl,
+		years: years
 };

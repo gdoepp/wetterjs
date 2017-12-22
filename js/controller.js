@@ -40,11 +40,16 @@ function stats(req, res) {
 	var result = {};		
 	
 	result.stats = updater.stats.slice();
-	result.stats.unshift({id: '00000', name: 'Home'});
+	result.stats.unshift({id: '00000', name: '####'});
 	result.admin=admin;
 	result.stat=result.stats[0].id;
-		
-	res.send(result);
+	wetter.years() 
+	.then( (data) => {
+		result.rows = data;
+		res.send(result);
+	}, (err) => {
+		res.send(err);
+	} );
 }
 
 function auswahl(req, res) {

@@ -43,3 +43,11 @@ button.adminbutton {
 button.adminbutton:hover {
 	background: red;
 }
+
+rect.button {
+	fill: #bbb;
+}
+rect.button:hover {
+	fill: #ccc;
+}
+

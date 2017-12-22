@@ -1,14 +1,14 @@
+<!--  (c) Gerhard Döppert, 2017 -->
 
 <h1>Wetter Rückblick</h1>
 
-	<br/>
     <br/>
     <table>
 		<tr>
-		   <td>Jahr: </td><td><input type='text' size='4' ng-model='data.jahr'/></td>
-		</tr>
-	<tr>
-	  <td>Station: </td>
+		   <td>Jahr: </td><td><select ng-model='data.jahr' ng-change="data.jahrChanged()">
+		   <option ng-repeat='y in data.stats.years'>{{y.year}}</option></select>		   
+		   </td>
+	  <td> Station: </td>
 	  <td><select ng-model='data.stats.stat' ng-change="data.statChanged()">
 		<option ng-repeat='stat in data.stats.stats' value='{{stat.id}}'>{{stat.name}}</option>
 		</select>
@@ -21,7 +21,7 @@
 	<br>
     <br/>
     <h1>Auswertung von</h1>
-  <table border='1'>
+  <table border='1px'>
     <thead>
     <tr>
       <th></th>
@@ -60,7 +60,7 @@
 	  <td><button ng-click="goDP(data.time, 'windf', data.per)"><img src='diagr_rv.png'/></button></td>
 	</tr>
 	<tr >
-	  <td>Heute</td>
+	  <td>Heute/Gestern</td>
 	  <td><button ng-click="goList(0, 'Tag')">Liste</button></td>
 	  <td><button ng-click="goDP(0, 'temp', 'Tag')"><img src='diagr_c.png'/></button></td>
 	  <td><button ng-click="goDP(0,'pres', 'Tag')"><img src='diagr_c1.png'/></button></td>	  

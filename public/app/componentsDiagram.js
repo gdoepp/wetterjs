@@ -128,11 +128,12 @@ module.component('monatDF', {
 function TagDTController($state, $stateParams, listTagFactory, svgMakerFactory) {
 	this.value=$state.current.data;
 	var tag = new Tag($stateParams.time, values[this.value].offset);
-	this.data = listTagFactory.getListTag($stateParams.time, $stateParams.stat, svgMakerFactory.prepareTemp, tag);
+	this.data = listTagFactory.getListTag($stateParams.time, $stateParams.stat, svgMakerFactory.prepareTemp, tag, $state.current.data);
 	this.monat=tag.monat;
 	this.vorher=tag.gestern;
 	this.nachher=tag.morgen;
 	this.time='Tag';
+	this.wert= values[this.value].name;
 }
 
 module.component('tagDT', {

@@ -1,14 +1,12 @@
 <!--  (c) Gerhard Döppert, 2017 -->
 
-<h1>Temperatur {{$ctrl.data.title}} </h1>
+<h1>{{$ctrl.wert}}  {{$ctrl.data.title}} </h1>
 <br/>
 
-
-
 <div style="position:relative;width:100%;">
-<canvas width="160" height="108"></canvas>
+<canvas width="160" height="98"></canvas>
 
-<svg width='100%' viewBox="0 0 1600 1068" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg width='100%' viewBox="0 0 1600 968" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <g>
 
 
@@ -20,10 +18,10 @@
    ng-attr-points="{{y}}"
   style="fill:none;stroke:black;stroke-width:{{$ctrl.data.gridYStroke[$index]}}" />
 
-<rect ng-repeat="t in $ctrl.data.link"
+<rect class='button' ng-repeat="t in $ctrl.data.link"
    ng-attr-x={{$ctrl.data.x[$index]}} ng-attr-y={{$ctrl.data.tickXy-20}}
    ng-attr-width={{$ctrl.data.tickXwidth}} ng-attr-height={{$ctrl.data.tickXheight*2}}
-   fill='#ccc'  ng-click="$ctrl.parent.myScope.goDP(t, $ctrl.value, 'Tag')" >
+   ng-click="$ctrl.parent.myScope.goDP(t, $ctrl.value, 'Tag')" >
 </rect>
 
 <text  ng-repeat="tag in $ctrl.data.tickXTag"
@@ -50,12 +48,12 @@
   style="fill:none;stroke:orange;stroke-width:3" />
 
     
-    <text x='90' y='1060' font-size='12pt' fill='green'>T_o</text>          
-    <text x='190' y='1060' font-size='12pt' fill='green'>T_o_avg</text>      
-    <text x='390' y='1060' font-size='12pt' fill='blue'>T_o_min</text> 
-    <text x='590' y='1060' font-size='12pt' fill='red'>T_o_max</text>
+    <text x='90' y='960' font-size='12pt' fill='green'>T_o</text>          
+    <text x='190' y='960' font-size='12pt' fill='green'>T_o_mittel</text>      
+    <text x='390' y='960' font-size='12pt' fill='blue'>T_o_min</text> 
+    <text x='590' y='960' font-size='12pt' fill='red'>T_o_max</text>
         
-    <text x='890' y='1060' font-size='12pt' fill='orange'>T_i</text>
+    <text x='890' y='960' font-size='12pt' fill='orange'>T_i</text>
     
    </g>
     

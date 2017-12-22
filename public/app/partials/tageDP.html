@@ -5,8 +5,8 @@
 <br/>
 
 <div style="position:relative;width:100%;">
-<canvas width="160" height="108"></canvas>
-<svg width='100%' viewBox="0 0 1600 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<canvas width="160" height="94"></canvas>
+<svg width='100%' viewBox="0 0 1600 924" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <g>
 
 
@@ -18,10 +18,10 @@
    ng-attr-points="{{y}}"
   style="fill:none;stroke:black;stroke-width:{{$ctrl.data.gridYStroke[$index]}}" />
 
-<rect ng-repeat="t in $ctrl.data.link"
+<rect class='button' ng-repeat="t in $ctrl.data.link"
    ng-attr-x={{$ctrl.data.x[$index]}} ng-attr-y={{$ctrl.data.tickXy-20}}
    ng-attr-width={{$ctrl.data.tickXwidth}} ng-attr-height={{$ctrl.data.tickXheight*2}}
-   fill='#ccc' ng-click="$ctrl.parent.myScope.goDP(t,$ctrl.value, 'Tag')" >
+   ng-click="$ctrl.parent.myScope.goDP(t,$ctrl.value, 'Tag')" >
 </rect>
 
 <text  ng-repeat="tag in $ctrl.data.tickXTag"
