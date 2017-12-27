@@ -173,7 +173,7 @@ CREATE TRIGGER wetter_retro_insert_data_trigger BEFORE INSERT ON wetter_retro.da
 -- shortcut for performance reasons, to be refreshed on insert of old data
 CREATE MATERIALIZED VIEW wetter_retro.stats AS
  SELECT stat,
-    date_trunc('year'::text, min(data.mtime)) AS year
+    date_trunc('year', min(data.mtime)) AS year
    FROM wetter_retro.data
   GROUP BY stat;
 

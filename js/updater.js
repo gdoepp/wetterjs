@@ -192,7 +192,6 @@ function update(statid, what, value, table) {
 
 function updateAllValues(statid, what) {
 	
-	var t1 = Date.now();
 	var table = {};
 	
 	return new Promise(function(resolve, reject) {
@@ -224,7 +223,7 @@ function updateAllValues(statid, what) {
 				for (var j=0; j<proms.length; j++) n += proms[j].rowCount;
 				console.log("ready");
 				resolve(n);
-			}, 
+			  }, 
 			  (err) => { console.log(err); reject(err); }
 			);
 			

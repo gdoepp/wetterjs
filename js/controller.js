@@ -263,20 +263,17 @@ function importHist(req, res) {
 	try {
 		updater.delete_all(statid)  // prevent conflicts, import should only happen once, anyway.
 		.then( (p) => {
-			return updater.updateAllValues(statid, 'historical');
-		})
+			console.log("deleted rows: "+p.rowCount);
+			return updater.updateAllValues(statid, 'historical'); })
 		.then( (p) => {
 			console.log("updated rows: "+p);
 			expired = new Date();  
-			return updater.clean_up(statid);
-		})
+			return updater.clean_up(statid); })
 		.then( (p) => {
 			console.log("cleaned up");
-			console.log('time taken: ' + (Date.now()-t1) + "ms");
-		}, 
-		(err) => {
-			console.log(err);
-		})
+			console.log('time taken: ' + (Date.now()-t1) + "ms"); }, 
+			(err) => {
+			console.log(err); });
 	} catch(ex) { console.log(ex); }
 	
 	res.json({"update":2});  // send "in work", no further response when done

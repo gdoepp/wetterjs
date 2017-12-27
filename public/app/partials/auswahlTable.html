@@ -11,15 +11,26 @@
 	    <th ts-criteria="temp_o|parseFloat">Temperatur außen</th>
 	    <th ts-criteria="pres|parseFloat">Luftdruck</th>
 	    <th ts-criteria="hum_o|parseFloat">Feuchte</th>
+	    <th ts-criteria="precip|parseFloat">Niederschlag</th>
+	    <th ts-criteria="cloud|parseFloat">Wolken</th>
+	    <th ts-criteria="sun|parseFloat">Sonne</th>
+	    <th ts-criteria="windf|parseFloat">Windstärke</th>
+	    <th ts-criteria="windd|parseFloat">Windrichtung</th>
+	    
 	  </tr>
 	</thead>
 	<tbody >	
 	<tr ng-repeat="tagwert in $ctrl.data.list"  ts-repeat>
 	  <td >{{tagwert.time_t}}</td>
-	  <td class='tab'>{{tagwert.temp_i}}°C</td>
-	  <td class='tab'>{{tagwert.temp_o}}°C</td>
-	  <td class='tab'>{{tagwert.pres}}hPa</td>
+	  <td class='tab'>{{tagwert.temp_i}} °C</td>
+	  <td class='tab'>{{tagwert.temp_o}} °C</td>
+	  <td class='tab'>{{tagwert.pres}} hPa</td>
 	  <td class='tab'>{{tagwert.hum_o}}%</td>
+	  <td class='tab'>{{tagwert.precip}} mm</td>
+	  <td class='tab'>{{tagwert.cloud}} /8</td>
+	  <td class='tab'>{{tagwert.sun}} min</td>
+	  <td class='tab'>{{tagwert.windf}} m/s</td>
+	  <td class='tab'>{{tagwert.windd}}°</td>
 	  </tr>
 	</tbody>  	    
 </table>

@@ -63,12 +63,20 @@ function WetterController($state, statsFactory) {
    	} else { $scope.station=''; }
    	
    	updateJahre($scope);
-   	$state.go('.', {time:$scope.data.time,stat:$scope.data.stats.stat});    	
+   	if ($scope.data.value == '-') {
+     	  $state.go('auswahl', {stat:$scope.data.stats.stat}); 
+     } else { 
+    	 $state.go('.', {time:$scope.data.time,stat:$scope.data.stats.stat}); 
+     }
    };
    
    this.jahrChanged = function() {
-   	$scope.data.time=$scope.data.time.replace(/[0-9]{4}/, $scope.data.jahr);    	
-   	$state.go('.', {time:$scope.data.time});
+	   	$scope.data.time=$scope.data.time.replace(/[0-9]{4}/, $scope.data.jahr);
+	   	if ($scope.data.value == '-') {
+	   	  $state.go('auswahl', {stat:$scope.data.stats.stat}); 
+	   	} else { 
+	   		$state.go('.', {time:$scope.data.time}); 
+	   	}
    };
    
    function checkTime (time)  {  // utility
@@ -102,6 +110,7 @@ function WetterController($state, statsFactory) {
    
    $scope.goAuswahl = function(state) {
 	   $state.go('auswahl',{tag: state, stat:$scope.data.stats.stat}, {reload:true});
+	   $scope.data.value = '';
    }
   
    $scope.goDP = function(time, value, per) {
@@ -122,9 +131,11 @@ function WetterController($state, statsFactory) {
    
    $scope.update = function(state, value) {
 	   $state.go('update',{stat:$scope.data.stats.stat});
+	   $scope.data.value = '-';
    }
    $scope.importHist = function(state, value) {
 	   $state.go('import',{stat:$scope.data.stats.stat});
+	   $scope.data.value = '-';
    }
 } 
 
