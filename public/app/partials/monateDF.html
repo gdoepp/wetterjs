@@ -1,69 +1,69 @@
 <!--  (c) Gerhard Döppert, 2017 -->
 
-<h1>{{$ctrl.wert}} {{$ctrl.data.title}}</h1>
+<h2>{{$ctrl.wert}} {{$ctrl.data.title}} {{$ctrl.parent.myScope.station}}</h2>
 
 <div style="position:relative;width:100%;">
-<canvas width="160" height="98"></canvas>
+<canvas width="160" height="99"></canvas>
 
-<svg width='100%' viewBox="0 0 1600 968" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg width='100%' viewBox="0 -10 1600 978" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <g>
 
-
-<polyline ng-repeat="x in $ctrl.data.gridXPath" 
-   ng-attr-points="{{x}}"
-  style="fill:none;stroke:black;stroke-width:1" />
-
-<polyline ng-repeat="y in $ctrl.data.gridYPath" 
-   ng-attr-points="{{y}}"
-  style="fill:none;stroke:black;stroke-width:{{$ctrl.data.gridYStroke[$index]}}" />
-
-<rect class='button' ng-repeat="t in $ctrl.data.link"
-   ng-attr-x={{$ctrl.data.x[$index]}} ng-attr-y={{$ctrl.data.tickXy-20}}
-   ng-attr-width={{$ctrl.data.tickXwidth}} ng-attr-height={{$ctrl.data.tickXheight*2}}
-   ng-click="$ctrl.parent.myScope.goDP(t,$ctrl.value, 'Monat')" >
-</rect>
-
-<text  ng-repeat="tag in $ctrl.data.tickXTag"
-   ng-attr-x={{$ctrl.data.tickXx[$index]}} ng-attr-y={{$ctrl.data.tickXy}} 
-   fill='black' font-size="12pt" >
-  {{tag}}
-</text>
-
-<text  ng-repeat="tag in $ctrl.data.tickYTag"
-   ng-attr-x={{$ctrl.data.tickYx}} ng-attr-y={{$ctrl.data.tickYy[$index]}} 
-   fill='black' font-size="12pt" text-anchor="end">
-  {{tag}}
-</text>
-
-<rect ng-repeat="p in $ctrl.data['windf_max']"
-	ng-attr-x={{p.x}} ng-attr-y={{p.y}}
-	ng-attr-width={{$ctrl.data.xwidth}} ng-attr-height={{$ctrl.data.tickXy-p.y-20}}
-	ng-attr-fill='{{p.color}}' >
-</rect>
-
-<rect ng-repeat="p in $ctrl.data['windf']"
-	ng-attr-x={{p.x}} ng-attr-y={{p.y}}
-	ng-attr-width={{$ctrl.data.xwidth}} ng-attr-height={{$ctrl.data.tickXy-p.y-20}}
-	ng-attr-fill='{{p.color}}' >
-</rect>
-
-<circle ng-repeat="p in $ctrl.data['windf']"
-	ng-attr-cx={{p.x+$ctrl.data.xwidth*0.5}} 
-	ng-attr-cy={{$ctrl.data.tickXy-$ctrl.data.xwidth}}
-	ng-attr-r={{$ctrl.data.xwidth*0.5}} 	
-	ng-attr-stroke='black'
-	ng-attr-fill='none' >
-</circle>
-
-<line ng-repeat="p in $ctrl.data['windf']"
-	ng-attr-x1={{p.x+$ctrl.data.xwidth*0.5}} 
-	ng-attr-y1={{$ctrl.data.tickXy-$ctrl.data.xwidth*(1.45-0.45*$ctrl.data.windv[$index])}}
-	ng-attr-x2={{p.x+$ctrl.data.xwidth*0.5}} 
-	ng-attr-y2={{$ctrl.data.tickXy-$ctrl.data.xwidth*1.5}}
-	ng-attr-transform='rotate({{$ctrl.data.windd[$index]}}, {{p.x+$ctrl.data.xwidth*0.5}}, {{$ctrl.data.tickXy-$ctrl.data.xwidth}})'
-	stroke='black' >
-</line>
-             
+	
+	<polyline ng-repeat="x in $ctrl.data.gridXPath" 
+	   ng-attr-points="{{x}}"
+	  style="fill:none;stroke:black;stroke-width:1" />
+	
+	<polyline ng-repeat="y in $ctrl.data.gridYPath" 
+	   ng-attr-points="{{y}}"
+	  style="fill:none;stroke:black;stroke-width:{{$ctrl.data.gridYStroke[$index]}}" />
+	
+	<rect class='button' ng-repeat="t in $ctrl.data.link"
+	   ng-attr-x={{$ctrl.data.x[$index]}} ng-attr-y={{$ctrl.data.tickXy-20}}
+	   ng-attr-width={{$ctrl.data.tickXwidth}} ng-attr-height={{$ctrl.data.tickXheight*2}}
+	   ng-click="$ctrl.parent.myScope.goDP(t,$ctrl.value, 'Monat')" >
+	</rect>
+	
+	<text  ng-repeat="tag in $ctrl.data.tickXTag"
+	   ng-attr-x={{$ctrl.data.tickXx[$index]}} ng-attr-y={{$ctrl.data.tickXy}} 
+	   fill='black' font-size="12pt" >
+	  {{tag}}
+	</text>
+	
+	<text  ng-repeat="tag in $ctrl.data.tickYTag"
+	   ng-attr-x={{$ctrl.data.tickYx}} ng-attr-y={{$ctrl.data.tickYy[$index]}} 
+	   fill='black' font-size="12pt" text-anchor="end">
+	  {{tag}}
+	</text>
+	
+	<rect ng-repeat="p in $ctrl.data['windf_max']"
+		ng-attr-x={{p.x}} ng-attr-y={{p.y}}
+		ng-attr-width={{$ctrl.data.xwidth}} ng-attr-height={{$ctrl.data.tickXy-p.y-20}}
+		ng-attr-fill='{{p.color}}' >
+	</rect>
+	
+	<rect ng-repeat="p in $ctrl.data['windf']"
+		ng-attr-x={{p.x}} ng-attr-y={{p.y}}
+		ng-attr-width={{$ctrl.data.xwidth}} ng-attr-height={{$ctrl.data.tickXy-p.y-20}}
+		ng-attr-fill='{{p.color}}' >
+	</rect>
+	
+	<circle ng-repeat="p in $ctrl.data['windf']"
+		ng-attr-cx={{p.x+$ctrl.data.xwidth*0.5}} 
+		ng-attr-cy={{$ctrl.data.tickXy-$ctrl.data.xwidth}}
+		ng-attr-r={{$ctrl.data.xwidth*0.5}} 	
+		ng-attr-stroke='black'
+		ng-attr-fill='none' >
+	</circle>
+	
+	<line ng-repeat="p in $ctrl.data['windf']"
+		ng-attr-x1={{p.x+$ctrl.data.xwidth*0.5}} 
+		ng-attr-y1={{$ctrl.data.tickXy-$ctrl.data.xwidth*(1.45-0.45*$ctrl.data.windv[$index])}}
+		ng-attr-x2={{p.x+$ctrl.data.xwidth*0.5}} 
+		ng-attr-y2={{$ctrl.data.tickXy-$ctrl.data.xwidth*1.5}}
+		ng-attr-transform='rotate({{$ctrl.data.windd[$index]}}, {{p.x+$ctrl.data.xwidth*0.5}}, {{$ctrl.data.tickXy-$ctrl.data.xwidth}})'
+		stroke='black' >
+	</line>
+	             
    	<rect ng-attr-fill='cyan' ng-attr-x='88' ng-attr-y='938' ng-attr-width='90' ng-attr-height='30'></rect> 
       <text x='90' y='960' font-size='12pt'> mittel</text>
     <rect ng-attr-fill='violet' ng-attr-x='288' ng-attr-y='938' ng-attr-width='90' ng-attr-height='30'></rect>         

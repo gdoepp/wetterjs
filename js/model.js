@@ -1,93 +1,64 @@
 // (c) Gerhard Döppert, 2017, GNU GPL 3
 
-var pg = require('pg');
+var pool = null;
 
-var env = process.env.NODE_ENV || 'dev';
+const datatab = 'wetter_retro.data';
+const statstab = 'wetter_retro.stats';
 
-const pool = new pg.Pool(
-		(env === 'dev') ?
-		{
-				  user: 'gd',
-				  host: 'localhost',
-				  database: 'pgdb',
-				  password: '',
-				  port: 5432
-		}
-		:
-		{
-	
-		    user: 'www',
-		    host: 'localhost',
-		    database: 'wetter',
-		    password: process.env.PGPW,
-		    port: 5432
-	  
-		});
+function setPg(p)
+{
+	pool = p;
+}
 
-
-function years() {
+function years() {  // read list of stations and first year with data
 
 	return new Promise(function(resolve, reject) {
 		
-		pool.query("SELECT distinct(date_trunc('year', mtime)) as year"+
-				" from wetter_home.dwd_data order by year desc")
+		pool.query("select stat, year from "+statstab)
 		.then(
 			(res) => {
 				for (var j=0; j<res.rows.length; j++) {
 					res.rows[j].year = res.rows[j].year.getFullYear();
 				}
 				resolve(res.rows); 
-			}
+			},
+			(err) => { console.log(err); reject(err); }
 		)
-		.catch(
-				(err) => { console.log(err.stack); reject(err); }
-				);
 	});	
 }
 
 
-function auswahl(stat, admin) {
+function auswahl(stat, admin) {  // return last 8 items for a station
 
 	return new Promise(function(resolve, reject) {
-		var tab = 'dwd_data';
-		if (stat==='00000') {
-			tab='data';
-		}
 		var home = "";
 		if (admin) {
 			home = ',temp_i';
 		}
 		
-		console.log("auswahl: " + stat)
-		
 		pool.query('SELECT mtime'+home+', temp_o, '+				
 				'hum_o, pres, precip, cloud, windf, windd '+
-				" from wetter_home."+tab+
+				" from "+datatab+
 				" where stat=$1 " +
 				" order by mtime desc limit 8", [stat])
 		.then(
 			(res) => {
 				for (var j=0; j<res.rows.length; j++) {
-					res.rows[j].time_d = res.rows[j].mtime.toLocaleDateString();
-					res.rows[j].time_t = res.rows[j].mtime.toLocaleTimeString();
+					res.rows[j].time_d = res.rows[j].mtime.toLocaleDateString("de-DE");
+					res.rows[j].time_t = res.rows[j].mtime.toLocaleTimeString("de-DE");
 				}
 				resolve(res.rows); 
-			}
+			},
+			(err) => { console.log(err); reject(err); }
 		)
-		.catch(
-				(err) => { console.log(err.stack); reject(err); }
-				);
 	});	
 }
 
+// return data for one year (aggregated per month)
 function listMonate(jahr, stat, admin) {
 
 	return new Promise(function(resolve, reject) {
 
-		var tab = 'dwd_data';
-		if (stat==='00000') {
-			tab='data';
-		}
 		var home = "";
 		if (admin) {
 			home = "round(avg(temp_i),1) as temp_i, ";
@@ -105,7 +76,7 @@ function listMonate(jahr, stat, admin) {
 		' avg(cloud) as cloud, sum(sun)/60 as sun, '+
 		' avg(windf) as windf, max(windf) as windf_max, '+
 		' arc_avg2(ARRAY[windf, windd]) as wind '+
-		" from wetter_home."+tab+" where extract(year from mtime) = $1 and stat=$2 " + 
+		" from "+datatab+" where extract(year from mtime) = $1 and stat=$2 " + 
 		" group by date_trunc('day', mtime) ) as t group by extract(month from time_d) " +
 		' order by month';
 		//console.log(query);
@@ -113,14 +84,13 @@ function listMonate(jahr, stat, admin) {
 		.then(
 			(res) => {
 				resolve(res.rows); 
-			}
+			},
+			(err) => { console.log(err); reject(err); }
 		)
-		.catch(
-				(err) => { console.log(err.stack); reject(err); }
-			);
 	});	
 }
 
+// return data for one month, aggregated per day
 function listMonat(monat, stat, admin) {
 
 	return new Promise(function(resolve, reject) {
@@ -130,10 +100,7 @@ function listMonat(monat, stat, admin) {
 		var mon=m[0];
 		var year = m[1];
 		
-		var tab = 'dwd_data';
-		if (stat==='00000') {
-			tab='data';
-		}
+		var tab = 'wetter_retro.data';
 		var home = "";
 		if (admin) {
 			home = "round(avg(temp_i),1) as temp_i, ";
@@ -144,23 +111,22 @@ function listMonat(monat, stat, admin) {
 				'round(min(temp_o),1) as temp_o_min, round(max(temp_o),1) as temp_o_max, round(sum(sun)/60,1) as sun, '+
 				'round(avg(hum_o)) as hum_o, round(avg(pres),1) as pres, round(sum(precip),1) as precip, round(avg(cloud),1) as cloud, '+
 				' round(avg(windf),1) as windf, max(windf) as windf_max, arc_avg2(ARRAY[windf, windd]) as windd ' +
-				' from wetter_home.'+tab+' where extract(month from mtime)=$1 and extract(year from mtime)=$2 ' + 
+				' from '+datatab+' where extract(month from mtime)=$1 and extract(year from mtime)=$2 ' + 
 				" and stat=$3 " +
 				" group by date_trunc('day', mtime) order by time_d", [mon, year, stat])
 		.then(
 			(res) => {
 				for (var j=0; j<res.rows.length; j++) {
-					res.rows[j].time_d = res.rows[j].time_d.toLocaleDateString();
+					res.rows[j].time_d = res.rows[j].time_d.toLocaleDateString('de-DE');
 				}
 				resolve(res.rows); 
-			}
-		)
-		.catch(
-				(err) => { console.log(err.stack); reject(err); }
-			);
+			},
+			(err) => { console.log(err.stack); reject(err); }
+		);
 	});	
 }
 
+// return data for one or more days, no aggregation
 function listTag(tag1, tag2, stat, admin) {
 	
 	return new Promise(function(resolve, reject) {		
@@ -174,10 +140,6 @@ function listTag(tag1, tag2, stat, admin) {
 			t1 = heute.toISOString().split('T')[0];
 			t2 = t1;
 		}		
-		var tab = 'dwd_data';
-		if (stat==='00000') {
-			tab='data';
-		}
 		var home = "";
 		if (admin) {
 			home = ',temp_i';
@@ -185,23 +147,23 @@ function listTag(tag1, tag2, stat, admin) {
 		
 		pool.query("SELECT date_trunc('day', mtime) as day, mtime as time_t "+home+', temp_o, '+				
 				'hum_o, pres, precip, cloud, sun, windf, ARRAY[windf,windd] as windd '+
-				" from wetter_home."+tab+" where date_trunc('day', mtime) between $1 and $2 and stat=$3" + 
+				" from "+datatab+" where date_trunc('day', mtime) between $1 and $2 and stat=$3" + 
 				" order by time_t", [t1, t2, stat])
 		.then(
 			(res) => {
 				for (var j=0; j<res.rows.length; j++) {
+					res.rows[j].day = res.rows[j].day.toLocaleDateString();
 					res.rows[j].time_t = res.rows[j].time_t.toLocaleTimeString();
 				}
 				resolve(res.rows); 
-			}
-		)
-		.catch(
-				(err) => { console.log(err.stack); reject(err); }
-				);
+			},
+			(err) => { console.log(err.stack); reject(err); }
+		);
 	});	
 }
 
 module.exports = { 
+		setPg: setPg,
 		listMonate: listMonate,
 		listMonat: listMonat,
 		listTag: listTag,

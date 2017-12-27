@@ -6,7 +6,6 @@ var module = angular.module('wetterDB', ['ui.router', 'ngResource', 'tableSort']
 
 module.config(configFn);
 
-
 configFn.$inject= ['$stateProvider', '$urlRouterProvider'];
 function configFn($stateProvider, $urlRouterProvider) {
 	
@@ -151,6 +150,13 @@ function configFn($stateProvider, $urlRouterProvider) {
 	  });	
 
 	$stateProvider
+	  .state('listTageDP', {
+		url: "/listTageDP/:time/:stat",
+		component: 'tageDP',
+		data: 'pres' 
+	  });	
+
+	$stateProvider
 	  .state('listTagDH', {
 		url: "/listTagDH/:time/:stat",
 		component: 'tagDP',		
@@ -185,12 +191,15 @@ function configFn($stateProvider, $urlRouterProvider) {
 		data: 'windf' 
 	  });	
 
-	
-	
 	$stateProvider
 	  .state('update', {
 		url: "/update/:stat",
 		component: 'updateResult'
 	  });	
 
+	$stateProvider
+	  .state('import', {
+		url: "/import/:stat",
+		component: 'importResult'
+	  });	
 }

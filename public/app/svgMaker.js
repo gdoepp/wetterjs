@@ -5,24 +5,11 @@ angular.module('wetterDB')
  .factory('svgMakerFactory', svgMakerFactory);
 
 
-function smooth(data, n) {
-	
-	var arr0 = data.slice(-n,0).concat(data.slice(0,n+1));
-	
-	func = function(curr, i, arr) {
-	   var val = (this.reduce(function(total,x) {return total+x;})+arr[i])/(2*n+2);
-	   this.shift();
-	   this.push(arr[(i+n+1)%arr.length]);
-	   return val;
-	}	
-	return data.map(func, arr0);
-}
-
 function makeRange(dims, data, values, typ) {
 	
-	var center = 0;
+	var center = false;
 	
-	if (dims.mny === undefined) { dims.mny = 9999; center = 1; }
+	if (dims.mny === undefined) { dims.mny = 9999; center = true; }
 	if (dims.mxy === undefined) { dims.mxy = -9999; }
 	
 	for (var k=0; k<data.length; k++) {
@@ -37,12 +24,13 @@ function makeRange(dims, data, values, typ) {
 		}
 	}
 	
-	if (dims.mxy-dims.mny < 3) {
+	if (dims.minUnits && dims.mxy>dims.mny && dims.mxy-dims.mny < dims.minUnits) {
 		if (center) {
-			dims.mxy = dims.mxy+1;
-			dims.mny = dims.mny-1;
+			var rest = dims.minUnits - (dims.mxy-dims.mny);
+			dims.mny = dims.mny-rest/2;
+			dims.mxy = dims.mxy+rest/2;
 		} else {
-			dims.mxy = dims.mxy+1;
+			dims.mxy = dims.mny + dims.minUnits;
 		}
 	}
 	
@@ -100,13 +88,19 @@ function makeAxes(obj, data, dims, typ) {
     obj.gridYStroke = [];
     
     var step = 1;
-    if (dims.mxy-dims.mny > 20) { 
+    if (dims.mxy-dims.mny > 15) { 
+    	step = 2; 
+    }
+    if (dims.mxy-dims.mny > 25) { 
     	step = 5; 
     }
     
+    var mbeg=typ.tick();
+
     for (var j = Math.ceil(dims.mny); j <= Math.floor(dims.mxy); j++) {
         if (j % step == 0) {
-		    obj.gridYPath.push(dims.x1 + " " + Math.round(dims.height-(j-dims.mny)*dims.dmy) + " " + dims.width + 
+		    obj.gridYPath.push(dims.x1 + " " + Math.round(dims.height-(j-dims.mny)*dims.dmy) + " " + 
+		    		(dims.x1 + mbeg[mbeg.length-1]*dims.dx) + 
 		    		" " + Math.round(dims.height-(j-dims.mny)*dims.dmy));
 		    obj.gridYStroke.push(j==0 ? 3 : 1);
 
@@ -123,7 +117,6 @@ function makeAxes(obj, data, dims, typ) {
     obj.link = [];
     obj.x = [];
 
-    var mbeg=typ.tick();
     
     if (data.length > 0 && (data[0].time_d || data[0].monat)) {
     	obj.tickXwidth=(mbeg[1]-mbeg[0])*dims.dx-7;
@@ -174,7 +167,7 @@ function svgMakerFactory() {
 		    }
 //			console.log("d.len:"+data.length);
 			
-			var dims={height: 900, width: 1600, x1: 90};
+			var dims={height: 900, width: 1600, x1: 90, minUnits: 10};
 	        
 	        makeRange(dims, data, values, typ);
 	       
@@ -194,13 +187,15 @@ function svgMakerFactory() {
 			
 			console.log("d.len:"+data.length);
 			
-			var dims={height: 870, width: 1600, x1: 90};
+			var dims={height: 870, width: 1600, x1: 90, minUnits:1};
 	        
 			var col = 'green';
 	        
-			if (feld=='precip') { dims.mny=0; col='blue';}
-			if (feld=='sun') { dims.mny=0; col='yellow'; }
+			if (feld=='precip') { dims.mny=0; dims.mxy=5; col='blue';}
+			if (feld=='sun') { dims.mny=0; dims.minUnits =  (typ.heute ? 60 : 5); col='yellow';	}
 			if (feld=='cloud') { dims.mny=0; dims.mxy=8; col='gray';}
+			if (feld=='hum_o') { dims.minUnits=30; }
+			if (feld=='pres') { dims.minUnits=10; }
 			
 			makeRange(dims, data, values, typ);
 		    
@@ -223,7 +218,7 @@ function svgMakerFactory() {
 			
 			console.log("d.len:"+data.length);
 			
-			var dims={height: 870, width: 1600, x1: 90};
+			var dims={height: 870, width: 1600, x1: 90, minUnits: 5};
 	        
 			dims.mny=0;
 			
@@ -246,7 +241,3 @@ function svgMakerFactory() {
 		}
 	};
 }
-
-
-
-

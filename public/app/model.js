@@ -15,7 +15,6 @@ function statsFactory($http) {
 	return {
 		getStats: function() {
 			var result = {};
-			console.log("get stats")
 			$http.get('wetter/stats')
 			.then( function success(resp) {
 				result.admin=resp.data.admin;			
@@ -28,6 +27,10 @@ function statsFactory($http) {
 				result.admin = 0;
 			});
 			return result;
+		},
+		getStatsPromise: function() {
+			var result = {};
+			return $http.get('wetter/stats');
 		}
 	}	
 }
@@ -116,7 +119,21 @@ function listTagFactory($http) {
 				result.list = undefined;
 			});
 			return result;
-		}				
+		},				
+	getListTage: function(tag1, tag2, stat, prepare, typ, feld) {
+		var result = {};
+		
+		$http.get('wetter/listTag?tag1=' + tag1 + '&tag2=' + tag2 +'&stat='+stat)
+		.then( function success(resp) {
+			result.list=resp.data;
+			if (prepare) {
+				prepare(result, typ, feld);
+			}
+		}, function error(resp) {
+			result.list = undefined;
+		});
+		return result;
+	}				
 	};
 }
 
@@ -127,6 +144,16 @@ function updateFactory($http) {
 		update: function(statid) {
 			var result = {};
 			$http.post('wetter/update/'+statid)
+			.then( function success(resp) {
+				result.result = resp.data;
+			}, function error(resp) {
+				result.result = { update: -2 };
+			});
+			return result;
+		},
+		importHist: function(statid) {
+			var result = {};
+			$http.post('wetter/import/'+statid)
 			.then( function success(resp) {
 				result.result = resp.data;
 			}, function error(resp) {

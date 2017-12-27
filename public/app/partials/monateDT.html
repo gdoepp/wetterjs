@@ -1,58 +1,58 @@
 <!--  (c) Gerhard Döppert, 2017 -->
 
-<h1>Temperatur {{$ctrl.data.title}}</h1>
+<h2>Temperatur {{$ctrl.data.title}} {{$ctrl.parent.myScope.station}}</h2>
 
 <div style="position:relative;width:100%;">
-<canvas width="160" height="94"></canvas>
+<canvas width="160" height="95"></canvas>
 
-<svg width='100%' viewBox="0 0 1600 968" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg width='100%' viewBox="0 -10 1600 978" version="1.1" xmlns="http://www.w3.org/2000/svg">
 
 <g>
- 
-<polyline ng-repeat="x in $ctrl.data.gridXPath" 
-   ng-attr-points="{{x}}"
-  style="fill:none;stroke:black;stroke-width:1" />
-
-<polyline ng-repeat="y in $ctrl.data.gridYPath" 
-   ng-attr-points="{{y}}"
-  style="fill:none;stroke:black;stroke-width:{{$ctrl.data.gridYStroke[$index]}}" />
-
-<rect class='button' ng-repeat="t in $ctrl.data.link"
-   ng-attr-x={{$ctrl.data.x[$index]}} ng-attr-y={{$ctrl.data.tickXy-20}}
-   ng-attr-width={{$ctrl.data.tickXwidth}} ng-attr-height={{$ctrl.data.tickXheight*2}}
-   ng-click="$ctrl.parent.myScope.goDP(t, $ctrl.value, 'Monat')" >
-</rect>
-
-<text  ng-repeat="tag in $ctrl.data.tickXTag"
-   ng-attr-x={{$ctrl.data.tickXx[$index]}} ng-attr-y={{$ctrl.data.tickXy}} 
-   fill='black' font-size="12pt" >
-  {{tag}}
-</text>
-
-<text  ng-repeat="tag in $ctrl.data.tickYTag"
-   ng-attr-x={{$ctrl.data.tickYx}} ng-attr-y={{$ctrl.data.tickYy[$index]}} 
-   fill='black' font-size="12pt" text-anchor="end">
-  {{tag}}°C
-</text>
- 
- 
-<polyline ng-attr-points="{{$ctrl.data.temp_o}}"
-  style="fill:none;stroke:green;stroke-width:3" />
-<polyline ng-attr-points="{{$ctrl.data.temp_o_min}}"
-  style="fill:none;stroke:blue;stroke-width:3" />
-<polyline ng-attr-points="{{$ctrl.data.temp_o_max}}"
-  style="fill:none;stroke:red;stroke-width:3" />
-
-<polyline ng-attr-points="{{$ctrl.data.temp_o_absmin}}"
-  style="fill:none;stroke:violet;stroke-width:3" />
-<polyline ng-attr-points="{{$ctrl.data.temp_o_absmax}}"
-  style="fill:none;stroke:brown;stroke-width:3" />
-
-
-<polyline ng-attr-points="{{$ctrl.data.temp_i}}"
-  style="fill:none;stroke:orange;stroke-width:3" />
-
-        
+	 
+	<polyline ng-repeat="x in $ctrl.data.gridXPath" 
+	   ng-attr-points="{{x}}"
+	  style="fill:none;stroke:black;stroke-width:1" />
+	
+	<polyline ng-repeat="y in $ctrl.data.gridYPath" 
+	   ng-attr-points="{{y}}"
+	  style="fill:none;stroke:black;stroke-width:{{$ctrl.data.gridYStroke[$index]}}" />
+	
+	<rect class='button' ng-repeat="t in $ctrl.data.link"
+	   ng-attr-x={{$ctrl.data.x[$index]}} ng-attr-y={{$ctrl.data.tickXy-20}}
+	   ng-attr-width={{$ctrl.data.tickXwidth}} ng-attr-height={{$ctrl.data.tickXheight*2}}
+	   ng-click="$ctrl.parent.myScope.goDP(t, $ctrl.value, 'Monat')" >
+	</rect>
+	
+	<text  ng-repeat="tag in $ctrl.data.tickXTag"
+	   ng-attr-x={{$ctrl.data.tickXx[$index]}} ng-attr-y={{$ctrl.data.tickXy}} 
+	   fill='black' font-size="12pt" >
+	  {{tag}}
+	</text>
+	
+	<text  ng-repeat="tag in $ctrl.data.tickYTag"
+	   ng-attr-x={{$ctrl.data.tickYx}} ng-attr-y={{$ctrl.data.tickYy[$index]}} 
+	   fill='black' font-size="12pt" text-anchor="end">
+	  {{tag}}°C
+	</text>
+	 
+	 
+	<polyline ng-attr-points="{{$ctrl.data.temp_o}}"
+	  style="fill:none;stroke:green;stroke-width:3" />
+	<polyline ng-attr-points="{{$ctrl.data.temp_o_min}}"
+	  style="fill:none;stroke:blue;stroke-width:3" />
+	<polyline ng-attr-points="{{$ctrl.data.temp_o_max}}"
+	  style="fill:none;stroke:red;stroke-width:3" />
+	
+	<polyline ng-attr-points="{{$ctrl.data.temp_o_absmin}}"
+	  style="fill:none;stroke:violet;stroke-width:3" />
+	<polyline ng-attr-points="{{$ctrl.data.temp_o_absmax}}"
+	  style="fill:none;stroke:brown;stroke-width:3" />
+	
+	
+	<polyline ng-attr-points="{{$ctrl.data.temp_i}}"
+	  style="fill:none;stroke:orange;stroke-width:3" />
+	
+	        
     <text x='90' y='960' font-size='12pt' fill='green'>T_o_mittel</text>        
     <text x='290' y='960' font-size='12pt' fill='violet'>T_o_absmin</text>
     <text x='490' y='960' font-size='12pt' fill='blue'>T_o_min</text> 

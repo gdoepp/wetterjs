@@ -1,6 +1,6 @@
 <!--  (c) Gerhard Döppert, 2017 -->
 
-<h1>Wetter im Monat {{$ctrl.monat}}</h1>
+<h2>Wetter im Monat {{$ctrl.monat}} {{$ctrl.parent.myScope.station}}</h2>
 <table border='1' ts-wrapper>
 	<thead>
 	  <tr>
@@ -23,8 +23,7 @@
 	    <th ts-criteria="sun|parseFloat">Sonne</th>
 	    <th ts-criteria="windf|parseFloat">mittel</th>
 	    <th ts-criteria="windf_max|parseFloat">max</th>
-	    <th ts-criteria="windd|parseFloat">Richtung</th>
-	    
+	    <th ts-criteria="windd|parseFloat">Richtung</th>	    
 	    <th>alles</th>
 	  </tr>
 	</thead>

@@ -4,6 +4,8 @@
 
 var module = angular.module('wetterDB');
 
+// components for svg diagrams
+
 function MonateDTController($state, $stateParams, listMonateFactory, svgMakerFactory) {
 	this.data = listMonateFactory.getListMonate($stateParams.time,$stateParams.stat, svgMakerFactory.prepareTemp, 
 			new Jahr($stateParams.time, 0.5));
@@ -64,6 +66,7 @@ function MonatDTController($state, $stateParams, listMonatFactory, svgMakerFacto
 	this.data = listMonatFactory.getListMonat($stateParams.time,$stateParams.stat, svgMakerFactory.prepareTemp, 
 			monat);
 	this.value=$state.current.data;
+	this.wert= values[this.value].name;
 	this.monat=$stateParams.monat;
 	this.vorher= monat.vormonat;
 	this.nachher=monat.nmonat;
@@ -152,8 +155,21 @@ function TagDPController($state, $stateParams, listTagFactory, svgMakerFactory) 
 	this.monat=tag.monat;
 	this.vorher=tag.gestern;
 	this.nachher=tag.morgen;
+	this.heute=tag.heute;
 	this.wert= values[this.value].name;
 	this.time='Tag';
+}
+
+function TageDPController($state, $stateParams, listTagFactory, svgMakerFactory) {
+	this.value=$state.current.data;
+	var tage = new Tage($stateParams.time, values[this.value].offset);
+	this.data = listTagFactory.getListTage(tage.gestern, tage.morgen, $stateParams.stat, svgMakerFactory.preparePhen, tage, $state.current.data);
+	this.monat=tage.monat;
+	this.vorher=tage.gestern;
+	this.nachher=tage.morgen;
+	this.heute=tage.heute;
+	this.wert= values[this.value].name;
+	this.time='Tage';
 }
 
 module.component('tagDP', {
@@ -162,6 +178,13 @@ module.component('tagDP', {
 	  require: { parent: '^root'
 	  },
 	  controller: TagDPController
+	})
+	.component('tageDP', {
+	  transclude: true,
+	  templateUrl: 'app/partials/tageDP.html',
+	  require: { parent: '^root'
+	  },
+	  controller: TageDPController
 	})
    .component('tagDR', {
 	  transclude: true,
@@ -190,13 +213,6 @@ module.component('tagDF', {
 	  controller: TagDFController
 	});
 
-
-UpdateController.$inject = ['$state', '$stateParams', 'updateFactory'];
-
-function UpdateController($state, $stateParams, updateFactory) {
-	this.result = updateFactory.update($stateParams.stat);
-	this.result.result = {update:2};
-}
 
 
 

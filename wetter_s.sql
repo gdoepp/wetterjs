@@ -89,32 +89,13 @@ CREATE AGGREGATE arc_avg2(double precision[]) (
 
 -- Tables:
 
-CREATE SCHEMA wetter_home;
+CREATE SCHEMA wetter_retro;
 
 --
--- Name: data; Type: TABLE; Schema: wetter_home; Owner: gd
+-- Name: data; Type: TABLE; Schema: wetter_retro; Partitioned
 --
 
-CREATE TABLE wetter_home.data (
-    stat integer DEFAULT 0,
-    mtime timestamp with time zone NOT NULL,
-    temp_i numeric(5,1),
-    temp_o numeric(5,1),
-    pres numeric(6,1),
-    hum_o numeric(4,1),
-    precip numeric(6,1),
-    cloud numeric(4,1),
-    windf numeric(4,1),
-    windd integer,
-    sun numeric(5,0),
-    primary key(stat,mtime)
-);
-
---
--- Name: dwd_data; Type: TABLE; Schema: wetter_home; Owner: gd
---
-
-CREATE TABLE wetter_home.dwd_data (
+CREATE TABLE wetter_retro.data (
     stat integer NOT NULL,
     mtime timestamp with time zone NOT NULL,
     pres numeric(6,1),
@@ -129,4 +110,70 @@ CREATE TABLE wetter_home.dwd_data (
     primary key(stat,mtime)
 );
 
+--
+-- Name: data_dwdhist; Type: TABLE; Schema: wetter_retro; Owner: gd
+--
+
+CREATE TABLE wetter_retro.data_dwdhist (
+    CONSTRAINT data_dwdhist_check CHECK (((mtime < '2016-01-01'::date) AND (stat > 0)))
+)
+INHERITS (data);
+
+--
+-- Name: data_dwdrecent; Type: TABLE; Schema: wetter_retro; Owner: gd
+--
+
+CREATE TABLE wetter_retro.data_dwdrecent (
+    CONSTRAINT data_dwdrecent_check CHECK (((mtime >= '2016-01-01'::date) AND (stat > 0)))
+)
+INHERITS (data);
+
+--
+-- Name: data_homerecent; Type: TABLE; Schema: wetter_retro; Owner: gd
+--
+
+CREATE TABLE wetter_retro.data_homerecent (
+    CONSTRAINT data_homerecent_check CHECK (((mtime >= '2016-01-01'::date) AND (stat = 0)))
+)
+INHERITS (data);
+
+
+--
+-- Name: data_insert_trigger(); Type: FUNCTION; Schema: wetter_retro;
+--
+
+CREATE FUNCTION wetter_retro.data_insert_trigger() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+ BEGIN
+	IF (NEW.stat>0 and NEW.mtime>='2016-01-01') then INSERT INTO wetter_retro.data_dwdrecent Values(NEW.*);
+	ELSIF (NEW.stat>0) then INSERT INTO wetter_retro.data_dwdhist Values(NEW.*);
+	ELSE INSERT INTO wetter_retro.data_homerecent Values(NEW.*);
+	END IF;
+	return NULL;
+END;
+$$;
+
+
+CREATE INDEX  ON wetter_retro.data_dwdhist USING btree (stat, mtime);
+
+
+CREATE INDEX  ON wetter_retro.data_dwdrecent USING btree (stat, mtime);
+
+
+CREATE INDEX  ON wetter_retro.data_homerecent USING btree (stat, mtime);
+
+
+--
+-- Name: wetter_retro_insert_data_trigger; Type: TRIGGER; Schema: wetter_retro; 
+--
+
+CREATE TRIGGER wetter_retro_insert_data_trigger BEFORE INSERT ON wetter_retro.data FOR EACH ROW EXECUTE PROCEDURE wetter_retro.data_insert_trigger();
+
+-- shortcut for performance reasons, to be refreshed on insert of old data
+CREATE MATERIALIZED VIEW wetter_retro.stats AS
+ SELECT stat,
+    date_trunc('year'::text, min(data.mtime)) AS year
+   FROM wetter_retro.data
+  GROUP BY stat;
 

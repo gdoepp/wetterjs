@@ -1,6 +1,6 @@
 <!--  (c) Gerhard Döppert, 2017 -->
 
-<h1>Wetter {{$ctrl.title}}</h1>
+<h2>Wetter {{$ctrl.title}} {{$ctrl.parent.myScope.station}}</h2>
 <br/>
 
 <table border='1' ts-wrapper>
@@ -42,11 +42,10 @@
 </table>
 
 <button 
-ng-click="$ctrl.parent.myScope.goList($ctrl.monat,  'Monat')">Monat</button>
+ng-click="$ctrl.parent.myScope.goList($ctrl.monat, 'Monat')">Monat</button>
 
 <button   class='dirbutton'
-ng-click="$ctrl.parent.myScope.goList($ctrl.vorher,  $ctrl.time)">&lt;</button>
+ng-click="$ctrl.parent.myScope.goList($ctrl.vorher, $ctrl.time)">&lt;</button>
 
 <button   class='dirbutton'
-ng-click="$ctrl.parent.myScope.goList($ctrl.nachher,  $ctrl.time)">&gt;</button>
-
+ng-click="$ctrl.parent.myScope.goList($ctrl.nachher, $ctrl.time)">&gt;</button>

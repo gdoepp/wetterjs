@@ -6,34 +6,27 @@ var app = express();
 
 var router = require('./router');
 
-var updater = require('./updater');
+var controller = require('./controller');
 
 var cron = require('node-schedule');
-5
-var s = 0;
-var v = 0;
 
-// 5 * 6 = 30
+var bodyParser = require('body-parser')
 
-cron.scheduleJob('10-39 10 * * *', () => {
-	
-	console.log('update ' + Object.entries(updater.values)[v][1] + " for " + updater.stats[s].name);
-	var t1 = Date.now();
-	updater.update(updater.stats[s].id, Object.entries(updater.values)[v][0])
-	.then( (n) => {
-			console.log("rows: "+n);
-			console.log('time taken: ' + (Date.now()-t1) + "ms");
-			
-		          },  
-		 (err) => { console.log(err);} 
-	);
-	
-	v++;	
-	if (v >= Object.entries(updater.values).length) { v = 0; s++; }
-	if (s >= updater.stats.length) { s=0; }
+var SegfaultHandler = require('segfault-handler');
+
+SegfaultHandler.registerHandler("crash.log"); 
+
+// install a job to update the 'recent' files from all the selected stations at about 10am
+
+// 6 stationen, 6 minutes
+cron.scheduleJob('10-15 10 * * *', () => {
+  controller.updateRecentAll();
 });
 
 app.use(express.static('public'));
+
+app.use( bodyParser.json() ); 
+app.use(bodyParser.urlencoded({ extended: false }))
 
 router(app);
 
