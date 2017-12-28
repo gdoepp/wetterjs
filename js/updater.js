@@ -18,7 +18,7 @@ function setPg(p)
 }
 
 
-// insert-or-update functions, return promise
+// insert-or-update functions
 
 
 function insertHome(data) {
@@ -30,7 +30,7 @@ function insertHome(data) {
 	return pool.query(q);
 }
 
-function insertDwd(data, tab) {
+function insertDwd(data, tab, client) {
 	 const q = {
 			 name: 'insert-dwd',
 			 text: 'insert into '+tab+' (stat, mtime, temp_o, pres, hum_o,cloud, precip, windf, windd, sun)'+
@@ -40,19 +40,38 @@ function insertDwd(data, tab) {
 			 values: [data.stat, data.mtime, data.temp_o, data.pres, data.hum_o, 
 				 data.cloud, data.precip, data.windf, data.windd, data.sun]	 
 	 };
-	return pool.query(q);
+	 
+	return client.query(q);
 }
 
-function storeDB(table, mode) {
+async function storeDB(table, mode) {
 	
-	var proms=[];
-	for (var line in table) {
+	var n=-1;
+	
+	// use transaction, otherwise pg may autocommit and fsync after every line depending on WAL
+	
+	const client = await pool.connect();
+	try {		
+		await client.query('BEGIN'); 
+
+		n=0;
+		for (var line in table) {
+			
+			var data = table[line];
 		
-		var data = table[line];
-	
-		proms.push(insertDwd(data, mode == 'recent' ? datatabrecent : datatab));
+			var res = await insertDwd(data, mode == 'recent' ? datatabrecent : datatab, client);
+			n = n + res.rowCount;
+		}
+
+		await client.query('COMMIT');
+	} catch (e) {
+		console.log('rolling back'); 
+		await client.query('ROLLBACK');
+		throw e;
+	} finally {
+		client.release();
 	}
-	return Promise.all(proms);
+	return n;
 }
 
 function delete_all(stat) { // delete all data for station
@@ -78,7 +97,7 @@ function cleanup(stat) { // delete data without temperature, refresh view with t
 	 
 	 return pool.query(q)
 	 .then( (p) => {
-		 console.log("deleted rows: " + p.rowCount);
+		 console.log("deleted rows (no temp yet): " + p.rowCount);
 		 return  pool.query(q1);
 	 }, (err) => {
 		 console.log(err);		
@@ -92,7 +111,7 @@ var paths = {'RR': 'precipitation', 'TU' : 'air_temperature', 'P0': 'pressure',
 			 'N': 'cloudiness', 'FF': 'wind', 'SD': 'sun'};
 
 var stats= [{id:'04928', name:'Stuttgart'},{id:'01420', name:'Frankfurt'},
-	{id:'03379', name:'München'}, {id:'03668', name:'Nürnberg'}, {id:'01975', name:'Hamburg'}, {id:'00433', name:'Berlin'} ];  
+	{id:'03379', name:'München'}, {id:'03668', name:'Nürnberg'}, {id:'01975', name:'Hamburg'}, {id:'00433', name:'Berlin'}];  
 
 
 function insert(statid, value, resolve0, reject0, data, table) {
@@ -190,44 +209,44 @@ function update(statid, what, value, table) {
 }
 
 
-function updateAllValues(statid, what) {
+async function updateAllValues(statid, what) {
 	
 	var table = {};
 	
-	return new Promise(function(resolve, reject) {
-	
 		// download and process all files for the station, continue on error
 
-		update(statid, what, "TU", table)
-		
-		.then( (tab) => { return update(statid, what, "P0", tab); }, 
-				(e) => { console.log(e);  return update(statid, what, "P0", table); } )
-		
-		.then( (tab) => { return update(statid, what, "RR", tab); }, 
-				(e) => {  console.log(e); return update(statid, what, "RR", table);})
-		
-		.then( (tab) => { return update(statid, what, "N", tab); }, 
-				(e) => {console.log(e); return update(statid, what, "N", table); })
-		
-		.then( (tab) => { return update(statid, what, "FF", tab); },
-				(e) => {  console.log(e); return update(statid, what, "FF", table); })
-		
-		.then( (tab) => { return update(statid, what, "SD", tab); }, 
-				(e) => { console.log(e); return update(statid, what, "SD", table); })
-		
-		.then( (tab) => { return storeDB(table, what); },
-				(e) => { console.log(e); return storeDB(table, what); })
-				
-		.then( (proms) => {
-			    var n = 0;
-				for (var j=0; j<proms.length; j++) n += proms[j].rowCount;
-				console.log("ready");
-				resolve(n);
-			  }, 
-			  (err) => { console.log(err); reject(err); }
-			);
-			
-		});
+	try {
+		await update(statid, what, "TU", table); 		
+	} catch(e) { console.log(e); }
+
+	try {
+		await update(statid, what, "TU", table); 		
+	} catch(e) { console.log(e); }
+
+	try {
+		await update(statid, what, "P0", table); 		
+	} catch(e) { console.log(e); }
+
+	try {
+		await update(statid, what, "RR", table); 		
+	} catch(e) { console.log(e); }
+
+	try {
+		await update(statid, what, "N", table); 		
+	} catch(e) { console.log(e); }
+
+	try {
+		await update(statid, what, "FF", table); 		
+	} catch(e) { console.log(e); }
+
+	try {
+		await update(statid, what, "SD", table); 		
+	} catch(e) { console.log(e); }
+
+	try {
+		return await storeDB(table, what);
+	} catch(e) { console.log('nothing inserted'); throw(e); }
+
 }
 
 module.exports = {

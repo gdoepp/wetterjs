@@ -6,7 +6,7 @@ var updater = require('./updater')
 
 const certsAllowed = require('./certs.json')
 
-const pg = require('pg').native;
+const pg = require('pg');
 
 const env = process.env.NODE_ENV || 'dev'
 
@@ -235,10 +235,10 @@ function update(req, res) {
 			expired = new Date(); 
 			console.log("updated rows: "+p);
 			console.log('time taken: ' + (Date.now()-t1) + "ms");
-		}),
+		},
 		(err) => {
 			console.log(err); res.json({"update":-2}); 			
-		};
+		});
 	} catch(ex) { console.log(ex); res.json({"update":-2}); }	
 	//res.send({"update":1});
 }
@@ -263,17 +263,19 @@ function importHist(req, res) {
 	try {
 		updater.delete_all(statid)  // prevent conflicts, import should only happen once, anyway.
 		.then( (p) => {
-			console.log("deleted rows: "+p.rowCount);
+			console.log("deleted existing rows: "+p.rowCount);
 			return updater.updateAllValues(statid, 'historical'); })
 		.then( (p) => {
-			console.log("updated rows: "+p);
+			console.log("updated rows: "+p + " ?");
 			expired = new Date();  
 			return updater.clean_up(statid); })
 		.then( (p) => {
 			console.log("cleaned up");
 			console.log('time taken: ' + (Date.now()-t1) + "ms"); }, 
 			(err) => {
-			console.log(err); });
+				console.log('time taken: ' + (Date.now()-t1) + "ms"); 
+				console.log(err); });
+		
 	} catch(ex) { console.log(ex); }
 	
 	res.json({"update":2});  // send "in work", no further response when done
