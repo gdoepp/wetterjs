@@ -50,3 +50,19 @@ table .tablesort-sortable:hover:after, table .tablesort-asc:after, table .tables
 .showIfLast td {
     text-align: center;
 }
+
+thead tr.wettertab {
+  background-color: #ccc;
+}
+
+tbody tr.wettertab:nth-child(even) {
+  background-color: #ddd;
+}
+
+tbody tr.wettertab:nth-child(pdd) {
+  background-color: #eee;
+}
+
+tbody tr.wettertab td {
+      text-align: right;
+}

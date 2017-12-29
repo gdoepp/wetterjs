@@ -5,13 +5,13 @@
 
 <table border='1' ts-wrapper>
 	<thead>
-	  <tr>
+	  <tr class='wettertab'>
 	    <th></th>
 	    <th colspan='2'>Temperatur</th>
 	    <th colspan='5'></th>
 	    <th colspan='2'>Wind</th>
 	  </tr>
-	  <tr>
+	  <tr class='wettertab'>
  	    <th ts-criteria="monat|parseTime"> Zeit</th>
 	    <th ts-criteria="temp_i|parseFloat">innen</th>
 	    <th ts-criteria="temp_o|parseFloat">außen</th>
@@ -26,17 +26,17 @@
 	  </tr>
 	</thead>
 	<tbody >	
-	<tr ng-repeat="tagwert in $ctrl.data.list" ts-repeat>
+	<tr  class='wettertab' ng-repeat="tagwert in $ctrl.data.list" ts-repeat>
 	  <td >{{tagwert.time_t}}</td>
-	  <td class='tab'>{{tagwert.temp_i}}°C</td>
-	  <td class='tab'>{{tagwert.temp_o}}°C</td>
-	  <td class='tab'>{{tagwert.pres}} hPa</td>
-	  <td class='tab'>{{tagwert.hum_o}}%</td>
-	  <td class='tab'>{{tagwert.precip}} mm</td>
-	  <td class='tab'>{{tagwert.cloud}} /8</td>
-	  <td class='tab'>{{tagwert.sun}} min</td>
-	  <td class='tab'>{{tagwert.windf}} m/s</td>
-	  <td class='tab'>{{tagwert.windd}} °</td>
+	  <td >{{tagwert.temp_i}}°C</td>
+	  <td >{{tagwert.temp_o}}°C</td>
+	  <td >{{tagwert.pres}} hPa</td>
+	  <td >{{tagwert.hum_o}}%</td>
+	  <td >{{tagwert.precip}} mm</td>
+	  <td >{{tagwert.cloud}} /8</td>
+	  <td >{{tagwert.sun}} min</td>
+	  <td >{{tagwert.windf}} m/s</td>
+	  <td >{{tagwert.windd}} °</td>
 	  </tr>
 	</tbody>  	    
 </table>
@@ -49,3 +49,6 @@ ng-click="$ctrl.parent.myScope.goList($ctrl.vorher, $ctrl.time)">&lt;</button>
 
 <button   class='dirbutton'
 ng-click="$ctrl.parent.myScope.goList($ctrl.nachher, $ctrl.time)">&gt;</button>
+
+<button ng-click="$ctrl.parent.myScope.downloadTag()">CSV herunterladen</button>
+

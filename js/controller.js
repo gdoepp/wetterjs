@@ -124,6 +124,36 @@ function auswahl(req, res) {
 	});
 }
 
+function formatDe(f, d) {
+	if (f !=='monat' && f != 'time_d' && f != 'day' && typeof(d) === 'string') d = d.replace('.', ','); 
+	else if (typeof(d) === 'number') d = d.toLocaleString('de-DE');
+	else if (!d) d = ''; 
+	return d + '\t';
+}
+
+function toCsv(data) {
+	var list="";
+	if (data.length>0) {
+	   var d = data[0];
+	   for (var f in d) {
+		   if (f === 'windd') { list = list + 'wind2f\t'; }
+		   list = list +f;
+		   list = list + '\t';
+	   }
+	   list = list + '\n';			
+	}
+	var numform = /^[0-9]+[.][0-9]+$/
+	for (var j=0; j<data.length; j++) {
+		   var d = data[j];
+		   for (var f in d) {
+			   if (f === 'windd' && d[f]) { 
+				   var d2 = d[f]; list = list + formatDe('wind2f', d2[0]) + formatDe('windd', d2[1]); 
+			   } else list = list + formatDe(f,d[f]);
+		   }
+		   list = list + '\n';
+	   }
+	return list;
+}
 // data aggregated by month for one year
 function listMonate(req, res) {
 	
@@ -139,12 +169,17 @@ function listMonate(req, res) {
 
 	var heute = new Date();
 	var expires = new Date(heute.getTime()+minutes*60*1000); // 1h
-	
 	wetter.listMonate(req.query.jahr, req.query.stat, admin)
 	.then(function success(data) {
 		res.set({"Cache-Control": "public",
 			"Last-Modified": heute.toUTCString(),
 			"Expires": expires.toUTCString()});
+
+		if (req.path.indexOf('download')>=0) {
+			res.set({'Content-Type': 'text/csv',
+	        'Content-Disposition': 'attachment;filename=monate.csv'});
+			data = toCsv(data);
+		}
 		res.send(data);
 		
 	}, function failure(err) {
@@ -173,6 +208,13 @@ function listMonat(req, res) {
 		res.set({"Cache-Control": "public",
 			"Last-Modified": heute.toUTCString(),
 			"Expires": expires.toUTCString()});
+		
+		if (req.path.indexOf('download')>=0) {
+			res.set({'Content-Type': 'text/csv',
+	        'Content-Disposition': 'attachment;filename=monat.csv'});
+			data = toCsv(data);
+		}
+
 		res.send(data);
 	}, function failure(err) {
 		res.status(500).send(err);
@@ -206,6 +248,12 @@ function listTag(req, res) {
 			"Last-Modified": heute.toUTCString(),
 			"Expires": expires.toUTCString()});
 		
+		if (req.path.indexOf('download')>=0) {
+			res.set({'Content-Type': 'text/csv',
+	        'Content-Disposition': 'attachment;filename=tag.csv'});
+			data = toCsv(data);
+		}
+
 		res.send(data);
 	}, function failure(err) {
 		res.status(500).send(err);

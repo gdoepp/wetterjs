@@ -137,6 +137,16 @@ function WetterController($state, statsFactory) {
 	   $state.go('import',{stat:$scope.data.stats.stat});
 	   $scope.data.value = '-';
    }
+   
+   $scope.downloadMonate = function() {	   		
+	   location.assign('wetter/downloadMonate?jahr='+$scope.data.time+'&stat='+$scope.data.stats.stat);
+   }
+   $scope.downloadMonat = function() {	   		
+	   location.assign('wetter/downloadMonat?monat='+$scope.data.time+'&stat='+$scope.data.stats.stat);
+   }
+   $scope.downloadTag = function() {	   		
+	   location.assign('wetter/downloadTag?tag='+$scope.data.time+'&stat='+$scope.data.stats.stat);
+   }
 } 
 
 // no classes because of ie11

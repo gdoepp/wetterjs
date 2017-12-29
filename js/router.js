@@ -7,6 +7,9 @@ module.exports = function(app) {
 	app.get('/wetter/stats', controller.stats);
 	app.get('/wetter/listMonate', controller.listMonate);
 	app.get('/wetter/listMonat', controller.listMonat);
+	app.get('/wetter/downloadMonate', controller.listMonate);
+	app.get('/wetter/downloadMonat', controller.listMonat);
+	app.get('/wetter/downloadTag', controller.listTag);
 	app.get('/wetter/listTag', controller.listTag);
 	app.post('/wetter/update/:stat', controller.update);	
 	app.post('/wetter/import/:stat', controller.importHist);

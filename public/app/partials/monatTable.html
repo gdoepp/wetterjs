@@ -1,7 +1,7 @@
 <!--  (c) Gerhard Döppert, 2017 -->
 
 <h2>Wetter im Monat {{$ctrl.monat}} {{$ctrl.parent.myScope.station}}</h2>
-<table border='1' ts-wrapper>
+<table id='mytab' border='1' ts-wrapper>
 	<thead>
 	  <tr>
 	    <th></th>
@@ -10,7 +10,7 @@
 	    <th colspan='3'>Wind</th>
 	    <th colspan='1'>weiter</th>
 	  </tr>
-	  <tr>
+	  <tr class='wettertab'>
 	    <th ts-criteria="tag|parseInt"> Tag</th>
 	    <th ts-criteria="temp_i|parseFloat">innen</th>
 	    <th ts-criteria="temp_o|parseFloat">außen mittel</th>
@@ -28,22 +28,22 @@
 	  </tr>
 	</thead>
 	<tbody >	
-	<tr ng-repeat="tagwert in $ctrl.data.list" ts-repeat>
-	  <td class='tab'>{{tagwert.tag}}</td>
-	  <td class='tab'>{{tagwert.temp_i}}°C</td>
-	  <td class='tab'>{{tagwert.temp_o}}°C</td>
-	  <td class='tab'>{{tagwert.temp_o_min}}°C</td>
-	  <td class='tab'>{{tagwert.temp_o_max}}°C</td>
-	  <td class='tab'>{{tagwert.pres}} hPa</td>
-	  <td class='tab'>{{tagwert.hum_o}}%</td>
-	  <td class='tab'>{{tagwert.precip}} mm</td>
-	  <td class='tab'>{{tagwert.cloud}} /8</td>
-	  <td class='tab'>{{tagwert.sun}} h</td>
-	  <td class='tab'>{{tagwert.windf}} m/s</td>
-	  <td class='tab'>{{tagwert.windf_max}} m/s</td>
-	  <td class='tab'>{{tagwert.windd}} °</td>
+	<tr class='wettertab' ng-repeat="tagwert in $ctrl.data.list" ts-repeat>
+	  <td >{{tagwert.tag}}</td>
+	  <td >{{tagwert.temp_i}}°C</td>
+	  <td >{{tagwert.temp_o}}°C</td>
+	  <td >{{tagwert.temp_o_min}}°C</td>
+	  <td >{{tagwert.temp_o_max}}°C</td>
+	  <td >{{tagwert.pres}} hPa</td>
+	  <td >{{tagwert.hum_o}}%</td>
+	  <td >{{tagwert.precip}} mm</td>
+	  <td >{{tagwert.cloud}} /8</td>
+	  <td >{{tagwert.sun}} h</td>
+	  <td >{{tagwert.windf}} m/s</td>
+	  <td >{{tagwert.windf_max}} m/s</td>
+	  <td >{{tagwert.windd}} °</td>
 	  
-	   <td class='tab'><button ng-click="$ctrl.parent.myScope.goList(tagwert.time_d,'Tag')"
+	   <td ><button ng-click="$ctrl.parent.myScope.goList(tagwert.time_d,'Tag')"
 	         class='button-small'>Liste</button></td>
 	  </tr>
 	</tbody>  	    
@@ -54,4 +54,7 @@ ng-click="$ctrl.parent.myScope.goList($ctrl.vorher,  $ctrl.time)">&lt;</button>
 
 <button   class='dirbutton'
 ng-click="$ctrl.parent.myScope.goList($ctrl.nachher,  $ctrl.time)">&gt;</button>
+
+<button ng-click="$ctrl.parent.myScope.downloadMonat()">CSV herunterladen</button>
+
 

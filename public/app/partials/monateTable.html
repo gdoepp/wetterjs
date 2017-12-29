@@ -3,14 +3,14 @@
 <h2>Wetter im Jahresverlauf {{$ctrl.jahr}} {{$ctrl.parent.myScope.station}}</h2>
 <table border='1' ts-wrapper>
 	<thead>
-	  <tr>
+	  <tr class='wettertab'>
 	    <th></th>
 	    <th colspan='6'>Temperatur</th>
 	    <th colspan='5'></th>
 	    <th colspan='3'>Wind</th>
 	    <th colspan='1'>weiter</th>
 	  </tr>
-	  <tr>
+	  <tr class='wettertab'>
 	    <th ts-criteria="monat|parseInt"> Monat</th>
 	    <th ts-criteria="temp_i|parseFloat">innen</th>
 	    <th ts-criteria="temp_o|parseFloat">außen mittel</th>
@@ -30,22 +30,22 @@
 	  </tr>
 	</thead>
 	<tbody >	
-	<tr ng-repeat="monat in $ctrl.data.list" ts-repeat>
-	  <td class='tab'>{{monat.monat}}</td>
-	  <td class='tab'>{{monat.temp_i}}°C</td>
-	  <td class='tab'>{{monat.temp_o}}°C</td>
-	  <td class='tab'>{{monat.temp_o_absmin}}°C</td>
-	  <td class='tab'>{{monat.temp_o_min}}°C</td>
-	  <td class='tab'>{{monat.temp_o_max}}°C</td>
-	  <td class='tab'>{{monat.temp_o_absmax}}°C</td>
-	  <td class='tab'>{{monat.pres}} hPa</td>
-	  <td class='tab'>{{monat.hum_o}}%</td>
-	  <td class='tab'>{{monat.precip}} mm</td>
-	  <td class='tab'>{{monat.cloud}} /8</td>
-	  <td class='tab'>{{monat.sun}} h</td>
-	  <td class='tab'>{{monat.windf}} m/s</td>
-	  <td class='tab'>{{monat.windf_max}} m/s</td>
-	  <td class='tab'>{{monat.windd}} °</td>
+	<tr  class='wettertab' ng-repeat="monat in $ctrl.data.list" ts-repeat>
+	  <td >{{monat.monat}}</td>
+	  <td >{{monat.temp_i}}°C</td>
+	  <td >{{monat.temp_o}}°C</td>
+	  <td >{{monat.temp_o_absmin}}°C</td>
+	  <td >{{monat.temp_o_min}}°C</td>
+	  <td >{{monat.temp_o_max}}°C</td>
+	  <td >{{monat.temp_o_absmax}}°C</td>
+	  <td >{{monat.pres}} hPa</td>
+	  <td >{{monat.hum_o}}%</td>
+	  <td >{{monat.precip}} mm</td>
+	  <td >{{monat.cloud}} /8</td>
+	  <td >{{monat.sun}} h</td>
+	  <td >{{monat.windf}} m/s</td>
+	  <td >{{monat.windf_max}} m/s</td>
+	  <td >{{monat.windd}} °</td>
 	  
 	  <td class='tab'><button ng-click="$ctrl.parent.myScope.goList(monat.monat,'Monat')"
 	         class='button-small'>Liste</button></td>
@@ -53,3 +53,6 @@
 	  </tr>
 	</tbody>  	    
 </table>
+
+<button ng-click="$ctrl.parent.myScope.downloadMonate()">CSV herunterladen</button>
+

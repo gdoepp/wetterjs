@@ -26,6 +26,7 @@ function MonatTableController($state, $stateParams, listMonatFactory) {
 	this.vorher= monat.vormonat;
 	this.nachher=monat.nmonat;
 	this.data = listMonatFactory.getListMonat($stateParams.time,$stateParams.stat, prepareList);
+
 }
 
 function TagTableController($state, $stateParams, listTagFactory) {
