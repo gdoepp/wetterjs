@@ -96,6 +96,9 @@ function WetterController($state, statsFactory) {
 	   $scope.data.stats.stats=resp.data.stats;
 	   $scope.data.stats.stat=resp.data.stat;
 	   $scope.data.stats.years=resp.data.rows;
+	   var heute = new Date();
+	   $scope.data.jahr=heute.getFullYear().toString();
+	   $scope.data.time = $scope.data.jahr;
 	   $scope.station='';
 	   if ($scope.data.stats.stat>0) {
 		   $scope.station=$scope.data.stats.station;
