@@ -183,6 +183,7 @@ function listMonate(req, res) {
 		res.send(data);
 		
 	}, function failure(err) {
+		console.log(err);
 		res.status(500).send(err);
 	});
 }

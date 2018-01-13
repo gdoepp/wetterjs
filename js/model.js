@@ -10,7 +10,28 @@ function setPg(p)
 	pool = p;
 }
 
-function years() {  // read list of stations and first year with data
+
+function toDay(tag)
+{
+	if (tag && tag !== 'undefined' && tag != 0) {
+		var tg = tag.split('.');
+		if (tg.length != 3) { tg = tag.split("-"); tag = new Date(tg[0], tg[1]-1, tg[2])}
+		else {
+			tag=new Date(tg[2], tg[1]-1, tg[0]);
+		}
+	} else {
+		tag = new Date();
+	}
+	return tag;
+}
+
+function fixDst(tag1) {
+	if (tag1.getFullYear() < 1970 && tag1.getTimezoneOffset() < -60) {
+		tag1.setUTCHours(23); // workaround incorrect DST: midnight in MET
+	}
+}
+
+function years() {  // read list of weather stations and first year with data
 
 	return new Promise(function(resolve, reject) {
 		
@@ -63,8 +84,12 @@ function listMonate(jahr, stat, admin) {
 		if (admin) {
 			home = "round(avg(temp_i),1) as temp_i, ";
 		}
+		var tag1 = toDay("01.01."+jahr);
+		var tag2 = new Date(tag1);
+		tag2.setFullYear(tag2.getFullYear()+1);
+		tag2.setMilliseconds(-1);
 		
-		var query = "SELECT extract(month from t.time_d) || '.' || $1 as monat, extract(month from t.time_d) as month, "+
+		var query = "SELECT extract(month from t.time_d) || '.' || $4 as monat, extract(month from t.time_d) as month, "+
 		home+ ' round(avg(t.temp_o),1) as temp_o, '+
 		'round(avg(temp_o_min),1) as temp_o_min, round(avg(temp_o_max),1) as temp_o_max,'+
 		'round(min(temp_o_min),1) as temp_o_absmin, round(max(temp_o_max),1) as temp_o_absmax,'+
@@ -76,11 +101,11 @@ function listMonate(jahr, stat, admin) {
 		' avg(cloud) as cloud, sum(sun)/60 as sun, '+
 		' avg(windf) as windf, max(windf) as windf_max, '+
 		' arc_avg2(ARRAY[windf, windd]) as wind '+
-		" from "+datatab+" where extract(year from mtime) = $1 and stat=$2 " + 
+		" from "+datatab+" where mtime between $1 and $2 and stat=$3 " + 
 		" group by date_trunc('day', mtime) ) as t group by extract(month from time_d) " +
 		' order by month';
 		//console.log(query);
-		pool.query(query, [jahr, stat])
+		pool.query(query, [tag1, tag2, stat, jahr])
 		.then(
 			(res) => {
 				resolve(res.rows); 
@@ -95,10 +120,14 @@ function listMonat(monat, stat, admin) {
 
 	return new Promise(function(resolve, reject) {
 
-		var m = monat.split(".");
-		
-		var mon=m[0];
-		var year = m[1];
+		var tag1 = toDay("01." + monat);
+		var tag2 = new Date(tag1);
+		tag2.setMonth(tag2.getMonth()+1);
+
+		fixDst(tag1);
+		fixDst(tag2);
+
+		tag2.setMilliseconds(-1); //before midnight
 		
 		var tab = 'wetter_retro.data';
 		var home = "";
@@ -111,13 +140,15 @@ function listMonat(monat, stat, admin) {
 				'round(min(temp_o),1) as temp_o_min, round(max(temp_o),1) as temp_o_max, round(sum(sun)/60,1) as sun, '+
 				'round(avg(hum_o)) as hum_o, round(avg(pres),1) as pres, round(sum(precip),1) as precip, round(avg(cloud),1) as cloud, '+
 				' round(avg(windf),1) as windf, max(windf) as windf_max, arc_avg2(ARRAY[windf, windd]) as windd ' +
-				' from '+datatab+' where extract(month from mtime)=$1 and extract(year from mtime)=$2 ' + 
+				' from '+datatab+' where mtime between $1 and $2 ' + 
 				" and stat=$3 " +
-				" group by date_trunc('day', mtime) order by time_d", [mon, year, stat])
+				" group by date_trunc('day', mtime) order by time_d", [tag1, tag2, stat])
 		.then(
 			(res) => {
+				while (res.rows.length>0 && res.rows[0] > 1) res.rows.shift();
+				while (res.rows.length>0 && res.rows[res.rows.length-1] < 28) res.rows.pop();
 				for (var j=0; j<res.rows.length; j++) {
-					res.rows[j].time_d = res.rows[j].time_d.toLocaleDateString('de-DE');
+					res.rows[j].time_d = res.rows[j].time_d.toLocaleDateString('de-DE');					
 				}
 				resolve(res.rows); 
 			},
@@ -130,16 +161,24 @@ function listMonat(monat, stat, admin) {
 function listTag(tag1, tag2, stat, admin) {
 	
 	return new Promise(function(resolve, reject) {		
-		var t1 = tag1;
-		var t2 = tag2;
-		if (typeof t1 === 'undefined' || t1 === 'undefined' || t1==0) { 
+		if (typeof tag1 === 'undefined' || tag1 === 'undefined' || tag1==0) { 
 			var heute = new Date();
 			if (stat !=='00000') {
 				//heute.setDate(heute.getDate()-1);
 			}
-			t1 = heute.toISOString().split('T')[0];
-			t2 = t1;
-		}		
+			tag1 = heute.toISOString().split('T')[0];
+			tag2 = tag1;
+		}
+		
+		var t1 = toDay(tag1);
+		var t2 = toDay(tag2);
+		t2.setDate(t2.getDate()+1);
+
+		fixDst(t1);
+		fixDst(t2);
+		
+		t2.setMilliseconds(-1); // before midnight
+		
 		var home = "";
 		if (admin) {
 			home = ',temp_i';
@@ -147,7 +186,7 @@ function listTag(tag1, tag2, stat, admin) {
 		
 		pool.query("SELECT date_trunc('day', mtime) as day, mtime as time_t "+home+', temp_o, '+				
 				'hum_o, pres, precip, cloud, sun, windf, ARRAY[windf,windd] as windd '+
-				" from "+datatab+" where date_trunc('day', mtime) between $1 and $2 and stat=$3" + 
+				" from "+datatab+" where mtime between $1 and $2 and stat=$3" + 
 				" order by time_t", [t1, t2, stat])
 		.then(
 			(res) => {

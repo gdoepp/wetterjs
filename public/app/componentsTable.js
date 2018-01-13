@@ -42,7 +42,6 @@ function TagTableController($state, $stateParams, listTagFactory) {
 
  function AuswahlTableController($state, $stateParams, auswahlFactory) {
       this.data = auswahlFactory.getAuswahl($stateParams.stat); 
-      	 
 }
 
  tableSortModule.filter( 'parseTime', function () {
