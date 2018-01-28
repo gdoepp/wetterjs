@@ -349,6 +349,13 @@ function insertHome(req, res) {
   		 );
 }
 
+function insertHomeMq(msg) {
+	//console.log(msg);
+	msg = JSON.parse(msg.content);
+	console.log(msg.time, msg.daylight);
+	updater.insertHome(msg);
+}
+
 var s = 0; // static 
 
 function updateRecentAll() {  // update one station for every call of this function
@@ -374,6 +381,7 @@ module.exports = {
 		update: update,
 		importHist: importHist,
 		insertHome: insertHome,
+		insertHomeMq: insertHomeMq,
 		auswahl: auswahl,
 		stats: stats,
 		expired: expired,

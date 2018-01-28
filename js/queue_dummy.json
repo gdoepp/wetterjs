@@ -1,0 +1,8 @@
+{
+"addr": "amqps://user:password@localhost",
+"certfile": "/path/to/client-cert.pem",
+"keyfile": "/path/to/client-key.pem",
+"pw": "keypassword",
+"cacertfiles": ["/path/to/first-ca-chain.pem",
+				"/path/to/nth-ca-chain.pem"]
+}

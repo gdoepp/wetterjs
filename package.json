@@ -10,6 +10,7 @@
   "author": "Gerhard Döppert",
   "license": "ISC",
   "dependencies": {
+    "amqplib": "^0.5.2",
     "angular": "^1.6.7",
     "angular-tablesort": "^1.6.0",
     "angularjs": "0.0.1",

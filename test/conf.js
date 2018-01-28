@@ -4,9 +4,20 @@ exports.config = {
   seleniumAddress: 'http://localhost:4444/wd/hub',
 
   // Capabilities to be passed to the webdriver instance.
-  capabilities: {
+
+  multiCapabilities: [
+{
     browserName: 'firefox'
   },
+  {
+    browserName:'chrome',
+chromeOptions: {
+     args: [ "--enable-automatation","--allow-file-access-from-files", "--user-data-dir=/tmp/chrome-gd",
+      "--disable-web-security" ]
+   }
+  }],
+
+//  capabilities: { browserName: 'firefox'},
 
   // Spec patterns are relative to the configuration file location passed
   // to protractor (in this example conf.js).

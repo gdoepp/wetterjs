@@ -110,8 +110,15 @@ var fields = {'RR': ['precip'], 'TU' : ['temp_o','hum_o'], 'P0': ['pres'], 'N': 
 var paths = {'RR': 'precipitation', 'TU' : 'air_temperature', 'P0': 'pressure', 
 			 'N': 'cloudiness', 'FF': 'wind', 'SD': 'sun'};
 
-var stats= [{id:'04928', name:'Stuttgart'},{id:'01420', name:'Frankfurt'},
-	{id:'03379', name:'München'}, {id:'03668', name:'Nürnberg'}, {id:'01975', name:'Hamburg'}, {id:'00433', name:'Berlin'}];  
+var stats= [
+	{id:'04928', name:'Stuttgart'},
+	{id:'01420', name:'Frankfurt'}, 
+	{id:'05705', name: 'Würzburg'},
+	{id:'03379', name:'München'},
+	// {id:'03668', name:'Nürnberg'},
+	{id:'01975', name:'Hamburg'}, 
+	{id:'00433', name:'Berlin'}
+];  
 
 
 function insert(statid, value, resolve0, reject0, data, table) {
