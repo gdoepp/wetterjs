@@ -7,36 +7,18 @@
 	<thead>
 	  <tr class='wettertab'>
 	    <th></th>
-	    <th colspan='2'>Temperatur</th>
-	    <th colspan='5'></th>
-	    <th colspan='2'>Wind</th>
+	   <th  ng-repeat="colgrname in $ctrl.data.colgrname" colspan='{{$ctrl.data.colgrlen[$index]}}'>{{colgrname}}</th>
 	  </tr>
 	  <tr class='wettertab'>
  	    <th ts-criteria="monat|parseTime"> Zeit</th>
-	    <th ts-criteria="temp_i|parseFloat">innen</th>
-	    <th ts-criteria="temp_o|parseFloat">außen</th>
-	    <th ts-criteria="pres|parseFloat">Luftdruck</th>
-	    <th ts-criteria="hum_o|parseFloat">Feuchte</th>
-	    <th ts-criteria="precip|parseFloat">Niederschlag</th>
-	    <th ts-criteria="cloud|parseFloat">Wolken</th>
-	    <th ts-criteria="sun|parseFloat">Sonne</th>
-	    <th ts-criteria="windf|parseFloat">Stärke</th>
-	    <th ts-criteria="windd|parseFloat">Richtung</th>
+	    <th ts-criteria="{{col}}|parseFloat"  ng-repeat="col in $ctrl.data.values" >{{$ctrl.data.werte[col]}}</th>
 	    
 	  </tr>
 	</thead>
 	<tbody >	
 	<tr  class='wettertab' ng-repeat="tagwert in $ctrl.data.list" ts-repeat>
 	  <td >{{tagwert.time_t}}</td>
-	  <td >{{tagwert.temp_i}}°C</td>
-	  <td >{{tagwert.temp_o}}°C</td>
-	  <td >{{tagwert.pres}} hPa</td>
-	  <td >{{tagwert.hum_o}}%</td>
-	  <td >{{tagwert.precip}} mm</td>
-	  <td >{{tagwert.cloud}} /8</td>
-	  <td >{{tagwert.sun}} min</td>
-	  <td >{{tagwert.windf}} m/s</td>
-	  <td >{{tagwert.windd}} °</td>
+	 <td class='tab' ng-repeat="col in $ctrl.data.values"   >{{tagwert[col]}}</td>
 	  </tr>
 	</tbody>  	    
 </table>

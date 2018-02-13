@@ -27,13 +27,7 @@
     <tr>
       <th></th>
       <th>alles</th>
-      <th>Temperatur</th>
-      <th>Luftdruck</th>
-      <th>rel. Feuchte</th>
-      <th>Niederschlag</th>
-      <th>Wolken</th>
-      <th>Sonne</th>
-      <th>Wind</th>
+      <th ng-repeat='val in $ctrl.myScope.vals'>{{$ctrl.values[val].name}}</th>
       </tr>
      </thead>
 	<tbody>
@@ -41,40 +35,40 @@
 	<tr>
 	  <td>Einstieg Jahr</td>
 	  <td><button id='yl' ng-click="$ctrl.myScope.goList($ctrl.myScope.data.jahr, 'Monate')">Liste</button></td>
-	  <td><button id='yt' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.jahr, 'temp', 'Monate')"><img src='diagr_c.png'/></button></td>
-	  <td><button id='yp' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.jahr, 'pres', 'Monate')"><img src='diagr_c1.png'/></button></td>	  
-	  <td><button id='yh' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.jahr, 'hum_o', 'Monate')"><img src='diagr_c1.png'/></button></td>
-	  <td><button id='yi' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.jahr, 'precip', 'Monate')"><img src='diagr_rb.png'/></button></td>
-	  <td><button id='yc' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.jahr, 'cloud', 'Monate')"><img src='diagr_rg.png'/></button></td>
-	  <td><button id='ys' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.jahr, 'sun', 'Monate')"><img src='diagr_ry.png'/></button></td>
-	  <td><button id='yw' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.jahr, 'windf', 'Monate')"><img src='diagr_rv.png'/></button></td>
+	  
+	  <td ng-repeat='val in $ctrl.myScope.vals'>
+	     <button id='y{{$ctrl.values[val].id}}' 
+	         ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.jahr, val, 'Monate')">
+	            <img src='diagr_{{$ctrl.values[val].im}}.png'/>
+	     </button>
+	  </td>
 	</tr>
 	<tr>
 	  <td>Umschalten nach</td>
 	  <td><button id='sl' ng-click="$ctrl.myScope.goList($ctrl.myScope.data.time, $ctrl.myScope.data.per)">Liste</td>
-	  <td><button id='st' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.time, 'temp', $ctrl.myScope.data.per)"><img src='diagr_c.png'/></button></td>
-	  <td><button id='sp' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.time, 'pres', $ctrl.myScope.data.per)"><img src='diagr_c1.png'/></button></td>	  
-	  <td><button id='sh' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.time, 'hum_o', $ctrl.myScope.data.per)"><img src='diagr_c1.png'/></button></td>
-	  <td><button id='si' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.time, 'precip', $ctrl.myScope.data.per)"><img src='diagr_rb.png'/></button></td>
-	  <td><button id='sc' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.time, 'cloud', $ctrl.myScope.data.per)"><img src='diagr_rg.png'/></button></td>
-	  <td><button id='ss' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.time, 'sun', $ctrl.myScope.data.per)"><img src='diagr_ry.png'/></button></td>
-	  <td><button id='sw' ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.time, 'windf', $ctrl.myScope.data.per)"><img src='diagr_rv.png'/></button></td>
+	  <td ng-repeat='val in $ctrl.myScope.vals'>
+	     <button id='s{{$ctrl.values[val].id}}' 
+	         ng-click="$ctrl.myScope.goDP($ctrl.myScope.data.time, val, $ctrl.myScope.data.per)">
+	            <img src='diagr_{{$ctrl.values[val].im}}.png'/>
+	     </button>
+	  </td>
 	</tr>
 	<tr >
 	  <td><button id='tl' ng-click="$ctrl.myScope.goAuswahl(0)">Heute/Gestern</button></td>
 	  <td><button id='tl' ng-click="$ctrl.myScope.goList(0, 'Tag')">Liste</button></td>
-	  <td><button id='tt' ng-click="$ctrl.myScope.goDP(0, 'temp', 'Tag')"><img src='diagr_c.png'/></button></td>
-	  <td><button id='tp' ng-click="$ctrl.myScope.goDP(0,'pres', 'Tag')"><img src='diagr_c1.png'/></button></td>	  
-	  <td><button id='th' ng-click="$ctrl.myScope.goDP(0,'hum_o', 'Tag')"><img src='diagr_c1.png'/></button></td>
-	  <td><button id='ti' ng-click="$ctrl.myScope.goDP(0, 'precip', 'Tag')"><img src='diagr_rb.png'/></button></td>
-	  <td><button id='tc' ng-click="$ctrl.myScope.goDP(0, 'cloud', 'Tag')"><img src='diagr_rg.png'/></button></td>
-	  <td><button id='ts' ng-click="$ctrl.myScope.goDP(0, 'sun', 'Tag')"><img src='diagr_ry.png'/></button></td>
-	  <td><button id='tw' ng-click="$ctrl.myScope.goDP(0, 'windf', 'Tag')"><img src='diagr_rv.png'/></button></td>
+  	  <td ng-repeat='val in $ctrl.myScope.vals'>
+	     <button id='t{{$ctrl.values[val].id}}' 
+	         ng-click="$ctrl.myScope.goDP(0, val, 'Tag')">
+	            <img src='diagr_{{$ctrl.values[val].im}}.png'/>
+	     </button>
+	  </td>
 	</tr>
 	 
 	 
 	</tbody>  	    
 </table>
+<br/>
+<br/>
 <button ng-show='$ctrl.myScope.data.stats.admin' ng-click="$ctrl.myScope.update()" class='adminbutton'>update</button>
 <button ng-show='$ctrl.myScope.data.stats.admin' ng-click="$ctrl.myScope.importHist()" class='adminbutton'>import history</button>
 <div ng-show='!$ctrl.myScope.data.stats.admin' class='adminbutton'>Eingeschränkter Modus: Gast</div>

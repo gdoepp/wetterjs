@@ -4,13 +4,14 @@
 
 var module = angular.module('wetterDB');
 
-var values={'temp': {name:'Temperatur', func:'T', offset: 0.5}, 
-			'pres': {name:'Luftdruck', func:'P', offset: 0.5},
-		    'hum_o': {name:'rel. Luftfeuchte', func:'H', offset: 0.5}, 
-		    'precip': {name:'Niederschlag', func:'R', offset: 0},
-		    'cloud': {name:'Wolken', func:'N', offset: 0},
-		    'sun': {name:'Sonne', func:'S', offset: 0},
-		    'windf': {name:'Wind', func:'F', offset: 0}
+var values={'temp': {name:'Temperatur', func:'T', offset: 0.5, id:'t', im:'c'}, 
+			'pres': {name:'Luftdruck', func:'P', offset: 0.5, id:'p', im:'c2'},
+		    'hum': {name:'Luftfeuchte', func:'H', offset: 0.5, id:'h', im:'c1'}, 
+		    'precip': {name:'Niederschlag', func:'R', offset: 0, id:'i', im:'rb'},
+		    'cloud': {name:'Wolken', func:'N', offset: 0, id:'c', im:'rg'},
+		    'lum': {name:'Helligkeit', func:'L', offset: 0.5, id:'l', im:'c3'},
+		    'sun': {name:'Sonne', func:'S', offset: 0, id:'s', im:'ry'},
+		    'wind': {name:'Wind', func:'F', offset: 0, id:'w', im:'rv'}
 };
 
 function updateJahre($scope)  // utility
@@ -51,16 +52,23 @@ function WetterController($state, statsFactory) {
    
    };
 
-
-   this.statChanged= function() {
+   $scope.vals = [ 'temp', 'hum', 'pres', 'lum'];
+  	this.values = values;
+   	
+   	
+   this.statChanged = function() {
    	if ($scope.data.stats.stat>0) {
-	    	for (var s in $scope.data.stats.stats) {    		
-	    		if ($scope.data.stats.stats[s].id == $scope.data.stats.stat) {
-	    			$scope.station = $scope.data.stats.stats[s].name;
-	    			break;
-	    		}
-	    	}
-   	} else { $scope.station=''; }
+    	for (var s in $scope.data.stats.stats) {    		
+    		if ($scope.data.stats.stats[s].id == $scope.data.stats.stat) {
+    			$scope.station = $scope.data.stats.stats[s].name;
+    			break;
+    		}
+    	}
+		$scope.vals = [ 'temp', 'hum', 'pres', 'precip','cloud', 'sun', 'wind' ];
+   	} else { 
+   		$scope.station=''; 
+   		$scope.vals = [ 'temp', 'hum', 'pres', 'lum'];
+   	}
    	
    	updateJahre($scope);
    	if ($scope.data.value == '-') {

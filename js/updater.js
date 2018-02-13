@@ -7,6 +7,7 @@ var StreamBuffers = require('stream-buffers');
 var FTP = require('ftp');
 
 const datatab = 'wetter_retro.data';
+const datatabhome = 'wetter_home.data';
 const datatabrecent = 'wetter_retro.data_dwdrecent';
 const statstab = 'wetter_retro.stats';
 
@@ -22,12 +23,25 @@ function setPg(p)
 
 
 function insertHome(data) {
-	 const q = {
+	if (!data.hum_o) {
+		data.hum_o=data.hum;
+	}
+	
+	const q = {
 			 name: 'insert-home',
 			 text: 'insert into '+datatab+' (stat, mtime, temp_i, temp_o, pres, hum_o) values($1, $2, $3, $4, $5, $6) ',
-			 values: ['00000', data.time, data.temp_i, data.temp_o, data.pres, data.hum]	 
-	 };
-	return pool.query(q);
+			 values: ['00000', data.time, data.temp_i, data.temp_o, data.pres, data.hum_o]	 
+	};
+
+	const q2 = {
+			 name: 'insert-home2',
+			 text: 'insert into '+datatabhome+' (stat, mtime, temp_i1, temp_i2, hum_i,lum_o, lum_i, temp_o, pres, hum_o, daylight) '+
+			       'values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ',
+			 values: ['00000', data.time, data.temp_i, data.temp_i2, data.hum_i, 
+				 	data.lum_o, data.lum_i, data.temp_o, data.pres, data.hum_o,data.daylight]	 
+	};
+
+	return pool.query(q).then( ()=> { return pool.query(q2);});
 }
 
 function insertDwd(data, tab, client) {

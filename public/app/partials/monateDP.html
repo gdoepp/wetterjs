@@ -34,11 +34,15 @@
 	  {{tag}}
 	</text>
 	
-	
-	<polyline 
-	   ng-attr-points="{{$ctrl.data[$ctrl.value]}}"
-	  style="fill:none;stroke:green;stroke-width:3" />
-	
+	 <g ng-repeat="value in $ctrl.data.values">
+	 
+	 <polyline ng-attr-points="{{$ctrl.data[value]}}"
+	  style="fill:none;stroke:{{$ctrl.data.cols[value]}};stroke-width:3" />
+
+    <text x='{{90+200*$index}}' y='960' font-size='12pt' fill='{{$ctrl.data.cols[value]}}'>{{$ctrl.data.werte[value]}}</text>        
+	  	
+	</g>
+		
 	 
    </g>
     

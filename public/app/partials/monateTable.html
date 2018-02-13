@@ -4,48 +4,22 @@
 <table border='1' ts-wrapper>
 	<thead>
 	  <tr class='wettertab'>
-	    <th></th>
-	    <th colspan='6'>Temperatur</th>
-	    <th colspan='5'></th>
-	    <th colspan='3'>Wind</th>
-	    <th colspan='1'>weiter</th>
+	  <th/>
+	  <th  ng-repeat="colgrname in $ctrl.data.colgrname" colspan='{{$ctrl.data.colgrlen[$index]}}'>{{colgrname}}</th>
+	  <th>weiter</th>
 	  </tr>
+	  
+	  
 	  <tr class='wettertab'>
 	    <th ts-criteria="monat|parseInt"> Monat</th>
-	    <th ts-criteria="temp_i|parseFloat">innen</th>
-	    <th ts-criteria="temp_o|parseFloat">außen mittel</th>
-	    <th ts-criteria="temp_o_absmin|parseFloat">außen absmin</th>
-	    <th ts-criteria="temp_o_min|parseFloat">außen min</th>
-	    <th ts-criteria="temp_o_max|parseFloat">außen max</th>
-	    <th ts-criteria="temp_o_absmax|parseFloat">außen absmax</th>
-	    <th ts-criteria="pres|parseFloat">Luftdruck</th>
-	    <th ts-criteria="hum_o|parseFloat">Feuchte</th>
-	    <th ts-criteria="precip|parseFloat">Niederschlag</th>
-	    <th ts-criteria="cloud|parseFloat">Wolken</th>
-	    <th ts-criteria="sun|parseFloat">Sonne</th>
-	    <th ts-criteria="windf|parseFloat">mittel</th>
-	    <th ts-criteria="windf_max|parseFloat">max</th>
-	    <th ts-criteria="windd|parseFloat">Richtung</th>
+	    <th ts-criteria="{{col}}|parseFloat"  ng-repeat="col in $ctrl.data.values" >{{$ctrl.data.werte[col]}}</th>
 	    <th>alles</th>
 	  </tr>
 	</thead>
 	<tbody >	
 	<tr  class='wettertab' ng-repeat="monat in $ctrl.data.list" ts-repeat>
 	  <td >{{monat.monat}}</td>
-	  <td >{{monat.temp_i}}°C</td>
-	  <td >{{monat.temp_o}}°C</td>
-	  <td >{{monat.temp_o_absmin}}°C</td>
-	  <td >{{monat.temp_o_min}}°C</td>
-	  <td >{{monat.temp_o_max}}°C</td>
-	  <td >{{monat.temp_o_absmax}}°C</td>
-	  <td >{{monat.pres}} hPa</td>
-	  <td >{{monat.hum_o}}%</td>
-	  <td >{{monat.precip}} mm</td>
-	  <td >{{monat.cloud}} /8</td>
-	  <td >{{monat.sun}} h</td>
-	  <td >{{monat.windf}} m/s</td>
-	  <td >{{monat.windf_max}} m/s</td>
-	  <td >{{monat.windd}} °</td>
+	  <td class='tab' ng-repeat="col in $ctrl.data.values"   >{{monat[col]}}</td>
 	  
 	  <td class='tab'><button ng-click="$ctrl.parent.myScope.goList(monat.monat,'Monat')"
 	         class='button-small'>Liste</button></td>

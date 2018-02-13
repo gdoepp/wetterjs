@@ -14,6 +14,8 @@ var bodyParser = require('body-parser')
 
 var SegfaultHandler = require('segfault-handler');
 
+const env = process.env.NODE_ENV || 'dev'
+
 SegfaultHandler.registerHandler("crash.log"); 
 
 // install a job to update the 'recent' files from all the selected stations at about 10am
@@ -36,7 +38,7 @@ app.listen(1337, function() {
 
 var amqp = require('amqplib/callback_api');
 
-const queue = require('./queue-dev.json')
+const queue = require('./queue-'+env+'.json')
 const fs = require('fs')
 var opts = {
 	
@@ -53,14 +55,17 @@ for (var j=0; j<queue.cacertfiles.length; j++) {
 
 amqp.connect(queue.addr, opts, function(err, conn) {
   conn.createChannel(function(err, ch) {
-    var q = 'wetterhome';
+	var ex = 'wetterex';
+    ch.assertExchange(ex, 'fanout', {durable: false});
+    ch.assertQueue('', {exclusive: true}, (err, q) => {
+    	
+    	ch.bindQueue(q.queue, ex, '');
+    	console.log("waiting for messages on queue "+q.queue);
 
-    ch.assertQueue(q, {durable: false});
-    console.log("Waiting for messages in %s.", q);
-    ch.consume(q, controller.insertHomeMq, {noAck: true});
+        ch.consume(q.queue, controller.insertHomeMq, {noAck: true});
+    });
   });
 });
-
 
 
 

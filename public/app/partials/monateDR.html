@@ -34,13 +34,14 @@
 	  {{tag}}
 	</text>
 	
+	 <g ng-repeat="value in $ctrl.data.values">
 	
-	<rect ng-repeat="p in $ctrl.data[$ctrl.value]"
+	<rect ng-repeat="p in $ctrl.data[value]"
 		ng-attr-x={{p.x}} ng-attr-y={{p.y}}
 		ng-attr-width={{$ctrl.data.xwidth}} ng-attr-height={{$ctrl.data.tickXy-p.y-20}}
-		ng-attr-fill='{{p.color}}' >
+		ng-attr-fill='{{$ctrl.data.cols[value]}}' >
 	</rect>
-	
+	</g>
 
         
    </g>

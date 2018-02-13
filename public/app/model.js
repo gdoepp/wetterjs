@@ -39,12 +39,14 @@ auswahlFactory.$inject = ['$http'];
 
 function auswahlFactory($http) {
 	return {
-		getAuswahl: function(stat) {
+		getAuswahl: function(stat, prepare, group, werte) {
 			var result = {};
 			$http.get('wetter/auswahl?stat='+stat)
 			.then( function success(resp) {
 				result.list=resp.data.rows;
-				
+				if (prepare) {
+					prepare(result, group, werte);
+				}
 				if (result.list.length > 2) {
 					var t = new Date(result.list[1].mtime);
 					result.tag = t.getDate() + '.' + (t.getMonth()+1) + '.' + t.getFullYear();
@@ -86,7 +88,7 @@ listMonatFactory.$inject = ['$http'];
 
 function listMonatFactory($http) {
 	return {
-		getListMonat: function(monat, stat, prepare, typ,feld) {
+		getListMonat: function(monat, stat, prepare, typ, feld) {
 			var result = {};
 			$http.get('wetter/listMonat?monat='+monat+'&stat='+stat)
 			.then( function success(resp) {

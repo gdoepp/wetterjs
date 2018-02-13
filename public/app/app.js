@@ -41,10 +41,17 @@ function configFn($stateProvider, $urlRouterProvider) {
 
 	$stateProvider
 	  .state('listMonateDH', {
-		url: "/listMonteDH/:time/:stat",
+		url: "/listMonateDH/:time/:stat",
 		component: 'monateDP',
-		data: 'hum_o' 
+		data: 'hum' 
 	  });
+	
+	$stateProvider
+	  .state('listMonateDL', {
+		url: "/listMonateDL/:time/:stat",
+		component: 'monateDP',		
+		data: 'lum' 
+	  });	
 	
 	$stateProvider
 	  .state('listMonateDN', {
@@ -71,7 +78,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	  .state('listMonateDF', {
 		url: "/listMonteDF/:time/:stat",
 		component: 'monateDF',
-		data: 'windf' 
+		data: 'wind' 
 	  });
 	
 	$stateProvider
@@ -98,9 +105,16 @@ function configFn($stateProvider, $urlRouterProvider) {
 	  .state('listMonatDH', {
 		url: "/listMonatDH/:time/:stat",
 		component: 'monatDP',
-		data: 'hum_o' 
+		data: 'hum' 
 	  });
 	
+	$stateProvider
+	  .state('listMonatDL', {
+		url: "/listMonatDL/:time/:stat",
+		component: 'monatDP',		
+		data: 'lum' 
+	  });	
+
 	$stateProvider
 	  .state('listMonatDN', {
 		url: "/listMonatDN/:time/:stat",
@@ -126,7 +140,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	  .state('listMonatDF', {
 		url: "/listMonatDF/:time/:stat",		
 		component: 'monatDF',	
-		data: 'windf' 
+		data: 'wind' 
 	  });
 	
 	$stateProvider
@@ -160,7 +174,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	  .state('listTagDH', {
 		url: "/listTagDH/:time/:stat",
 		component: 'tagDP',		
-		data: 'hum_o' 
+		data: 'hum' 
 	  });	
 
 	$stateProvider
@@ -178,6 +192,13 @@ function configFn($stateProvider, $urlRouterProvider) {
 	  });	
 
 	$stateProvider
+	  .state('listTagDL', {
+		url: "/listTagDL/:time/:stat",
+		component: 'tagDP',
+		data: 'lum' 
+	  });	
+
+	$stateProvider
 	  .state('listTagDR', {
 		url: "/listTagDR/:time/:stat",
 		component: 'tagDR',
@@ -188,7 +209,7 @@ function configFn($stateProvider, $urlRouterProvider) {
 	  .state('listTagDF', {
 		url: "/listTagDF/:time/:stat",
 		component: 'tagDF',
-		data: 'windf' 
+		data: 'wind' 
 	  });	
 
 	$stateProvider

@@ -2,14 +2,12 @@
 
 var pool = null;
 
-const datatab = 'wetter_retro.data';
-const statstab = 'wetter_retro.stats';
+const datatab = 'wetter_home.data';
 
 function setPg(p)
 {
 	pool = p;
 }
-
 
 function toDay(tag)
 {
@@ -25,17 +23,11 @@ function toDay(tag)
 	return tag;
 }
 
-function fixDst(tag1) {
-	if (tag1.getFullYear() < 1970 && tag1.getTimezoneOffset() < -60) {
-		tag1.setUTCHours(23); // workaround incorrect DST: midnight in MET
-	}
-}
-
 function years() {  // read list of weather stations and first year with data
 
 	return new Promise(function(resolve, reject) {
 		
-		pool.query("select stat, year from "+statstab)
+		pool.query("select 0, distinct year from "+datatab)
 		.then(
 			(res) => {
 				for (var j=0; j<res.rows.length; j++) {
@@ -52,7 +44,8 @@ function years() {  // read list of weather stations and first year with data
 function auswahl(stat, admin) {  // return last 8 items for a station
 
 	return new Promise(function(resolve, reject) {
-		var fields = ",temp_o, hum_o, pres,precip, cloud, windf, ARRAY[windf,windd] as windd";
+		var fields = ",temp_o, hum_o, pres, lum_o";
+		if (admin) fields += ", temp_i1, temp_i2, hum_i, lum_i";
 		
 		pool.query('SELECT mtime' +fields +
 				" from "+datatab+
@@ -77,23 +70,25 @@ function listMonate(jahr, stat, admin) {
 
 	return new Promise(function(resolve, reject) {
 
+		var home = "";
 		var tag1 = toDay("01.01."+jahr);
 		var tag2 = new Date(tag1);
 		tag2.setFullYear(tag2.getFullYear()+1);
 		tag2.setMilliseconds(-1);
 		
 		var query = "SELECT extract(month from t.time_d) || '.' || $4 as monat, extract(month from t.time_d) as month, "+
-		' round(avg(t.temp_o),1) as temp_o_avg, '+
+		home+ ' round(avg(t.temp_o),1) as temp_o_avg, '+
 		'round(avg(temp_o_min),1) as temp_o_min, round(avg(temp_o_max),1) as temp_o_max,'+
 		'round(min(temp_o_min),1) as temp_o_absmin, round(max(temp_o_max),1) as temp_o_absmax,'+
-		'round(avg(hum_o)) as hum_o, round(avg(pres),1) as pres, round(sum(precip),1) as precip,'+
-		'round(avg(cloud),1) as cloud, round(avg(sun), 1) as sun, ' +
-		'round(avg(windf),1) as windf, max(windf_max) as windf_max, arc_avg2(wind) as windd ' +
-		" from (select date_trunc('day',mtime) as time_d, avg(temp_i) as temp_i, avg(temp_o) as temp_o, " +
-		' max(temp_o) as temp_o_max, min(temp_o) as temp_o_min, avg(hum_o) as hum_o, avg(pres) as pres , sum(precip) as precip, ' +
-		' avg(cloud) as cloud, sum(sun)/60 as sun, '+
-		' avg(windf) as windf, max(windf) as windf_max, '+
-		' arc_avg2(ARRAY[windf, windd]) as wind '+
+		'round(avg(hum_o)) as hum_o, round(avg(pres),1) as pres, round(avg(lum_o),2) as lum_o '+
+		(admin ? 
+		  ', round(avg(temp_i1), 1) as temp_i1_avg, ' +
+		  'round(avg(temp_i2),1) as temp_i2_avg, round(avg(hum_i),1) as hum_i, round(avg(lum_i),2) as lum_i ' : ''
+		)+
+		" from (select date_trunc('day',mtime) as time_d, avg(temp_i1) as temp_i1, avg(temp_o) as temp_o, " +
+		' max(temp_o) as temp_o_max, min(temp_o) as temp_o_min, avg(hum_o) as hum_o, avg(pres) as pres , ' +
+		' avg(hum_i) as hum_i, '+
+		' avg(temp_i2) as temp_i2, avg(lum_i) as lum_i, avg(lum_o) as lum_o '+
 		" from "+datatab+" where mtime between $1 and $2 and stat=$3 " + 
 		" group by date_trunc('day', mtime) ) as t group by extract(month from time_d) " +
 		' order by month';
@@ -117,18 +112,15 @@ function listMonat(monat, stat, admin) {
 		var tag2 = new Date(tag1);
 		tag2.setMonth(tag2.getMonth()+1);
 
-		fixDst(tag1);
-		fixDst(tag2);
-
 		tag2.setMilliseconds(-1); //before midnight
-		
-		var tab = 'wetter_retro.data';
 
 		pool.query("SELECT date_trunc('day', mtime) as time_d, extract(day from date_trunc('day', mtime)) as tag, "+
-				 "round(avg(temp_o),1) as temp_o_avg, "+
-				'round(min(temp_o),1) as temp_o_min, round(max(temp_o),1) as temp_o_max, round(sum(sun)/60,1) as sun, '+
-				'round(avg(hum_o)) as hum_o, round(avg(pres),1) as pres, round(sum(precip),1) as precip, round(avg(cloud),1) as cloud, '+
-				' round(avg(windf),1) as windf, max(windf) as windf_max, arc_avg2(ARRAY[windf, windd]) as windd ' +
+				 "round(avg(temp_o),1) as temp_o_avg, round(min(temp_o),1) as temp_o_min, round(max(temp_o),1) as temp_o_max  "+
+				',round(avg(hum_o)) as hum_o, round(avg(pres)) as pres, round(avg(lum_o),2) as lum_o' +
+				(admin ?
+				  ', round(avg(temp_i1),1) as temp_i1_avg, round(avg(temp_i2),1) as temp_i2_avg,'+
+				   ' round(avg(hum_i)) as hum_i, round(avg(lum_i),2) as lum_i ' : ''
+				) +				
 				' from '+datatab+' where mtime between $1 and $2 ' + 
 				" and stat=$3 " +
 				" group by date_trunc('day', mtime) order by time_d", [tag1, tag2, stat])
@@ -163,13 +155,11 @@ function listTag(tag1, tag2, stat, admin) {
 		var t2 = toDay(tag2);
 		t2.setDate(t2.getDate()+1);
 
-		fixDst(t1);
-		fixDst(t2);
-		
 		t2.setMilliseconds(-1); // before midnight
 		
-		pool.query("SELECT date_trunc('day', mtime) as day, mtime as time_t, temp_o, "+				
-				'hum_o, pres, precip, cloud, sun, windf, ARRAY[windf,windd] as windd '+
+		pool.query("SELECT date_trunc('day', mtime) as day, mtime as time_t , temp_o, hum_o,pres," +
+				" lum_o " + 
+				(admin ? ", temp_i1, temp_i2, hum_i,lum_i " : '') +
 				" from "+datatab+" where mtime between $1 and $2 and stat=$3" + 
 				" order by time_t", [t1, t2, stat])
 		.then(

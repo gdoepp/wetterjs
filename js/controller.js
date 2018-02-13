@@ -1,6 +1,7 @@
 // (c) Gerhard Döppert, 2017
 
-var wetter = require('./model')
+var wetter_o = require('./model')
+var wetter_i = require('./model_i')
 
 var updater = require('./updater')
 
@@ -20,6 +21,7 @@ const pool = new pg.Pool(
 				  database: 'pgdb',
 				  password: '',
 				  port: 5432
+				 
 		}
 		:
 		{
@@ -33,7 +35,8 @@ const pool = new pg.Pool(
 		});
 
 updater.setPg(pool);  // forward to updater
-wetter.setPg(pool);   // forward to model
+wetter_o.setPg(pool);   // forward to model
+wetter_i.setPg(pool);   // forward to model
 
 var expired = new Date(); // force expire of all possibly cached results
 
@@ -88,7 +91,8 @@ function stats(req, res) {
 	result.admin=admin;
 	result.stat=result.stats[0].id;
 	result.station=result.stats[0].name;
-	wetter.years() 
+	
+	wetter_o.years() 
 	.then( (data) => {
 		result.rows = data;
 		res.send(result);
@@ -105,6 +109,8 @@ function auswahl(req, res) {
 	if (checkCert(req))	 {
 		 admin=1; 
 	} 
+	
+	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
 	
 	wetter.auswahl(req.query.stat, admin)
 	.then(function success(data) {
@@ -169,6 +175,9 @@ function listMonate(req, res) {
 
 	var heute = new Date();
 	var expires = new Date(heute.getTime()+minutes*60*1000); // 1h
+	
+	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
+	
 	wetter.listMonate(req.query.jahr, req.query.stat, admin)
 	.then(function success(data) {
 		res.set({"Cache-Control": "public",
@@ -204,6 +213,8 @@ function listMonat(req, res) {
 	var heute = new Date();
 	var expires = new Date(heute.getTime()+minutes*60*1000); // 1h
 
+	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
+	
 	wetter.listMonat(req.query.monat, req.query.stat, admin)
 	.then(function success(data) {
 		res.set({"Cache-Control": "public",
@@ -243,6 +254,8 @@ function listTag(req, res) {
 		req.query.tag2 = req.query.tag;
 	}
 
+	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
+	
 	wetter.listTag(req.query.tag1, req.query.tag2, req.query.stat, admin)
 	.then(function success(data) {
 		res.set({"Cache-Control": "public",
@@ -350,9 +363,7 @@ function insertHome(req, res) {
 }
 
 function insertHomeMq(msg) {
-	//console.log(msg);
 	msg = JSON.parse(msg.content);
-	console.log(msg.time, msg.daylight);
 	updater.insertHome(msg);
 }
 
