@@ -11,7 +11,7 @@ function makeRange(dims, data, values, typ) {
 	
 	if (dims.mny === undefined) { dims.mny = 9999999; center = true; }
 	if (dims.mxy === undefined) { dims.mxy = -9999999; }
-	if (!dims.scalefn) { dims.scalefn = (x) => { return x; };}
+	if (!dims.scalefn) { dims.scalefn = function(x) { return x; };}
 	if (!dims.scalefninv) { dims.scalefninv = dims.scalefn;}
 
 	for (var k=0; k<data.length; k++) {
@@ -93,7 +93,7 @@ function makeAxes(obj, data, dims, typ) {
     var mxy = dims.scalefn(dims.mxy);
     var mny = dims.scalefn(dims.mny);
      
-    var stepl = Math.log10(mxy-mny);
+    var stepl = Math.log(mxy-mny)/Math.log(10);
     var step10 = Math.floor(stepl);
     var step_10 = stepl-step10;
     if (step_10 > 0.69897) step = 5*Math.pow(10,step10-1);
@@ -110,7 +110,7 @@ function makeAxes(obj, data, dims, typ) {
     
     var mbeg=typ.tick();
 
-    for (var j = ybeg; j <= Math.floor(mxy); j += step) {
+    for (var j = ybeg; j < Math.ceil(mxy); j += step) {
     	var y = j-mny;
 	    obj.gridYPath.push(dims.x1 + " " + Math.round(dims.height-y*dims.dmy) + " " + 
 	    		(dims.x1 + mbeg[mbeg.length-1]*dims.dx) + 
@@ -161,13 +161,16 @@ function svgMakerFactory() {
 
 	return {
 		prepareTemp: function(obj, typ) {
-			const tempCols = {"temp_o":"green", "temp_i1":"orange", "temp_o_min": "blue", "temp_o_absmin": "violet",
+			const tempCols = {"temp_o":"limegreen", "temp_i1":"orange", "temp_o_min": "blue", "temp_o_absmin": "violet",
 					"temp_o_max": "red", "temp_o_absmax": "brown", "temp_o_avg": "green", "temp_i1_avg": "orange",
-					"temp_i2":"brown", "temp_i2_avg":"orange"};
+					"temp_o1":"limegreen",
+					"temp_i2":"brown", "temp_i2_avg":"orange", "temp_o2": "seagreen", "temp_i3":"magenta","temp_i4": "coral"};
 			
 		    const tempWerte = {"temp_o":"Temp", "temp_o_min": "Temp Min", "temp_o_absmin": "Temp abs Min",
 					"temp_o_max": "Temp Max", "temp_o_absmax": "Temp abs Max", "temp_o_avg": "Temp Mittel", 
-					"temp_i1":"Temp innen", "temp_i1_avg": "Temp innen Mittel", "temp_i2": "Temp innen 2","temp_i2_avg": "Temp innen 2 Mittel"};
+					"temp_i1":"Temp innen", "temp_i1_avg": "Temp innen Mittel", 
+					"temp_i2": "Temp innen 2","temp_i2_avg": "Temp innen 2 Mittel",
+					"temp_o1": "Temp1","temp_o2": "Temp2", "temp_i3": "Temp innen 3", "temp_i4": "Temp innen 4"};
 			
 			var data = obj.list;
 		    obj.list = undefined;
@@ -199,7 +202,7 @@ function svgMakerFactory() {
 		preparePhen: function(obj, typ, feld) {
 			
 			const phenCols = { "hum_i": "orange", "hum_o": "brown", "pres": "blue",
-					"precip": "blue", "sun": "yellow", "cloud": "gray", "lum_o": "yellow", "lum_i": "orange"};
+					"precip": "blue", "sun": "yellow", "cloud": "gray", "lum_o": "goldenrod", "lum_i": "darkorange"};
 			
 		    const phenWerte = {
 					"hum_o": "rel. Feuchte", "hum_i": "rel. Feuchte innen", "pres": "Luftdruck",
@@ -226,8 +229,8 @@ function svgMakerFactory() {
 			if (feld=='lum') { 
 				dims.minUnits=3;
 				values.push('lum_o');
-				dims.scalefn = (x)=> { return x>1e-2 ? Math.log10(x) : -2; } // min: half moon
-				dims.scalefninv = (x)=> { 
+				dims.scalefn = function(x) { return x>1e-2 ? Math.log(x)/Math.log(10) : -2; } // min: half moon
+				dims.scalefninv = function(x) { 
 					return x==-2 ? '0' : Math.round(Math.pow(10,x)*Math.pow(10,Math.ceil(-x)+2))/Math.pow(10,Math.ceil(-x)+2); 
 				} 
 				if (data.length>0 && data[data.length-1]['lum_i']) { values.push('lum_i'); } 

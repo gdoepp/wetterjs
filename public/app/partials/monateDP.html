@@ -4,7 +4,7 @@
 
 <div style="position:relative;width:100%;">
 <canvas width="160" height="95"></canvas>
-<svg width='100%' viewBox="0 -10 1600 934" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg width='100%' viewBox="0 -10 1600 938" version="1.1" xmlns="http://www.w3.org/2000/svg">
 <g>
 
 	
@@ -37,9 +37,9 @@
 	 <g ng-repeat="value in $ctrl.data.values">
 	 
 	 <polyline ng-attr-points="{{$ctrl.data[value]}}"
-	  style="fill:none;stroke:{{$ctrl.data.cols[value]}};stroke-width:3" />
+	  ng-attr-style="fill:none;stroke:{{$ctrl.data.cols[value]}};stroke-width:3" />
 
-    <text x='{{90+200*$index}}' y='960' font-size='12pt' fill='{{$ctrl.data.cols[value]}}'>{{$ctrl.data.werte[value]}}</text>        
+     <text ng-attr-x='{{90+200*$index}}' y='924' font-size='12pt' ng-attr-fill='{{$ctrl.data.cols[value]}}'>{{$ctrl.data.werte[value]}}</text>        
 	  	
 	</g>
 		
@@ -47,4 +47,5 @@
    </g>
     
 </svg>
+<br/>
 </div>

@@ -16,12 +16,12 @@ const env = process.env.NODE_ENV || 'dev'
 const pool = new pg.Pool(
 		(env === 'dev') ?
 		{
-				  user: 'gd',
+		 
+		     user: 'gd',
 				  host: 'localhost',
 				  database: 'pgdb',
 				  password: '',
 				  port: 5432
-				 
 		}
 		:
 		{

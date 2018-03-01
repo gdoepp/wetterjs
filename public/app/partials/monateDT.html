@@ -38,9 +38,9 @@
 	 <g ng-repeat="value in $ctrl.data.values">
 	 
 	<polyline ng-attr-points="{{$ctrl.data[value]}}"
-	  style="fill:none;stroke:{{$ctrl.data.cols[value]}};stroke-width:3" />
+	  ng-attr-style="fill:none;stroke:{{$ctrl.data.cols[value]}};stroke-width:3" />
 
-    <text x='{{90+200*$index}}' y='960' font-size='12pt' fill='{{$ctrl.data.cols[value]}}'>{{$ctrl.data.werte[value]}}</text>        
+    <text ng-attr-x='{{90+200*$index}}' y='960' font-size='12pt' ng-attr-fill='{{$ctrl.data.cols[value]}}'>{{$ctrl.data.werte[value]}}</text>        
 	  	
 	</g>
 	        
