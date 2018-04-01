@@ -21,11 +21,16 @@ SegfaultHandler.registerHandler("crash.log");
 // install a job to update the 'recent' files from all the selected stations at about 10am
 
 // 6 stationen, 6 minutes
-cron.scheduleJob('10-15 10 * * *', () => {
+cron.scheduleJob('10-15 12 * * *', () => {
   controller.updateRecentAll();
 });
 
-app.use(express.static('public'));
+app.use(express.static('dist'));
+
+app.all('/*;*', function(req, res, next) {
+    // Just send the index.html for other files to support HTML5Mode
+    res.sendFile('dist/index.html', {root: __dirname+'/..'});
+});
 
 app.use( bodyParser.json() ); 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -33,10 +38,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 router(app);
 
 app.listen(1337, function() {
-	console.log('Server listening on port 1337');
+	console.log('Server listening on port 1337'); // apache2 acts as proxy
 });
 
-var amqp = require('amqplib/callback_api');
+var amqp = require('amqplib/callback_api');  // for collecting locale weather data 
 
 const queue = require('./queue-'+env+'.json')
 const fs = require('fs')
@@ -56,13 +61,17 @@ for (var j=0; j<queue.cacertfiles.length; j++) {
 amqp.connect(queue.addr, opts, function(err, conn) {
   conn.createChannel(function(err, ch) {
 	var ex = 'wetterex';
-    ch.assertExchange(ex, 'fanout', {durable: false});
+    ch.assertExchange(ex, 'fanout', {durable: true});
     ch.assertQueue('', {exclusive: true}, (err, q) => {
     	
     	ch.bindQueue(q.queue, ex, '');
     	console.log("waiting for messages on queue "+q.queue);
 
-        ch.consume(q.queue, controller.insertHomeMq, {noAck: true});
+        ch.consume(q.queue, (msg) => { 
+        	controller.insertHomeMq(msg);
+        	ch.ack(msg);
+        }, {noAck: false});
+        
     });
   });
 });

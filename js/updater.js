@@ -13,6 +13,11 @@ const statstab = 'wetter_retro.stats';
 
 var pool = null;
 
+function pad (s, size) {
+    while (s.length < (size || 2)) {s = "0" + s;}
+    return s;
+}
+
 function setPg(p)
 {
 	pool = p;
@@ -126,21 +131,28 @@ var fields = {'RR': ['precip'], 'TU' : ['temp_o','hum_o'], 'P0': ['pres'], 'N': 
 var paths = {'RR': 'precipitation', 'TU' : 'air_temperature', 'P0': 'pressure', 
 			 'N': 'cloudiness', 'FF': 'wind', 'SD': 'sun'};
 
+
 var stats= [
-	{id:'04928', name:'Stuttgart'},
-	{id:'01420', name:'Frankfurt'}, 
-	{id:'05705', name: 'Würzburg'},
-	{id:'03379', name:'München'},
+	{id:'04928', name:'Stuttgart', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ]},
+	{id:'01420', name:'Frankfurt', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ]}, 
+	{id:'05705', name: 'Würzburg', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ]},
+	{id:'03379', name:'München', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ]},
 	// {id:'03668', name:'Nürnberg'},
-	{id:'01975', name:'Hamburg'}, 
-	{id:'00433', name:'Berlin'}
+	{id:'01975', name:'Hamburg', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ]}, 
+	{id:'00433', name:'Berlin', vals: [ 'temp', 'hum', 'pres', 'precip', 'sun', 'wind' ]}
 ];  
+
+function getStats() {
+	var allstats = stats.slice();
+	allstats.unshift({id: '00000', name: '####', vals: [ 'temp', 'hum', 'pres', 'lum']}); // our met station at home
+	return allstats;
+}
 
 
 function insert(statid, value, resolve0, reject0, data, table) {
 	
 	console.log("insert: " + statid + ", ", value);
-
+	
 	JSZip.loadAsync(data)
 	.then( (zip) => {
 		var found=false;
@@ -184,6 +196,8 @@ function update(statid, what, value, table) {
 	if (statid == 0) return;  // home data, not dwd
 
 	console.log("called update: " + what + " " + value);
+	
+	statid = pad(statid,5);
 	
 	return new Promise(function(resolve, reject) {
 	
@@ -276,7 +290,8 @@ module.exports = {
 		setPg: setPg,
 		update: update,
 		values: paths,
-		stats: stats,
+		getStats: getStats,
+		stats: 	stats,
 		insertHome: insertHome,
 		updateAllValues: updateAllValues,
 		delete_all: delete_all,

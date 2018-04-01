@@ -12,7 +12,6 @@ const pg = require('pg');
 const env = process.env.NODE_ENV || 'dev'
 
 // manage db connection
-
 const pool = new pg.Pool(
 		(env === 'dev') ?
 		{
@@ -75,6 +74,20 @@ function checkUnmodified(req, res, maxTimeMin) {
 	return false;
 }
 
+function checkCrossOriginAllowed(res) {
+	if (env === 'dev') {  // allow cross origin access from frontend
+		res.set({'Access-Control-Allow-Methods': 'GET,OPTIONS',
+		'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type'});
+	}
+}
+
+function addCacheControl(res, modified, expires) {
+	res.set({"Cache-Control": "public",
+		"Last-Modified": modified.toUTCString(),
+		"Expires": expires.toUTCString()});
+}
+
 // list stations and their first year with data
 function stats(req, res) {
 	var admin = 0;
@@ -86,15 +99,23 @@ function stats(req, res) {
 		
 	var result = {};		
 	
-	result.stats = updater.stats.slice();
-	result.stats.unshift({id: '00000', name: '####'}); // our met station at home
+	result.stats = updater.getStats();
 	result.admin=admin;
-	result.stat=result.stats[0].id;
-	result.station=result.stats[0].name;
+	result.links = [{rel: 'templateJahr', href: 'listJahr?stat={{statid}}&jahr={{jahr}}', method: 'get'},
+					{rel: 'templateHeute', href: 'listTag?stat={{statid}}&tag=0', method: 'get'},
+					{rel: 'templateAktuell', href: 'aktuell?stat={{statid}}', method: 'get'},
+					{rel: 'insertHome', href: 'insert', method: 'post'},
+					{rel: 'update', href: 'update/:stat', method: 'post'},
+					{rel: 'importHistory', href: 'import/:stat', method: 'post'},
+	];
 	
 	wetter_o.years() 
 	.then( (data) => {
+		for (const row of data) {
+			row.link = {rel: 'Jahr1', href: 'listJahr?stat='+row.stat+'&jahr='+row.jahr, method: 'get'};
+		}
 		result.rows = data;
+		checkCrossOriginAllowed(res);
 		res.send(result);
 	}, (err) => {
 		res.status(500);
@@ -103,7 +124,7 @@ function stats(req, res) {
 }
 
 // return a list of some recent data
-function auswahl(req, res) {
+function aktuell(req, res) {
 	
 	var admin = 0;
 	if (checkCert(req))	 {
@@ -112,36 +133,33 @@ function auswahl(req, res) {
 	
 	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
 	
-	wetter.auswahl(req.query.stat, admin)
+	wetter.aktuell(req.query.stat, admin)
 	.then(function success(data) {
 
-		var result = {};		
-	
-		result.rows = data;
 		var heute = new Date();
 		var expires = new Date(heute.getTime()+60*1000);  // 1 min
-		res.set({"Cache-Control": "public",
-		"Expires": expires.toUTCString()});
-		
-		res.send(result);
+		addCacheControl(res, heute, expires)
+		checkCrossOriginAllowed(res);
+		res.send(data);
 		
 	}, function failure(err) {
 		res.status(500).send(err);
 	});
 }
 
-function formatDe(f, d) {
+function formatDe(f, d) {  // for download, locale: de
 	if (f !=='monat' && f != 'time_d' && f != 'day' && typeof(d) === 'string') d = d.replace('.', ','); 
 	else if (typeof(d) === 'number') d = d.toLocaleString('de-DE');
 	else if (!d) d = ''; 
 	return d + '\t';
 }
 
-function toCsv(data) {
+function toCsv(data) {  // for download
 	var list="";
 	if (data.length>0) {
 	   var d = data[0];
 	   for (var f in d) {
+		   if (f === 'link') { continue; }
 		   if (f === 'windd') { list = list + 'wind2f\t'; }
 		   list = list +f;
 		   list = list + '\t';
@@ -152,6 +170,7 @@ function toCsv(data) {
 	for (var j=0; j<data.length; j++) {
 		   var d = data[j];
 		   for (var f in d) {
+			   if (f === 'link') { continue; }
 			   if (f === 'windd' && d[f]) { 
 				   var d2 = d[f]; list = list + formatDe('wind2f', d2[0]) + formatDe('windd', d2[1]); 
 			   } else list = list + formatDe(f,d[f]);
@@ -160,6 +179,7 @@ function toCsv(data) {
 	   }
 	return list;
 }
+
 // data aggregated by month for one year
 function listMonate(req, res) {
 	
@@ -180,14 +200,13 @@ function listMonate(req, res) {
 	
 	wetter.listMonate(req.query.jahr, req.query.stat, admin)
 	.then(function success(data) {
-		res.set({"Cache-Control": "public",
-			"Last-Modified": heute.toUTCString(),
-			"Expires": expires.toUTCString()});
 
+		addCacheControl(res, heute, expires)
+		checkCrossOriginAllowed(res);
 		if (req.path.indexOf('download')>=0) {
-			res.set({'Content-Type': 'text/csv',
+			res.set({'Content-Type': 'text/csv; charset=utf-8',
 	        'Content-Disposition': 'attachment;filename=monate.csv'});
-			data = toCsv(data);
+			data = toCsv(data.rows);
 		}
 		res.send(data);
 		
@@ -217,18 +236,17 @@ function listMonat(req, res) {
 	
 	wetter.listMonat(req.query.monat, req.query.stat, admin)
 	.then(function success(data) {
-		res.set({"Cache-Control": "public",
-			"Last-Modified": heute.toUTCString(),
-			"Expires": expires.toUTCString()});
-		
+		addCacheControl(res, heute, expires)
+		checkCrossOriginAllowed(res);
 		if (req.path.indexOf('download')>=0) {
-			res.set({'Content-Type': 'text/csv',
+			res.set({'Content-Type': 'text/csv; charset=utf-8',
 	        'Content-Disposition': 'attachment;filename=monat.csv'});
-			data = toCsv(data);
+			data = toCsv(data.rows);
 		}
 
 		res.send(data);
 	}, function failure(err) {
+		console.log(err);
 		res.status(500).send(err);
 	});
 }
@@ -258,20 +276,28 @@ function listTag(req, res) {
 	
 	wetter.listTag(req.query.tag1, req.query.tag2, req.query.stat, admin)
 	.then(function success(data) {
-		res.set({"Cache-Control": "public",
-			"Last-Modified": heute.toUTCString(),
-			"Expires": expires.toUTCString()});
-		
+		addCacheControl(res, heute, expires)
+		checkCrossOriginAllowed(res);
 		if (req.path.indexOf('download')>=0) {
-			res.set({'Content-Type': 'text/csv',
+			res.set({'Content-Type': 'text/csv; charset=utf-8',
 	        'Content-Disposition': 'attachment;filename=tag.csv'});
-			data = toCsv(data);
+			data = toCsv(data.rows);
 		}
 
 		res.send(data);
 	}, function failure(err) {
 		res.status(500).send(err);
 	});
+}
+
+function options(req, res) {
+	
+	res.set({"Cache-Control": "public",
+		'Access-Control-Max-Age': 86400,
+		'Vary': 'Accept-Encoding, Origin',
+		'Connection': 'Keep-Alive'});
+	checkCrossOriginAllowed(res);
+	res.end();
 }
 
 // update recent data from DWD, fast, should not hit timeout 
@@ -389,11 +415,12 @@ module.exports = {
 		listMonate: listMonate,
 		listMonat: listMonat,
 		listTag: listTag,
+		options: options,
 		update: update,
 		importHist: importHist,
 		insertHome: insertHome,
 		insertHomeMq: insertHomeMq,
-		auswahl: auswahl,
+		aktuell: aktuell,
 		stats: stats,
 		expired: expired,
 		updateRecentAll: updateRecentAll
