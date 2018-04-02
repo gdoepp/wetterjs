@@ -33,7 +33,7 @@ const pool = new pg.Pool(
 	  
 		});
 
-updater.setPg(pool);  // forward to updater
+updater.setPg(pool);    // forward to updater
 wetter_o.setPg(pool);   // forward to model
 wetter_i.setPg(pool);   // forward to model
 
@@ -45,17 +45,17 @@ function checkCert(req) {  // checking certificates is done by Apache, result is
 	
 	if (req.headers['ssl_client_verify'] !== 'SUCCESS' || 
 		!req.headers['ssl_client_s_dn'] || !req.headers['ssl_client_i_dn']) {
-		return false;
+		return false;  // guest
 	}
 	
 	for (var j=0; j < certsAllowed.length; j++) {
 		var cert = certsAllowed[j];
 		if (req.headers['ssl_client_s_dn'].indexOf(cert.subjectString) >= 0 &&
 		    req.headers['ssl_client_i_dn'].indexOf(cert.issuerString) >= 0) {
-			return true; 
+			return true; // allowed, privileged
 		}
 	}
-	return false;
+	return false; // guest
 }
 
 // is the result the client received before still valid?
@@ -88,7 +88,7 @@ function addCacheControl(res, modified, expires) {
 		"Expires": expires.toUTCString()});
 }
 
-// list stations and their first year with data
+// list stations and their first year with data, also sends link templates for further requests
 function stats(req, res) {
 	var admin = 0;
 	if (checkCert(req))	 {
@@ -112,9 +112,6 @@ function stats(req, res) {
 	
 	wetter_o.years() 
 	.then( (data) => {
-		for (const row of data) {
-			row.link = {rel: 'Jahr1', href: 'listJahr?stat='+row.stat+'&jahr='+row.jahr, method: 'get'};
-		}
 		result.rows = data;
 		checkCrossOriginAllowed(res);
 		res.send(result);
@@ -124,7 +121,7 @@ function stats(req, res) {
 	} );
 }
 
-// return a list of some recent data
+// returns a list of some recent data
 function aktuell(req, res) {
 	
 	var admin = 0;
@@ -189,7 +186,7 @@ function toCsv(data) {  // for download
 // data aggregated by month for one year
 function listMonate(req, res) {
 	
-	var minutes=60;
+	var minutes=60; // valid for one hour
 	
 	var admin = 0;
 	if (checkCert(req))	 {
