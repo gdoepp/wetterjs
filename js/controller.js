@@ -132,6 +132,11 @@ function aktuell(req, res) {
 		 admin=1; 
 	} 
 	
+	if (!req.query.stat) {
+		res.status(400).send("parameter <stat> missing"); 
+		return;
+	}
+
 	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
 	
 	wetter.aktuell(req.query.stat, admin)
@@ -192,6 +197,15 @@ function listMonate(req, res) {
 		 minutes=1;
 	} 
 	
+	if (!req.query.jahr) {
+		res.status(400).send("parameter <jahr> missing")
+		return;
+	}
+	if (!req.query.stat) {
+		res.status(400).send("parameter <stat> missing")
+		return;
+	}
+
 	if (checkUnmodified(req, res, 24*60)) return; // 1d ago, unless explicitly expired
 
 	var heute = new Date();
@@ -227,7 +241,15 @@ function listMonat(req, res) {
 		 admin=1; 
 		 minutes=1;
 	} 
-	
+	if (!req.query.monat) {
+		res.status(400).send("parameter <monat> missing")
+		return;
+	}
+	if (!req.query.stat) {
+		res.status(400).send("parameter <stat> missing")
+		return;
+	}
+
 	if (checkUnmodified(req, res, 60)) return; // 1 h ago
 	
 	var heute = new Date();
@@ -272,6 +294,14 @@ function listTag(req, res) {
 		req.query.tag1 = req.query.tag;
 		req.query.tag2 = req.query.tag;
 	}
+	if (!req.query.tag1) {
+		res.status(400).send("parameter <tag> missing")
+		return;
+	}
+	if (!req.query.stat) {
+		res.status(400).send("parameter <stat> missing")
+		return;
+	}
 
 	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
 	
@@ -305,6 +335,11 @@ function options(req, res) {
 // update recent data from DWD, fast, should not hit timeout 
 function update(req, res) {
 	
+	if (!req.params.stat) {
+		res.status(400).send("parameter <stat> missing")
+		return;
+	}
+
 	var statid = req.params.stat;
 	
 	checkCrossOriginAllowed(res);
@@ -338,6 +373,11 @@ function update(req, res) {
 // import historical data from DWD, slow, we send the response immediately
 function importHist(req, res) {
 	
+	if (!req.params.stat) {
+		res.status(400).send("parameter <stat> missing")
+		return;
+	}
+
 	var statid = req.params.stat;
 	
 	checkCrossOriginAllowed(res);
