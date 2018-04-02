@@ -74,9 +74,9 @@ function checkUnmodified(req, res, maxTimeMin) {
 	return false;
 }
 
-function checkCrossOriginAllowed(res) {
+function checkCrossOriginAllowed(res, meth='GET') {
 	if (env === 'dev') {  // allow cross origin access from frontend
-		res.set({'Access-Control-Allow-Methods': 'GET,OPTIONS',
+		res.set({'Access-Control-Allow-Methods': meth+',OPTIONS',
 		'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type'});
 	}
@@ -101,12 +101,13 @@ function stats(req, res) {
 	
 	result.stats = updater.getStats();
 	result.admin=admin;
-	result.links = [{rel: 'templateJahr', href: 'listJahr?stat={{statid}}&jahr={{jahr}}', method: 'get'},
-					{rel: 'templateHeute', href: 'listTag?stat={{statid}}&tag=0', method: 'get'},
-					{rel: 'templateAktuell', href: 'aktuell?stat={{statid}}', method: 'get'},
-					{rel: 'insertHome', href: 'insert', method: 'post'},
-					{rel: 'update', href: 'update/:stat', method: 'post'},
-					{rel: 'importHistory', href: 'import/:stat', method: 'post'},
+	result.links = [{rel: 'templateJahr', href: '/listJahr?stat={{stat}}&jahr={{time}}', method: 'get'},
+					{rel: 'templateMonat', href: '/listMonat?stat={{stat}}&monat={{time}}', method: 'get'},
+					{rel: 'templateTag', href: '/listTag?stat={{stat}}&tag={{time}}', method: 'get'},
+					{rel: 'templateAktuell', href: '/aktuell?stat={{stat}}', method: 'get'},
+					{rel: 'insertHome', href: '/insert', method: 'post'},
+					{rel: 'templateUpdate', href: '/update/{{stat}}', method: 'post'},
+					{rel: 'templateHistory', href: '/import/{{stat}}', method: 'post'},
 	];
 	
 	wetter_o.years() 
@@ -205,7 +206,7 @@ function listMonate(req, res) {
 		checkCrossOriginAllowed(res);
 		if (req.path.indexOf('download')>=0) {
 			res.set({'Content-Type': 'text/csv; charset=utf-8',
-	        'Content-Disposition': 'attachment;filename=monate.csv'});
+	        'Content-Disposition': 'attachment;filename=jahr.csv'});
 			data = toCsv(data.rows);
 		}
 		res.send(data);
@@ -300,11 +301,14 @@ function options(req, res) {
 	res.end();
 }
 
+
 // update recent data from DWD, fast, should not hit timeout 
 function update(req, res) {
 	
 	var statid = req.params.stat;
-
+	
+	checkCrossOriginAllowed(res);
+	
 	if (statid==0) { res.json({"update":0}); return; } // not dwd
 	
 	if (!checkCert(req)) {
@@ -336,7 +340,9 @@ function importHist(req, res) {
 	
 	var statid = req.params.stat;
 	
-	if (statid=='00000') { res.send('{"update":0}'); return; } // not dwd
+	checkCrossOriginAllowed(res);
+	
+	if (statid=='00000' || statid==0) { res.send('{"update":0}'); return; } // not dwd
 	
 	if (!checkCert(req)) {
 		 console.log("import not allowed");
