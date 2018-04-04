@@ -104,40 +104,51 @@ function evalMonat(prom, monat, stat, resolve, reject) {
 		);	
 }
 
+function threeDays(tag) {
+	var t0 = toDay(tag);
+	var t1 = new Date(t0), t2 = new Date(t0);
+	t1.setDate(t0.getDate() - 1);
+	fixDst(t1);
+	t2.setDate(t0.getDate() +  1);
+	fixDst(t2);
+
+	return [t1, t2];
+}
+
+function threeDaysLocal(tag) {
+	var [tag1, tag2] = threeDays(tag);
+	var prvtag = tag1.toLocaleDateString();
+	var nxttag = tag2.toLocaleDateString();
+	return [prvtag, nxttag];
+}
+
 // return data for one or more days, no aggregation
-function evalTag(prom, tag1, tag2, stat, resolve, reject) {
+function evalTag(prom, tag, isTage, stat, resolve, reject) {
 		
-		var isTage = (tag1 !== tag2);
-		var t1 = toDay(tag1);
-		var t2 = toDay(tag2);
-		var t0 = new Date((t1.getTime()+t2.getTime())/2);
-		var mtag = t0.toLocaleDateString();
-		t1.setDate(t0.getDate() - (isTage ? 2 : 1) );
-		var prvtag = t1.toLocaleDateString();
-		t2.setDate(t0.getDate() + (isTage ? 2 : 1));
-		var nxttag = t2.toLocaleDateString();
+		var [prvtag, nxttag] = threeDaysLocal(tag);
+		var t0 = toDay(tag);
 			
 		prom.then(
 			(res0) => {
 				var res = {};
 				res.rows = res0.rows;
 				res.type = isTage ? 'Tage' : 'Tag';
-				res.time = mtag;
+				res.time = tag;
 				res.stat = stat;
 				var links = [];
 				
-				links.push({ rel: "self", href: base_url + '/listTag?stat='+stat+'&tag1='+tag1+'&tag2='+tag2, method: 'get'});
+				links.push({ rel: "self", href: base_url + '/listTag?stat='+stat+'&tag='+tag+ (isTage?'&tage=3':''), method: 'get'});
 				
 				links.push({rel: "up", 
 							href: base_url + '/listMonat?stat='+stat+'&monat='+(t0.getMonth()+1) + '.' + t0.getFullYear(), 
 							method: 'get'});
 				
 				if (isTage) {
-					links.push({rel: 't1', href: base_url + '/listTag?stat='+stat+'&tag='+mtag, method: 'get'});
-					links.push({rel: 'nxt', href: base_url + '/listTag?stat='+stat+'&tag1='+mtag+'&tag2='+nxttag, method: 'get'});
-					links.push({rel: 'prv', href: base_url + '/listTag?stat='+stat+'&tag1='+prvtag+'&tag2='+mtag, method: 'get'});
+					links.push({rel: 't1', href: base_url + '/listTag?stat='+stat+'&tag='+tag, method: 'get'});
+					links.push({rel: 'nxt', href: base_url + '/listTag?stat='+stat+'&tag='+nxttag+'&tage=3', method: 'get'});
+					links.push({rel: 'prv', href: base_url + '/listTag?stat='+stat+'&tag='+prvtag+'&tage=3', method: 'get'});
 				} else {
-					links.push({rel: 't3', href: base_url + '/listTag?stat='+stat+'&tag1='+prvtag+'&tag2='+nxttag, method: 'get'});
+					links.push({rel: 't3', href: base_url + '/listTag?stat='+stat+'&tag='+tag+'&tage=3', method: 'get'});
 					links.push({rel: 'nxt', href: base_url + '/listTag?stat='+stat+'&tag='+nxttag, method: 'get'});
 					links.push({rel: 'prv', href: base_url + '/listTag?stat='+stat+'&tag='+prvtag, method: 'get'});
 				}
@@ -159,6 +170,8 @@ module.exports = {
 		evalMonate: evalMonate,
 		evalMonat: evalMonat,
 		evalTag: evalTag,
+		threeDays: threeDays,
+		threeDaysLocal: threeDaysLocal,
 		evalAktuell: evalAktuell,
 		fixDst: fixDst,
 		toDay: toDay

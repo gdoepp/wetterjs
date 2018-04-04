@@ -104,6 +104,7 @@ function stats(req, res) {
 	result.links = [{rel: 'templateJahr', href: '/listJahr?stat={{stat}}&jahr={{time}}', method: 'get'},
 					{rel: 'templateMonat', href: '/listMonat?stat={{stat}}&monat={{time}}', method: 'get'},
 					{rel: 'templateTag', href: '/listTag?stat={{stat}}&tag={{time}}', method: 'get'},
+					{rel: 'templateTage', href: '/listTag?stat={{stat}}&tag={{time}}&tage=3', method: 'get'},
 					{rel: 'templateAktuell', href: '/aktuell?stat={{stat}}', method: 'get'},
 					{rel: 'insertHome', href: '/insert', method: 'post'},
 					{rel: 'templateUpdate', href: '/update/{{stat}}', method: 'post'},
@@ -287,11 +288,7 @@ function listTag(req, res) {
 	var heute = new Date();
 	var expires = new Date(heute.getTime()+minutes*60*1000); 
 	
-	if (!req.query.tag1) {
-		req.query.tag1 = req.query.tag;
-		req.query.tag2 = req.query.tag;
-	}
-	if (!req.query.tag1) {
+	if (!req.query.tag) {
 		res.status(400).send("parameter <tag> missing")
 		return;
 	}
@@ -300,9 +297,11 @@ function listTag(req, res) {
 		return;
 	}
 
+	var isTage = (req.query.tage == 3);
+
 	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
 	
-	wetter.listTag(req.query.tag1, req.query.tag2, req.query.stat, admin)
+	wetter.listTag(req.query.tag, isTage, req.query.stat, admin)
 	.then(function success(data) {
 		addCacheControl(res, heute, expires)
 		checkCrossOriginAllowed(res);

@@ -110,32 +110,36 @@ function listMonat(monat, stat, admin) {
 }
 
 // return data for one or more days, no aggregation
-function listTag(tag1, tag2, stat, admin) {
+function listTag(tag, isTage, stat, admin) {
 	
 	return new Promise(function(resolve, reject) {		
-		if (typeof tag1 === 'undefined' || tag1 === 'undefined' || tag1==0) { 
+		if (typeof tag === 'undefined' || tag === 'undefined' || tag==0) { 
 			var heute = new Date();
 			if (stat !=='00000') {
 				//heute.setDate(heute.getDate()-1);
 			}
-			tag1 = heute.toISOString().split('T')[0];
-			tag2 = tag1;
+			tag = heute.toISOString().split('T')[0];
 		}
 		
-		var t1 = modbase.toDay(tag1);
-		var t2 = modbase.toDay(tag2);
-		t2.setDate(t2.getDate()+1);
+		var t1;
+		var t2;
+		if (isTage) {
+			[t1, t2] = modbase.threeDays(tag);
+		} else {
+			t1 = modbase.toDay(tag);
+			modbase.fixDst(t1);
+			t2 = new Date(t1);
+		}
 		
-		modbase.fixDst(t1);
+		t2.setDate(t2.getDate() + 1);
 		modbase.fixDst(t2);
-		
 		t2.setMilliseconds(-1); // before midnight
 				
 		var prom = pool.query("SELECT date_trunc('day', mtime) as day, mtime as time_t , temp_o1, temp_o2, hum_o,pres,lum_o " + 
 				(admin ? ", temp_i1, temp_i2,temp_i3,temp_i4, hum_i,lum_i " : '') +
 				" from "+datatab+" where mtime between $1 and $2 and stat=$3" + 
 				" order by time_t", [t1, t2, stat]);
-		modbase.evalTag(prom, tag1, tag2, stat, resolve, reject);
+		modbase.evalTag(prom, tag, isTage, stat, resolve, reject);
 	});	
 }
 
