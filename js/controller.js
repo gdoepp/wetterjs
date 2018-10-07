@@ -16,10 +16,10 @@ const pool = new pg.Pool(
 		(env === 'dev') ?
 		{
 		 
-		     user: 'gd',
+		     user: 'www',
 				  host: 'localhost',
 				  database: 'pgdb',
-				  password: '',
+				  password: '***',
 				  port: 5432
 		}
 		:

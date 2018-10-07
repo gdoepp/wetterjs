@@ -56,7 +56,7 @@ function evalMonate(prom, jahr, stat, resolve, reject) {
 				];
 
 				for (var j=0; j<res.rows.length; j++) {
-					res.rows[j].link = { ref: 'child', href: base_url + '/listMonat?stat='+stat+'&monat='+res.rows[j].monat, method: 'get'};
+					res.rows[j].link = { rel: 'child', href: base_url + '/listMonat?stat='+stat+'&monat='+res.rows[j].monat, method: 'get'};
 					res.rows[j].type = 'Monat';
 				}
 				resolve(res); 
@@ -95,7 +95,7 @@ function evalMonat(prom, monat, stat, resolve, reject) {
 				while (res.rows.length>0 && res.rows[res.rows.length-1] < 28) res.rows.pop();
 				for (var j=0; j<res.rows.length; j++) {
 					res.rows[j].time_d = res.rows[j].time_d.toLocaleDateString('de-DE');	
-					res.rows[j].link = {ref: 'child', href: base_url + '/listTag?stat='+stat+'&tag='+res.rows[j].time_d, method: 'get'};
+					res.rows[j].link = {rel: 'child', href: base_url + '/listTag?stat='+stat+'&tag='+res.rows[j].time_d, method: 'get'};
 					res.rows[j].type = 'Tag';
 				}
 				resolve(res); 

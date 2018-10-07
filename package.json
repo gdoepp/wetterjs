@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/testModel.js",
-    "build": "tar zcf wettersvr.tgz js package.json"
+    "build": "tar zcf wettersvr.tgz js api package.json"
   },
   "author": "Gerhard Döppert",
   "license": "GPL 3",
@@ -17,6 +17,7 @@
     "fs": "0.0.1-security",
     "ftp": "^0.3.10",
     "jszip": "^3.1.5",
+    "mocha": "^5.2.0",
     "node-schedule": "^1.3.0",
     "pg": "^7.4.1",
     "readline-stream": "^1.0.2",

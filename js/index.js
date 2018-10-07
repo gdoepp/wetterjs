@@ -12,20 +12,20 @@ var cron = require('node-schedule');
 
 var bodyParser = require('body-parser')
 
-var SegfaultHandler = require('segfault-handler');
-
 const env = process.env.NODE_ENV || 'dev'
-
-SegfaultHandler.registerHandler("crash.log"); 
 
 // install a job to update the 'recent' files from all the selected stations at about 10am
 
 // 6 stationen, 6 minutes
-cron.scheduleJob('10-15 12 * * *', () => {
+cron.scheduleJob('10-15 11 * * *', () => {
   controller.updateRecentAll();
 });
 
 app.use(express.static('dist'));
+
+app.use('/v2/api-docs', (req, res, next) => {
+	res.sendFile('wetter.yaml', {root: __dirname+'/../api'});
+});
 
 app.all('/*;*', function(req, res, next) {
     // Just send the index.html for other files to support HTML5Mode

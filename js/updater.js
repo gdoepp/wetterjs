@@ -161,9 +161,7 @@ function insert(statid, value, resolve0, reject0, data, table) {
 				console.log(path);
 				found=true;
 				var lstream = new ReadlineStream({re:/(.*\r\n)|(.+$)/g});
-				file.nodeStream().pipe(lstream);
-				lstream.on('readable', () => { 
-					var c = lstream.read(); 
+				lstream.on('data', (c) => { 
 					if (c) {
 						var [stat, zeit, qn, v1, v2, rest] = c.split(';');
 						stat=stat.trim();
@@ -183,6 +181,10 @@ function insert(statid, value, resolve0, reject0, data, table) {
 				lstream.on('end', () =>  {					
 					resolve0(table);					
 				});
+				lstream.on('error', (e) =>  {	
+					console.log('error on zip-stream ' + e);
+				});
+				file.nodeStream().pipe(lstream);
 			}
 		
 		});
@@ -221,7 +223,20 @@ function update(statid, what, value, table) {
 						c.get(path+list[f].name, function(err, stream) {
 						      if (err) { reject(err); }
 						      if (stream) {
-							      stream.once('close', function() { 
+						    	  var len=0;
+						    	  stream.on('error', (e) => {
+						    		  console.log('ftp get error! '+ e);
+						    		  c.end();
+						    		  reject(e);
+						    	  });
+						    	  stream.on('data', (d) => { // workaround for node 10+ ???
+							    	    len += d.length;
+							    	    if (len === list[f].size) {
+							    	    	console.log("end reached");
+							    	    	stream.end();
+							    	    }
+							    	  });
+							      stream.on('end', function() { 
 							    	  c.end();
 							    	  try {
 							    		  insert(statid, value, resolve, reject, myWritableStreamBuffer.getContents(), table);
@@ -251,10 +266,6 @@ async function updateAllValues(statid, what) {
 	var table = {};
 	
 		// download and process all files for the station, continue on error
-
-	try {
-		await update(statid, what, "TU", table); 		
-	} catch(e) { console.log(e); }
 
 	try {
 		await update(statid, what, "TU", table); 		
