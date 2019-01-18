@@ -1,8 +1,0 @@
-{
-"addr": "amqps://gd:Oviteid5@cloud.gdoeppert.de",
-"certfile": "/etc/ssl/private/certs/cloudclient.gdoeppert.de.pem",
-"keyfile": "/etc/ssl/private/private/cloudclient.gdoeppert.de.pem",
-"pw": "",
-"cacertfiles": ["/etc/ssl/private/cacerts/ca-chain.cert.pem",
-				"/etc/ssl/private/cacerts/ca-chain2.cert.pem"]
-}

@@ -38,7 +38,7 @@ function aktuell(stat, admin) {  // return last 8 items for a station
 
 	return new Promise(function(resolve, reject) {
 		var fields = ",temp_o1, temp_o2, hum_o, pres, lum_o";
-		if (admin) fields += ", temp_i1, temp_i2, temp_i3, temp_i4, hum_i, lum_i";
+		if (admin) fields += ", temp_i1, temp_i2, temp_i3, temp_i4, temp_i5, hum_i, lum_i";
 		
 		var prom = pool.query('SELECT mtime' +fields +
 				" from "+datatab+
@@ -75,7 +75,7 @@ function listMonate(jahr, stat, admin) {
 		" from "+datatab+" where mtime between $1 and $2 and stat=$3 " + 
 		" group by date_trunc('day', mtime) ) as t group by extract(month from time_d) " +
 		' order by month';
-		//console.log(query);
+		// console.log(query);
 		var prom = pool.query(query, [tag1, tag2, stat, jahr]);
         modbase.evalMonate(prom, jahr, stat, resolve, reject);
 	});
@@ -92,7 +92,7 @@ function listMonat(monat, stat, admin) {
 		modbase.fixDst(tag1);
 		modbase.fixDst(tag2);
 		
-		tag2.setMilliseconds(-1); //before midnight
+		tag2.setMilliseconds(-1); // before midnight
 		
 		var prom = pool.query("SELECT date_trunc('day', mtime) as time_d, extract(day from date_trunc('day', mtime)) as tag, "+
 				 "round(avg(temp_o),1) as temp_o_avg, round(min(temp_o),1) as temp_o_min, round(max(temp_o),1) as temp_o_max  "+
@@ -116,7 +116,7 @@ function listTag(tag, isTage, stat, admin) {
 		if (typeof tag === 'undefined' || tag === 'undefined' || tag==0) { 
 			var heute = new Date();
 			if (stat !=='00000') {
-				//heute.setDate(heute.getDate()-1);
+				// heute.setDate(heute.getDate()-1);
 			}
 			tag = heute.toISOString().split('T')[0];
 		}
@@ -136,7 +136,7 @@ function listTag(tag, isTage, stat, admin) {
 		t2.setMilliseconds(-1); // before midnight
 				
 		var prom = pool.query("SELECT date_trunc('day', mtime) as day, mtime as time_t , temp_o1, temp_o2, hum_o,pres,lum_o " + 
-				(admin ? ", temp_i1, temp_i2,temp_i3,temp_i4, hum_i,lum_i " : '') +
+				(admin ? ", temp_i1, temp_i2,temp_i3,temp_i4, temp_i5, hum_i,lum_i " : '') +
 				" from "+datatab+" where mtime between $1 and $2 and stat=$3" + 
 				" order by time_t", [t1, t2, stat]);
 		modbase.evalTag(prom, tag, isTage, stat, resolve, reject);

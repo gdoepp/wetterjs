@@ -41,11 +41,11 @@ function insertHome(data) {
 	const q2 = {
 			 name: 'insert-home2',
 			 text: 'insert into '+datatabhome+
-			 ' (stat, mtime, temp_i1, temp_i2, hum_i,lum_o, lum_i, temp_o, pres, hum_o, daylight, temp_o2, temp_i3, temp_i4, temp_o1) '+
-			       'values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) ',
+			 ' (stat, mtime, temp_i1, temp_i2, hum_i,lum_o, lum_i, temp_o, pres, hum_o, daylight, temp_o2, temp_i3, temp_i4, temp_i5, temp_o1) '+
+			       'values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) ',
 			 values: ['00000', data.time, data.temp_i, data.temp_i2, data.hum_i, 
 				 	data.lum_o, data.lum_i, Math.min(data.temp_o1, data.temp_o2), data.pres, data.hum_o,data.daylight, 
-				 	data.temp_o2, data.temp_i3, data.temp_i4, data.temp_o1]	 
+				 	data.temp_o2, data.temp_i3, data.temp_i4, data.temp_i5, data.temp_o1]	 
 	};
 
 	return pool.query(q).then( ()=> { return pool.query(q2);});

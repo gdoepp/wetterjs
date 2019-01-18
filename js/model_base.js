@@ -152,12 +152,24 @@ function evalTag(prom, tag, isTage, stat, resolve, reject) {
 					links.push({rel: 'nxt', href: base_url + '/listTag?stat='+stat+'&tag='+nxttag, method: 'get'});
 					links.push({rel: 'prv', href: base_url + '/listTag?stat='+stat+'&tag='+prvtag, method: 'get'});
 				}
-				
+
 				res.links = links;
-				
+
 				for (var j=0; j<res.rows.length; j++) {
 					res.rows[j].day = res.rows[j].day.toLocaleDateString();
 					res.rows[j].time_t = res.rows[j].time_t.toLocaleTimeString();
+					
+					var phi = 1.0*res.rows[j].hum_o;
+					var theta=0;
+					if (res.rows[j].hasOwnProperty('temp_o')) {
+						theta = 1.0*res.rows[j].temp_o;
+					} else {
+						theta = 1.0*res.rows[j].temp_o1;
+					}
+					
+					res.rows[j].taup = Math.round(10.0* (241.2*Math.log(phi/100.0) + (4222.03716*theta)/(241.2+theta)) /
+					   (17.5043-Math.log(phi/100.0) - (17.5043*theta)/(241.2+theta))) * 0.1;
+					
 					res.rows[j].type = 'Wetterbeobachtung';
 				}
 				resolve(res); 

@@ -59,21 +59,25 @@ for (var j=0; j<queue.cacertfiles.length; j++) {
 }
 
 amqp.connect(queue.addr, opts, function(err, conn) {
-  conn.createChannel(function(err, ch) {
-	var ex = 'wetterex';
-    ch.assertExchange(ex, 'fanout', {durable: true});
-    ch.assertQueue('', {exclusive: true}, (err, q) => {
-    	
-    	ch.bindQueue(q.queue, ex, '');
-    	console.log("waiting for messages on queue "+q.queue);
-
-        ch.consume(q.queue, (msg) => { 
-        	controller.insertHomeMq(msg);
-        	ch.ack(msg);
-        }, {noAck: false});
-        
-    });
-  });
+  if (conn) {
+	  conn.createChannel(function(err, ch) {
+		var ex = 'wetterex';
+	    ch.assertExchange(ex, 'fanout', {durable: true});
+	    ch.assertQueue('', {exclusive: true}, (err, q) => {
+	    	
+	    	ch.bindQueue(q.queue, ex, '');
+	    	console.log("waiting for messages on queue "+q.queue);
+	
+	        ch.consume(q.queue, (msg) => { 
+	        	controller.insertHomeMq(msg);
+	        	ch.ack(msg);
+	        }, {noAck: false});
+	        
+	    });
+	  });
+  } else {
+	  console.log(err);
+  }
 });
 
 
