@@ -167,8 +167,9 @@ function evalTag(prom, tag, isTage, stat, resolve, reject) {
 						theta = 1.0*res.rows[j].temp_o1;
 					}
 					
-					res.rows[j].taup = Math.round(10.0* (241.2*Math.log(phi/100.0) + (4222.03716*theta)/(241.2+theta)) /
-					   (17.5043-Math.log(phi/100.0) - (17.5043*theta)/(241.2+theta))) * 0.1;
+					res.rows[j].taup = (241.2*Math.log(phi/100.0) + (4222.03716*theta)/(241.2+theta)) /
+					   (17.5043-Math.log(phi/100.0) - (17.5043*theta)/(241.2+theta));
+					res.rows[j].taup = Number(res.rows[j].taup).toFixed(2);
 					
 					res.rows[j].type = 'Wetterbeobachtung';
 				}
