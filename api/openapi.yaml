@@ -1,0 +1,371 @@
+openapi: 3.0.1
+info:
+  title: Wetter-Retro
+  description: Wetter-Retro-Service
+  version: '2.1'
+servers:
+  - url: 'https://www.gdoeppert.de/wetterjs'
+tags:
+  - name: wetter
+    description: Wetter-Rückblick
+paths:
+  /wetter/:
+    get:
+      operationId: getStationen
+      responses:
+        '200':
+          description: 'initial request, returns list of stations'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stat_Liste'
+          links:
+            linkAktuell:
+              operationId: 'getAktuell'
+              parameters:
+                stat: '$response.body#/stats/0/id'
+            linkMonat:
+              operationId: 'getListJahr'
+              parameters:
+                stat: '$response.body#/stats/0/id'
+                jahr: '2018'
+        '5XX':
+          description: other error
+  /wetter/aktuell:
+    get:
+      operationId: getAktuell
+      parameters:
+        - name: stat
+          in: query
+          required: true
+          schema:
+            type: string
+          example: '0'
+      responses:
+        '200':
+          description: 'short list, current data'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wetterdaten'
+        '5XX':
+          description: other error
+        '400':
+          description: parameter missing
+  /wetter/listMonat:
+    get:
+      operationId: getListMonat
+      parameters:
+        - name: stat
+          in: query
+          required: true
+          schema:
+            type: string
+          example: '0'
+        - name: monat
+          in: query
+          required: true
+          schema:
+            type: string
+          example: '11.2017'
+      responses:
+        '200':
+          description: data for one month
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wetterdaten'
+          links:
+            linkTag:
+              operationId: 'getListTag'
+              parameters:
+                stat: '$request.query#/stat'
+                monat: '$response.body#/rows/0/time_d'
+        '5XX':
+          description: other error
+        '400':
+          description: parameter missing
+  /wetter/listJahr:
+    get:
+      operationId: getListJahr
+      parameters:
+        - name: stat
+          in: query
+          required: true
+          schema:
+            type: string
+          example: '0'
+        - name: jahr
+          in: query
+          required: true
+          schema:
+            type: string
+          example: '2017'
+      responses:
+        '200':
+          description: data for one year
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wetterdaten'
+          links:
+            linkMonat:
+              operationId: 'getListMonat'
+              parameters:
+                stat: '$request.query#/stat'
+                monat: '$response.body#/rows/0/monat'
+        '5XX':
+          description: other error
+        '400':
+          description: parameter missing
+  /wetter/listTag:
+    get:
+      operationId: getListTag
+      parameters:
+        - name: stat
+          in: query
+          required: true
+          schema:
+            type: string
+          example: '0'
+        - name: tag
+          in: query
+          required: true
+          schema:
+            type: string
+          example: 13.12.2017
+        - name: tage
+          in: query
+          schema:
+            type: number
+          example: 3
+      responses:
+        '200':
+          description: data for one day or for a few days
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wetterdaten'
+        '400':
+          description: parameter missing
+        '5XX':
+          description: other error
+  /wetter/insert:
+    post:
+      description: insert dataset from home station
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HomeData'
+        required: false
+      responses:
+        '200':
+          description: ok message
+          content:
+            text/plain:
+              schema:
+                type: string
+        '403':
+          description: not allowed
+  '/wetter/update/{stat}':
+    post:
+      description: update recent data
+      parameters:
+        - name: stat
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateResult'
+  '/wetter/import/{stat}':
+    post:
+      description: import historical data
+      parameters:
+        - name: stat
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateResult'
+components:
+  schemas:
+    HomeData:
+      type: object
+      properties:
+        mtime:
+          type: string
+          format: date-time
+        hum_o:
+          type: number
+        hum_i:
+          type: number
+        temp_o1:
+          type: number
+        temp_o2:
+          type: number
+        temp_i1:
+          type: number
+        temp_i2:
+          type: number
+        temp_i3:
+          type: number
+        temp_i4:
+          type: number
+        temp_i5:
+          type: number
+        pres:
+          type: number
+        lum_o:
+          type: number
+        lum_i:
+          type: number
+    Stats:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        vals:
+          type: array
+          items:
+            type: string
+    Links:
+      type: object
+      properties:
+        rel:
+          type: string
+        href:
+          type: string
+        method:
+          type: string
+    Wetterdaten:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rows'
+        type:
+          type: string
+        stat:
+          type: string
+        time:
+          type: string
+        admin:
+          type: integer
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Links'
+    stat_jahre:
+      type: object
+      properties:
+        stat:
+          type: integer
+          format: int32
+        jahr:
+          type: integer
+          format: int32
+        type:
+          type: string
+    UpdateResult:
+      type: object
+      properties:
+        update:
+          type: integer
+    Stat_Liste:
+      type: object
+      properties:
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stats'
+        admin:
+          type: integer
+          format: int32
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Links'
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/stat_jahre'
+    Rows:
+      type: object
+      properties:
+        mtime:
+          type: string
+          format: date-time
+        temp_o:
+          type: number
+        temp_o_max:
+          type: number
+        temp_o_absmax:
+          type: number
+        temp_o_min:
+          type: number
+        temp_o_absmin:
+          type: number
+        temp_o_avg:
+          type: number
+        temp_o1:
+          type: number
+        temp_o2:
+          type: number
+        temp_i1:
+          type: number
+        temp_i2:
+          type: number
+        temp_i3:
+          type: number
+        temp_i4:
+          type: number
+        temp_i5:
+          type: number
+        hum_o:
+          type: number
+        hum_i:
+          type: number
+        pres:
+          type: number
+        lum_o:
+          type: number
+        lum_i:
+          type: number
+        precip:
+          type: number
+        sun:
+          type: number
+        cloud:
+          type: number
+        windf:
+          type: number
+        windf_max:
+          type: number
+        windd:
+          type: array
+          items:
+            type: number
+        time_d:
+          type: string
+          format: date
+        time_t:
+          type: string
+          format: date-time
+        link:
+          $ref: '#/components/schemas/Links'

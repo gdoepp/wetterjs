@@ -72,7 +72,7 @@ function listMonate(jahr, stat, admin) {
 		' avg(windf) as windf, max(windf) as windf_max, '+
 		' arc_avg2(ARRAY[windf, windd]) as wind '+
 		" from "+datatab+" where mtime between $1 and $2 and stat=$3 " + 
-		" group by date_trunc('day', mtime) ) as t group by extract(month from time_d) " +
+		" group by 1 ) as t group by extract(month from time_d) " +
 		' order by month';
 		//console.log(query);
 		var prom = pool.query(query, [tag1, tag2, stat, jahr]);
@@ -100,7 +100,7 @@ function listMonat(monat, stat, admin) {
 				' round(avg(windf),1) as windf, max(windf) as windf_max, arc_avg2(ARRAY[windf, windd]) as windd ' +
 				' from '+datatab+' where mtime between $1 and $2 ' + 
 				" and stat=$3 " +
-				" group by date_trunc('day', mtime) order by time_d", [tag1, tag2, stat]);
+				" group by 1 order by time_d", [tag1, tag2, stat]);
 		modbase.evalMonat(prom, monat, stat, resolve, reject);
 	});	
 }

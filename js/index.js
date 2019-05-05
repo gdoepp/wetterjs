@@ -24,7 +24,7 @@ cron.scheduleJob('10-15 11 * * *', () => {
 app.use(express.static('dist'));
 
 app.use('/v2/api-docs', (req, res, next) => {
-	res.sendFile('wetter.yaml', {root: __dirname+'/../api'});
+	res.sendFile('openapi.yaml', {root: __dirname+'/../api'});
 });
 
 app.all('/*;*', function(req, res, next) {
@@ -49,7 +49,7 @@ var opts = {
 	
   cert: fs.readFileSync(queue.certfile),
   key: fs.readFileSync(queue.keyfile),
-  passphrase: queue.pw,//fs.readFileSync(queue.pw),
+  passphrase: queue.pw,
   ca: []
 };
 
@@ -57,7 +57,7 @@ for (var j=0; j<queue.cacertfiles.length; j++) {
 	var ca= fs.readFileSync(queue.cacertfiles[j]);
 	opts.ca.push(ca);
 }
-
+/*
 amqp.connect(queue.addr, opts, function(err, conn) {
   if (conn) {
 	  conn.createChannel(function(err, ch) {
@@ -79,6 +79,6 @@ amqp.connect(queue.addr, opts, function(err, conn) {
 	  console.log(err);
   }
 });
-
+*/
 
 
