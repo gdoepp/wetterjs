@@ -203,7 +203,7 @@ function update(statid, what, value, table) {
 	
 	return new Promise(function(resolve, reject) {
 	
-		var path='/pub/CDC/observations_germany/climate/hourly/'+paths[value]+'/'+what+'/';
+		var path='/climate_environment/CDC/observations_germany/climate/hourly/'+paths[value]+'/'+what+'/';
 		 var c = new FTP();
 		  c.on('ready', function() {
 			var myWritableStreamBuffer = new StreamBuffers.WritableStreamBuffer({
@@ -256,7 +256,7 @@ function update(statid, what, value, table) {
 			});
 		  });
 		  
-		  c.connect({host:'ftp-cdc.dwd.de'});
+		  c.connect({host:'opendata.dwd.de'});
 	});
 }
 
