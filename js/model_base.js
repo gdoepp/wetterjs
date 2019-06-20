@@ -33,7 +33,7 @@ function evalAktuell(prom, stat, resolve, reject) {
 				res.stat = stat;
 			for (var j=0; j<res.rows.length; j++) {
 				res.rows[j].time_d = res.rows[j].mtime.toLocaleDateString("de-DE");
-				res.rows[j].time_t = res.rows[j].mtime.toLocaleTimeString("de-DE");
+				res.rows[j].time_t = res.rows[j].mtime.toLocaleTimeString("de-DE", {hour12: false});
 			}
 			resolve(res); 
 		},
@@ -156,8 +156,8 @@ function evalTag(prom, tag, isTage, stat, resolve, reject) {
 				res.links = links;
 
 				for (var j=0; j<res.rows.length; j++) {
-					res.rows[j].day = res.rows[j].day.toLocaleDateString();
-					res.rows[j].time_t = res.rows[j].time_t.toLocaleTimeString();
+					res.rows[j].day = res.rows[j].time_t.toLocaleDateString('de-DE');
+					res.rows[j].time_t = res.rows[j].time_t.toLocaleTimeString('de-DE');
 					
 					var phi = 1.0*res.rows[j].hum_o;
 					var theta=0;
@@ -171,7 +171,7 @@ function evalTag(prom, tag, isTage, stat, resolve, reject) {
 					   (17.5043-Math.log(phi/100.0) - (17.5043*theta)/(241.2+theta));
 					res.rows[j].taup = Number(res.rows[j].taup).toFixed(2);
 					
-					res.rows[j].type = 'Wetterbeobachtung';
+					res.rows[j].type = 'Einzel';
 				}
 				resolve(res); 
 			},

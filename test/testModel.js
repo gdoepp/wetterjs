@@ -10,11 +10,12 @@ var pg = require('pg');
 const pool = new pg.Pool(
 		
 		{	
-		    user: 'www',
-		    host: 'localhost',
-		    database: 'pgdb',
-		    password: process.env.PGPW,
-		    port: 5432
+			  user: 'www',
+			     host: process.env.HOST,
+				 database: 'wetter',
+				 password: process.env.PGPW,
+				 port: 5432
+				 
 	  
 		});
 

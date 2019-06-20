@@ -133,13 +133,17 @@ var paths = {'RR': 'precipitation', 'TU' : 'air_temperature', 'P0': 'pressure',
 
 
 var stats= [
-	{id:'04928', name:'Stuttgart', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ]},
-	{id:'01420', name:'Frankfurt', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ]}, 
-	{id:'05705', name: 'Würzburg', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ]},
-	{id:'03379', name:'München', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ]},
-	// {id:'03668', name:'Nürnberg'},
-	{id:'01975', name:'Hamburg', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ]}, 
-	{id:'00433', name:'Berlin', vals: [ 'temp', 'hum', 'pres', 'precip', 'sun', 'wind' ]}
+	{id:'04928', name:'Stuttgart', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:1, at:0},
+	{id:'01420', name:'Frankfurt', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:10, at:2}, 
+	{id:'05705', name:'Würzburg', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:1, at:0},
+	{id:'02600', name:'Kitzingen', vals: [ 'temp', 'hum', 'precip' ], freq:10, at:3},
+	{id:'03668', name:'Nürnberg', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:10, at:3},
+	{id:'03379', name:'München', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:10, at:2},
+	{id:'02667', name:'Köln-Bonn', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:31, at:1},
+	{id:'01048', name:'Dresden', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:31, at:1},
+	{id:'01975', name:'Hamburg', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:10, at:4}, 
+	{id:'00433', name:'Berlin', vals: [ 'temp', 'hum', 'pres', 'precip', 'sun', 'wind' ], freq:10, at:4}
+	
 ];  
 
 function getStats() {

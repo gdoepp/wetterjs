@@ -135,7 +135,7 @@ function listTag(tag, isTage, stat, admin) {
 		modbase.fixDst(t2);
 		t2.setMilliseconds(-1); // before midnight
 				
-		var prom = pool.query("SELECT date_trunc('day', mtime) as day, mtime as time_t , temp_o1, temp_o2, hum_o,pres,lum_o " + 
+		var prom = pool.query("SELECT mtime as time_t , temp_o1, temp_o2, hum_o,pres,lum_o " + 
 				(admin ? ", temp_i1, temp_i2,temp_i3,temp_i4, temp_i5, hum_i,lum_i " : '') +
 				" from "+datatab+" where mtime between $1 and $2 and stat=$3" + 
 				" order by time_t", [t1, t2, stat]);

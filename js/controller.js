@@ -17,10 +17,10 @@ const pool = new pg.Pool(
 		{
 		 
 		     user: 'www',
-				  host: 'localhost',
-				  database: 'pgdb',
-				  password: '***',
-				  port: 5432
+		     host: process.env.HOST,
+			 database: 'wetter',
+			 password: process.env.PGPW,
+			 port: 5432
 		}
 		:
 		{
@@ -435,22 +435,28 @@ function insertHomeMq(msg) {
 	updater.insertHome(msg);
 }
 
-var s = 0; // static 
-
-function updateRecentAll() {  // update one station for every call of this function
-	console.log('update ' + updater.stats[s].name);
-	var t1 = Date.now();
-	updater.updateAllValues(updater.stats[s].id, 'recent')
-	.then( (p) => {
-		console.log("updated rows: "+p);
-		console.log('time taken: ' + (Date.now()-t1) + "ms");
-		expired = new Date();  
-	},
-	(err) => {
-		console.log(err);
-	});
-	s++;
-	if (s >= updater.stats.length) { s=0; }  // return to first station
+function updateRecentAll() {  // update stations
+	
+	var j = 1;
+	var tag = new Date().getDate();
+	for (let s of updater.stats) {	
+		if (tag % s.freq == s.at) {
+			setTimeout( function() {
+				var t1 = Date.now();
+				console.log('update ' + s.name);
+				updater.updateAllValues(s.id, 'recent')
+				.then( (p) => {
+					console.log("updated rows: "+p);
+					console.log('time taken: ' + (Date.now()-t1) + "ms");
+				},
+				(err) => {
+					console.log(err);
+				});
+			}, 30000*j);
+		    j++;
+		}
+	}
+	if (j > 1) { expired = new Date(); }  
 }
 
 module.exports = {

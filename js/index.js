@@ -10,14 +10,13 @@ var controller = require('./controller');
 
 var cron = require('node-schedule');
 
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 
 const env = process.env.NODE_ENV || 'dev'
 
 // install a job to update the 'recent' files from all the selected stations at about 10am
 
-// 6 stationen, 6 minutes
-cron.scheduleJob('10-15 11 * * *', () => {
+cron.scheduleJob('32 12 * * *', () => {
   controller.updateRecentAll();
 });
 
@@ -57,7 +56,7 @@ for (var j=0; j<queue.cacertfiles.length; j++) {
 	var ca= fs.readFileSync(queue.cacertfiles[j]);
 	opts.ca.push(ca);
 }
-/*
+
 amqp.connect(queue.addr, opts, function(err, conn) {
   if (conn) {
 	  conn.createChannel(function(err, ch) {
@@ -79,6 +78,6 @@ amqp.connect(queue.addr, opts, function(err, conn) {
 	  console.log(err);
   }
 });
-*/
+
 
 
