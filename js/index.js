@@ -1,5 +1,5 @@
-// (c) Gerhard Döppert, 2017, GNU GPL 3
-
+// (c) Gerhard Döppert, 2017
+// SPDX-License-Identifier: GPL-3.0-or-later
 var express = require('express');
 
 var app = express();
@@ -12,7 +12,14 @@ var cron = require('node-schedule');
 
 var bodyParser = require('body-parser');
 
+const fs = require('fs')
+
 const env = process.env.NODE_ENV || 'dev'
+
+const pgpw = fs.readFileSync(process.env.PGPW, "utf8");
+
+controller.initPg(pgpw.trim());
+
 
 // install a job to update the 'recent' files from all the selected stations at about 10am
 
@@ -43,7 +50,7 @@ app.listen(1337, function() {
 var amqp = require('amqplib/callback_api');  // for collecting locale weather data 
 
 const queue = require('./queue-'+env+'.json')
-const fs = require('fs')
+
 var opts = {
 	
   cert: fs.readFileSync(queue.certfile),
@@ -51,6 +58,7 @@ var opts = {
   passphrase: queue.pw,
   ca: []
 };
+
 
 for (var j=0; j<queue.cacertfiles.length; j++) {
 	var ca= fs.readFileSync(queue.cacertfiles[j]);

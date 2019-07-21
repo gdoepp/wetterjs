@@ -40,7 +40,7 @@ paths:
           required: true
           schema:
             type: string
-          example: '0'
+          example: '00000'
       responses:
         '200':
           description: 'short list, current data'
@@ -61,7 +61,7 @@ paths:
           required: true
           schema:
             type: string
-          example: '0'
+          example: '00000'
         - name: monat
           in: query
           required: true
@@ -94,7 +94,7 @@ paths:
           required: true
           schema:
             type: string
-          example: '0'
+          example: '00000'
         - name: jahr
           in: query
           required: true
@@ -127,7 +127,7 @@ paths:
           required: true
           schema:
             type: string
-          example: '0'
+          example: '00000'
         - name: tag
           in: query
           required: true
@@ -275,8 +275,7 @@ components:
       type: object
       properties:
         stat:
-          type: integer
-          format: int32
+          type: string
         jahr:
           type: integer
           format: int32

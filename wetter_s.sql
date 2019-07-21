@@ -1,6 +1,6 @@
 -- POSTGRESQL source
--- (c) Gerhard Döppert, 2017, GNU GPL 3
-
+-- (c) Gerhard Döppert, 2017, 
+-- SPDX-License-Identifier: GPL-3.0-or-later
 
 
 -- create vector average aggregates for wind speed/direction
@@ -91,12 +91,13 @@ CREATE AGGREGATE arc_avg2(double precision[]) (
 
 CREATE SCHEMA wetter_retro;
 
+
 --
 -- Name: data; Type: TABLE; Schema: wetter_retro; Partitioned
 --
 
 CREATE TABLE wetter_retro.data (
-    stat integer NOT NULL,
+    stat varchar(10) NOT NULL,
     mtime timestamp with time zone NOT NULL,
     pres numeric(6,1),
     temp_o numeric(6,1),
@@ -109,6 +110,27 @@ CREATE TABLE wetter_retro.data (
     sun numeric(5,0),
     primary key(stat,mtime)
 );
+
+
+CREATE TABLE wetter_retro.aemet_es
+(
+  stat character varying(10) NOT NULL,
+  mtime date NOT NULL,
+  tmed numeric(6,1),
+  tmin numeric(6,1),
+  tmax numeric(6,1),
+  precip numeric(6,1),
+  sun numeric(5,0),
+  windf numeric(4,1),
+  windd numeric(4,0),
+  pres numeric(6,1),
+  windf_max numeric(4,1),
+  PRIMARY KEY (stat, mtime)
+);
+
+CREATE INDEX data_stat_mtime_idx
+  ON wetter_retro.data
+  (stat, mtime);
 
 --
 -- Name: data_dwdhist; Type: TABLE; Schema: wetter_retro; Owner: gd

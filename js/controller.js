@@ -1,9 +1,16 @@
 // (c) Gerhard Döppert, 2017
 
-var wetter_o = require('./model')
-var wetter_i = require('./model_i')
+var model = {};
+model['o'] = require('./model')
+model['i'] = require('./model_i')
+model['es'] = require('./model_es')
+model['fr'] = require('./model')
 
 var updater = require('./updater')
+
+const fs = require('fs')
+
+var pgpw = "*";
 
 const certsAllowed = require('./certs.json')
 
@@ -11,33 +18,43 @@ const pg = require('pg');
 
 const env = process.env.NODE_ENV || 'dev'
 
-// manage db connection
-const pool = new pg.Pool(
-		(env === 'dev') ?
-		{
-		 
-		     user: 'www',
-		     host: process.env.HOST,
-			 database: 'wetter',
-			 password: process.env.PGPW,
-			 port: 5432
-		}
-		:
-		{
-	
-		    user: 'www',
-		    host: 'localhost',
-		    database: 'wetter',
-		    password: process.env.PGPW,
-		    port: 5432
-	  
-		});
-
-updater.setPg(pool);    // forward to updater
-wetter_o.setPg(pool);   // forward to model
-wetter_i.setPg(pool);   // forward to model
+var statmap = {};
 
 var expired = new Date(); // force expire of all possibly cached results
+
+function initPg(pgpw) {
+	// manage db connection
+	const pool = new pg.Pool(
+			(env === 'dev') ?
+			{
+			 
+			     user: 'www',
+			     host: process.env.HOST,
+				 database: 'wetter',
+				 password: pgpw,
+				 port: 5432
+			}
+			:
+			{
+		
+			    user: 'www',
+			    host: 'localhost',
+			    database: 'wetter',
+			    password: pgpw,
+			    port: 5432
+		  
+			});
+	
+	updater.setPg(pool);    // forward to updater
+	model['o'].setPg(pool);   // forward to model
+	model['i'].setPg(pool);   // forward to model
+	model['es'].setPg(pool);   // forward to model
+	
+	const api_key_aemet = fs.readFileSync(process.env.APIKEY, "utf8");
+	updater.setApiKeyAemet(api_key_aemet.trim());
+	
+}
+
 
 function checkCert(req) {  // checking certificates is done by Apache, result is forwarded via headers 
 	
@@ -100,6 +117,11 @@ function stats(req, res) {
 	var result = {};		
 	
 	result.stats = updater.getStats();
+	
+	for (var s in result.stats) {
+		statmap['s_'+result.stats[s].id] = result.stats[s];
+	}
+	
 	result.admin=admin;
 	result.links = [{rel: 'templateJahr', href: '/listJahr?stat={{stat}}&jahr={{time}}', method: 'get'},
 					{rel: 'templateMonat', href: '/listMonat?stat={{stat}}&monat={{time}}', method: 'get'},
@@ -111,7 +133,7 @@ function stats(req, res) {
 					{rel: 'templateHistory', href: '/import/{{stat}}', method: 'post'},
 	];
 	
-	wetter_o.years() 
+	model['o'].years() 
 	.then( (data) => {
 		result.rows = data;
 		checkCrossOriginAllowed(res);
@@ -134,8 +156,15 @@ function aktuell(req, res) {
 		res.status(400).send("parameter <stat> missing"); 
 		return;
 	}
+	
+	console.log("stat: " + req.query.stat);
 
-	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
+	if (typeof statmap['s_'+req.query.stat] === 'undefined') {
+		res.status(400);
+		return
+	}
+	
+	var wetter = model[statmap['s_'+req.query.stat].model]; // (req.query.stat == 0 ? wetter_i : wetter_o);
 	
 	wetter.aktuell(req.query.stat, admin)
 	.then(function success(data) {
@@ -209,7 +238,7 @@ function listMonate(req, res) {
 	var heute = new Date();
 	var expires = new Date(heute.getTime()+minutes*60*1000); // 1h
 	
-	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
+	var wetter = model[statmap['s_'+req.query.stat].model]; // (req.query.stat == 0 ? wetter_i : wetter_o);
 	
 	wetter.listMonate(req.query.jahr, req.query.stat, admin)
 	.then(function success(data) {
@@ -253,7 +282,7 @@ function listMonat(req, res) {
 	var heute = new Date();
 	var expires = new Date(heute.getTime()+minutes*60*1000); // 1h
 
-	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
+	var wetter = model[statmap['s_'+req.query.stat].model]; // (req.query.stat == 0 ? wetter_i : wetter_o);
 	
 	wetter.listMonat(req.query.monat, req.query.stat, admin)
 	.then(function success(data) {
@@ -299,7 +328,7 @@ function listTag(req, res) {
 
 	var isTage = (req.query.tage == 3);
 
-	var wetter = (req.query.stat == 0 ? wetter_i : wetter_o);
+	var wetter = model[statmap['s_'+req.query.stat].model]; // (req.query.stat == 0 ? wetter_i : wetter_o);
 	
 	wetter.listTag(req.query.tag, isTage, req.query.stat, admin)
 	.then(function success(data) {
@@ -378,8 +407,6 @@ function importHist(req, res) {
 	
 	checkCrossOriginAllowed(res);
 	
-	if (statid=='00000' || statid==0) { res.send('{"update":0}'); return; } // not dwd
-	
 	if (!checkCert(req)) {
 		 console.log("import not allowed");
 		 res.json({"update":-1}); return; 
@@ -389,27 +416,39 @@ function importHist(req, res) {
 
 	var t1 = Date.now();
 	
-	// download and process files sequentially	
-	try {
-		updater.delete_all(statid)  // prevent conflicts, import should only happen once, anyway.
-		.then( (p) => {
-			console.log("deleted existing rows: "+p.rowCount);
-			return updater.updateAllValues(statid, 'historical'); })
-		.then( (p) => {
-			console.log("updated rows: "+p + " ?");
-			expired = new Date();  
-			return updater.clean_up(statid); })
-		.then( (p) => {
-			console.log("cleaned up");
-			console.log('time taken: ' + (Date.now()-t1) + "ms"); }, 
-			(err) => {
-				console.log('time taken: ' + (Date.now()-t1) + "ms"); 
-				console.log(err); });
-		
-	} catch(ex) { console.log(ex); }
+	if (statmap['s_'+statid].model === 'es') { // aemet
+		updater.updateEsp(statid);
+	} else if (statmap['s_'+statid].model === 'fr') {
+		updater.updateFr(statid);
+	} else if (statmap['s_'+statid].model === 'i') {
+		res.send('{"update":0}'); return;
+	} else if (statmap['s_'+statid].model === 'o') { // dwd
+	
+		// download and process files sequentially	
+		try {
+			updater.delete_all(statid)  // prevent conflicts, import should only happen once, anyway.
+			.then( (p) => {
+				console.log("deleted existing rows: "+p.rowCount);
+				return updater.updateAllValues(statid, 'historical'); })
+			.then( (p) => {
+				console.log("updated rows: "+p + " ?");
+				expired = new Date();  
+				return updater.clean_up(statid); })
+			.then( (p) => {
+				console.log("cleaned up");
+				console.log('time taken: ' + (Date.now()-t1) + "ms"); }, 
+				(err) => {
+					console.log('time taken: ' + (Date.now()-t1) + "ms"); 
+					console.log(err); });
+			
+		} catch(ex) { console.log(ex); }
+	}
+	
+	updater.refresh();
 	
 	res.json({"update":2});  // send "in work", no further response when done
 }
+
 
 // accept current weather data of a home station 
 // format is:  { "time": now_timestamp, "temp_i": temp_indoors, "temp_o": temp_outdoors, "pres": pressure_at_sealevel, "hum": humidity_outdoors  }
@@ -444,17 +483,27 @@ function updateRecentAll() {  // update stations
 			setTimeout( function() {
 				var t1 = Date.now();
 				console.log('update ' + s.name);
-				updater.updateAllValues(s.id, 'recent')
-				.then( (p) => {
-					console.log("updated rows: "+p);
-					console.log('time taken: ' + (Date.now()-t1) + "ms");
-				},
-				(err) => {
-					console.log(err);
-				});
+				
+				if (statmap['s_' + s.id].model === 'es') { // aemet
+					updater.updateEsp(statid);
+				} else if (statmap['s_'+s.id].model === 'fr') { // meteo france
+					updater.updateFr(statid);
+				} else if (statmap['s_'+s.id].model === 'i') {
+					return;
+				} else if (statmap['s_'+s.id].model === 'o') { // dwd
+								
+					updater.updateAllValues(s.id, 'recent')
+					.then( (p) => {
+						console.log("updated rows: "+p);
+						console.log('time taken: ' + (Date.now()-t1) + "ms");
+					},
+					(err) => {
+						console.log(err);
+					});
+			    }
 			}, 30000*j);
-		    j++;
 		}
+		j++;
 	}
 	if (j > 1) { expired = new Date(); }  
 }
@@ -471,5 +520,6 @@ module.exports = {
 		aktuell: aktuell,
 		stats: stats,
 		expired: expired,
-		updateRecentAll: updateRecentAll
+		updateRecentAll: updateRecentAll,
+		initPg: initPg
 };

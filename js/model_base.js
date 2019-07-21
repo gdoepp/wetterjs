@@ -1,5 +1,5 @@
-// (c) Gerhard Döppert, 2017, GNU GPL 3
-
+// (c) Gerhard Döppert, 2017
+// SPDX-License-Identifier: GPL-3.0-or-later
 // utilities functions for model
 
 const base_url = '';
@@ -66,7 +66,7 @@ function evalMonate(prom, jahr, stat, resolve, reject) {
 }
 
 // return data for one month, aggregated per day
-function evalMonat(prom, monat, stat, resolve, reject) {
+function evalMonat(prom, monat, stat, resolve, reject, nolink) {
 	
 	var tag1 = toDay("01." + monat);
 	var tag2 = new Date(tag1);	
@@ -91,11 +91,13 @@ function evalMonat(prom, monat, stat, resolve, reject) {
 					{ rel: "nxt", href: base_url + '/listMonat?stat='+stat+'&monat='+nxtmon, method: 'get'},
 					{ rel: "prv", href: base_url + '/listMonat?stat='+stat+'&monat='+prvmon, method: 'get'},
 				];
-				while (res.rows.length>0 && res.rows[0] > 1) res.rows.shift();
-				while (res.rows.length>0 && res.rows[res.rows.length-1] < 28) res.rows.pop();
+				//while (res.rows.length>0 && res.rows[0].tag > 1) res.rows.shift();
+				//while (res.rows.length>0 && res.rows[res.rows.length-1].tag < 28) res.rows.pop();
 				for (var j=0; j<res.rows.length; j++) {
-					res.rows[j].time_d = res.rows[j].time_d.toLocaleDateString('de-DE');	
-					res.rows[j].link = {rel: 'child', href: base_url + '/listTag?stat='+stat+'&tag='+res.rows[j].time_d, method: 'get'};
+					res.rows[j].time_d = res.rows[j].time_d.toLocaleDateString('de-DE');
+					if (typeof nolink === 'undefined' && !nolink) {
+						res.rows[j].link = {rel: 'child', href: base_url + '/listTag?stat='+stat+'&tag='+res.rows[j].time_d, method: 'get'};
+					}
 					res.rows[j].type = 'Tag';
 				}
 				resolve(res); 

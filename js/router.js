@@ -1,5 +1,5 @@
-// (c) Gerhard Döppert, 2017, GNU GPL 3
-
+// (c) Gerhard Döppert, 2017,
+// SPDX-License-Identifier: GPL-3.0-or-later
 var controller = require('./controller.js');
 
 module.exports = function(app) {
@@ -16,7 +16,7 @@ module.exports = function(app) {
 	app.get('/wetter/downloadTag', controller.listTag);
 	app.get('/wetter/listTag', controller.listTag);
 	app.post('/wetter/update/:stat', controller.update);	
-	app.post('/wetter/import/:stat', controller.importHist);
+    app.post('/wetter/import/:stat', controller.importHist);
 	app.post('/wetter/insert', controller.insertHome);
 	app.options('/wetter/', controller.options);
 	app.options('/wetter/stats', controller.options);

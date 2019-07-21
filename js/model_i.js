@@ -1,5 +1,5 @@
-// (c) Gerhard Döppert, 2017, GNU GPL 3
-
+// (c) Gerhard Döppert, 2017,
+// SPDX-License-Identifier: GPL-3.0-or-later
 // model for home weather station
 
 var modbase = require('./model_base');
@@ -23,7 +23,7 @@ function years() {  // read list of weather stations and first year with data
 				res.type = 'Stationen';
 				for (var j=0; j<res.rows.length; j++) {
 					res.rows[j].year = res.rows[j].year.getFullYear();
-					res.rows[j].name = '###';
+					res.rows[j].name = '####';
 					res.rows[j].type = 'Station';
 				}
 				resolve(res.rows); 
