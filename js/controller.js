@@ -1,5 +1,5 @@
 // (c) Gerhard Döppert, 2017
-
+// SPDX-License-Identifier: GPL-3.0-or-later
 var model = {};
 model['o'] = require('./model')
 model['i'] = require('./model_i')
@@ -53,6 +53,11 @@ function initPg(pgpw) {
 	const api_key_aemet = fs.readFileSync(process.env.APIKEY, "utf8");
 	updater.setApiKeyAemet(api_key_aemet.trim());
 	
+	var stats = updater.getStats();
+	
+	for (var s in stats) {
+		statmap['s_'+stats[s].id] = stats[s];
+	}
 }
 
 
@@ -117,11 +122,7 @@ function stats(req, res) {
 	var result = {};		
 	
 	result.stats = updater.getStats();
-	
-	for (var s in result.stats) {
-		statmap['s_'+result.stats[s].id] = result.stats[s];
-	}
-	
+		
 	result.admin=admin;
 	result.links = [{rel: 'templateJahr', href: '/listJahr?stat={{stat}}&jahr={{time}}', method: 'get'},
 					{rel: 'templateMonat', href: '/listMonat?stat={{stat}}&monat={{time}}', method: 'get'},
@@ -238,7 +239,7 @@ function listMonate(req, res) {
 	var heute = new Date();
 	var expires = new Date(heute.getTime()+minutes*60*1000); // 1h
 	
-	var wetter = model[statmap['s_'+req.query.stat].model]; // (req.query.stat == 0 ? wetter_i : wetter_o);
+	var wetter = model[statmap['s_'+req.query.stat].model];
 	
 	wetter.listMonate(req.query.jahr, req.query.stat, admin)
 	.then(function success(data) {
@@ -328,7 +329,7 @@ function listTag(req, res) {
 
 	var isTage = (req.query.tage == 3);
 
-	var wetter = model[statmap['s_'+req.query.stat].model]; // (req.query.stat == 0 ? wetter_i : wetter_o);
+	var wetter = model[statmap['s_'+req.query.stat].model]; 
 	
 	wetter.listTag(req.query.tag, isTage, req.query.stat, admin)
 	.then(function success(data) {

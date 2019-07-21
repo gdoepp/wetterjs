@@ -70,7 +70,7 @@ function insertDwd(data, tab, client) {
 			 ' values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ' +
 			 'on conflict(stat, mtime) do update set temp_o=excluded.temp_o, hum_o=excluded.hum_o,pres=excluded.pres,' +
 			 ' cloud=excluded.cloud,precip=excluded.precip,windf=excluded.windf,windd=excluded.windd,sun=excluded.sun',
-			 values: [data.stat, data.mtime, data.temp_o, data.pres, data.hum_o, 
+			 values: [String(data.stat).padStart(5,'0'), data.mtime, data.temp_o, data.pres, data.hum_o, 
 				 data.cloud, data.precip, data.windf, data.windd, data.sun]	 
 	 };
 	 
