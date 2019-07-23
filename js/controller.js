@@ -378,22 +378,32 @@ function update(req, res) {
 	}
 	
 	console.log("update: id="+statid);
-	var t1 = Date.now();
 	
-	// download and process files sequentially
-	try {
-		updater.updateAllValues(statid, 'recent')
-		.then( (p) => {
-			res.json({"update":1}); 
-			expired = new Date(); 
-			console.log("updated rows: "+p);
-			console.log('time taken: ' + (Date.now()-t1) + "ms");
-		},
-		(err) => {
-			console.log(err); res.json({"update":-2}); 			
-		});
-	} catch(ex) { console.log(ex); res.json({"update":-2}); }	
-	//res.send({"update":1});
+	if (statmap['s_'+statid].model === 'es') { // aemet
+		updater.updateEsp(statid);
+	} else if (statmap['s_'+statid].model === 'fr') {
+		updater.updateFr(statid);
+	} else if (statmap['s_'+statid].model === 'i') {
+		res.send('{"update":0}'); return;
+	} else {
+	
+		var t1 = Date.now();
+		
+		// download and process files sequentially
+		try {
+			updater.updateAllValues(statid, 'recent')
+			.then( (p) => {
+				res.json({"update":1}); 
+				expired = new Date(); 
+				console.log("updated rows: "+p);
+				console.log('time taken: ' + (Date.now()-t1) + "ms");
+			},
+			(err) => {
+				console.log(err); res.json({"update":-2}); 			
+			});
+		} catch(ex) { console.log(ex); res.json({"update":-2}); }	
+		//res.send({"update":1});
+	}
 }
 
 // import historical data from DWD, slow, we send the response immediately
@@ -503,8 +513,8 @@ function updateRecentAll() {  // update stations
 					});
 			    }
 			}, 30000*j);
+		    j++;
 		}
-		j++;
 	}
 	if (j > 1) { expired = new Date(); }  
 }

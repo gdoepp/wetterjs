@@ -39,7 +39,7 @@ function years() {  // read list of weather stations and first year with data
 function aktuell(stat, admin) {  // return last 8 items for a station
 
 	return new Promise(function(resolve, reject) {
-		var fields = ",tmed, pres, precip, windf, ARRAY[windf,windd] as windd";
+		var fields = ",tmed as temp_o, pres, precip, windf, ARRAY[windf,windd] as windd";
 		
 		var prom = pool.query('SELECT mtime' +fields +
 				" from "+datatab+
@@ -102,7 +102,6 @@ function listMonat(monat, stat, admin) {
 
 // return data for one or more days, no aggregation
 function listTag(tag, isTage, stat, admin) {
-	
 	return new Promise(function(resolve, reject) {	
 		
 		if (typeof tag === 'undefined' || tag === 'undefined' || tag==0) { 
@@ -112,7 +111,24 @@ function listTag(tag, isTage, stat, admin) {
 			}
 			tag = heute.toISOString().split('T')[0];
 		}
-		reject('not available');
+		
+		var t1, t2;
+		if (isTage) {
+			[t1, t2] = modbase.threeDays(tag);
+		} else {
+			t1 = modbase.toDay(tag);
+			modbase.fixDst(t1);
+			t2 = new Date(t1);
+		}
+		t2.setDate(t2.getDate() + 1);
+		modbase.fixDst(t2);	
+		t2.setMilliseconds(-1); // before midnight
+		
+		var prom = pool.query("SELECT mtime as time_t, tmed as temp_o, "+				
+				' pres, precip, windf, ARRAY[windf,windd] as windd '+
+				" from "+datatab+" where mtime between $1 and $2 and stat=$3" + 
+				" order by time_t", [t1, t2, stat]);
+		modbase.evalTag(prom, tag, isTage, stat, resolve, reject);
 	});	
 }
 

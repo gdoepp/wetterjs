@@ -110,7 +110,9 @@ function insertEsp(data, tab, client) {
 	 const q = {
 			 name: 'insert-esp',
 			 text: 'insert into '+tab+' (stat, mtime, tmed, tmin, tmax, pres, precip, windf, windf_max, windd, sun)'+
-			 ' values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ',
+			 ' values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ' +
+		     ' on conflict(stat, mtime) do update set tmed=excluded.tmed, tmin=excluded.tmin, tmax=excluded.tmax, pres=excluded.pres,' +
+             ' precip=excluded.precip, windf=excluded.windf, windd=excluded.windd, sun=excluded.sun',
 			 values: [data.indicativo, data.fecha, 
 			 check(data.tmed), check(data.tmin), check(data.tmax), 
 			 (check(data.presMin)+check(data.presMax))/2,  
@@ -400,6 +402,11 @@ async function updateEsp(statid) {
 	
 	while (fechaIni < now) {
 		var fechaFin = new Date(fechaIni.valueOf() + (fourY-1000));
+		
+		if (fechaFin > now) {
+			fechaFin = now;
+			fechaFin.setMilliseconds(0);
+		}
 		
 		var fechaIniStr = fechaIni.toISOString().replace('.000Z', 'UTC').replace(/:/g, '%3A');
 		var fechaFinStr = fechaFin.toISOString().replace('.000Z', 'UTC').replace(/:/g, '%3A');
