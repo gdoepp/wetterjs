@@ -370,7 +370,10 @@ function update(req, res) {
 	
 	checkCrossOriginAllowed(res);
 	
-	if (statid==0) { res.json({"update":0}); return; } // not dwd
+	if (statid==0) { 
+		res.json({"update":0}); 
+		return; 
+	} // not dwd
 	
 	if (!checkCert(req)) {
 		 console.log("update recent not allowed");
@@ -378,21 +381,30 @@ function update(req, res) {
 	}
 	
 	console.log("update: id="+statid);
+
+	var t1 = Date.now();
+	var prom;
 	
 	if (statmap['s_'+statid].model === 'es') { // aemet
-		updater.updateEsp(statid);
+		prom = updater.updateEsp(statid);
 	} else if (statmap['s_'+statid].model === 'fr') {
-		updater.updateFr(statid);
+		prom = updater.updateFr(statid, 'recent');
 	} else if (statmap['s_'+statid].model === 'i') {
 		res.send('{"update":0}'); return;
 	} else {
 	
-		var t1 = Date.now();
-		
 		// download and process files sequentially
 		try {
-			updater.updateAllValues(statid, 'recent')
-			.then( (p) => {
+			prom = updater.updateAllValues(statid, 'recent');
+		} catch(ex) { 
+			console.log(ex); 
+			res.json({"update":-2}); 
+		}	
+	}
+	
+	if (prom) {
+		prom.then( 
+			(p) => {
 				res.json({"update":1}); 
 				expired = new Date(); 
 				console.log("updated rows: "+p);
@@ -401,8 +413,6 @@ function update(req, res) {
 			(err) => {
 				console.log(err); res.json({"update":-2}); 			
 			});
-		} catch(ex) { console.log(ex); res.json({"update":-2}); }	
-		//res.send({"update":1});
 	}
 }
 
@@ -428,9 +438,23 @@ function importHist(req, res) {
 	var t1 = Date.now();
 	
 	if (statmap['s_'+statid].model === 'es') { // aemet
-		updater.updateEsp(statid);
+		updater.updateEsp(statid)
+		.then( (n) => {
+		  return updater.refresh();
+		} )
+		.then( (p) => {
+		  console.log("updated rows: "+ n);
+ 		  console.log('time taken: ' + (Date.now()-t1) + "ms");  
+		});
 	} else if (statmap['s_'+statid].model === 'fr') {
-		updater.updateFr(statid);
+		updater.updateFr(statid, 'historical')
+		.then( (n) => {
+  		  return updater.refresh(); 	
+		} )
+		.then( (p) => {
+		  console.log("updated rows: " + n);
+		  console.log('time taken: ' + (Date.now()-t1) + "ms");
+		});
 	} else if (statmap['s_'+statid].model === 'i') {
 		res.send('{"update":0}'); return;
 	} else if (statmap['s_'+statid].model === 'o') { // dwd
@@ -446,16 +470,17 @@ function importHist(req, res) {
 				expired = new Date();  
 				return updater.clean_up(statid); })
 			.then( (p) => {
+				return updater.refresh(); })
+			.then( (p) => {
 				console.log("cleaned up");
-				console.log('time taken: ' + (Date.now()-t1) + "ms"); }, 
+				console.log('time taken: ' + (Date.now()-t1) + "ms"); },				
 				(err) => {
 					console.log('time taken: ' + (Date.now()-t1) + "ms"); 
-					console.log(err); });
+					console.log(err); 
+				});
 			
 		} catch(ex) { console.log(ex); }
 	}
-	
-	updater.refresh();
 	
 	res.json({"update":2});  // send "in work", no further response when done
 }
@@ -492,26 +517,31 @@ function updateRecentAll() {  // update stations
 	for (let s of updater.stats) {	
 		if (tag % s.freq == s.at) {
 			setTimeout( function() {
+				
 				var t1 = Date.now();
+				var prom;
+							
 				console.log('update ' + s.name);
 				
 				if (statmap['s_' + s.id].model === 'es') { // aemet
-					updater.updateEsp(statid);
+					prom = updater.updateEsp(s.id);
 				} else if (statmap['s_'+s.id].model === 'fr') { // meteo france
-					updater.updateFr(statid);
+					prom = updater.updateFr(s.id, 'recent');
 				} else if (statmap['s_'+s.id].model === 'i') {
 					return;
 				} else if (statmap['s_'+s.id].model === 'o') { // dwd
 								
-					updater.updateAllValues(s.id, 'recent')
-					.then( (p) => {
-						console.log("updated rows: "+p);
+					prom = updater.updateAllValues(s.id, 'recent')
+			    }
+			    if (prom) {
+					prom.then( (p) => {
+						console.log("updated rows: " + p);
 						console.log('time taken: ' + (Date.now()-t1) + "ms");
 					},
 					(err) => {
 						console.log(err);
 					});
-			    }
+				}
 			}, 30000*j);
 		    j++;
 		}

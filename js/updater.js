@@ -40,9 +40,17 @@ function setApiKeyAemet(k) {
 
 
 function insertHome(data) {
+	
 	if (!data.hum_o) {
 		data.hum_o=data.hum;
 	}
+	if (!data.daylight) {
+		data.daylight= (data.lum_o > 10 ? 1 : 0);
+	}
+	if (!data.hum_i2) {
+		data.hum_i2=data.hum_i;
+	}
+	
 	
 	const q = {
 			 name: 'insert-home',
@@ -53,9 +61,9 @@ function insertHome(data) {
 	const q2 = {
 			 name: 'insert-home2',
 			 text: 'insert into '+datatabhome+
-			 ' (stat, mtime, temp_i1, temp_i2, hum_i,lum_o, lum_i, temp_o, pres, hum_o, daylight, temp_o2, temp_i3, temp_i4, temp_i5, temp_o1) '+
-			       'values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) ',
-			 values: ['00000', data.time, data.temp_i, data.temp_i2, data.hum_i, 
+			 ' (stat, mtime, temp_i1, temp_i2, hum_i, hum_i2, lum_o, lum_i, temp_o, pres, hum_o, daylight, temp_o2, temp_i3, temp_i4, temp_i5, temp_o1) '+
+			       'values($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) ',
+			 values: ['00000', data.time, data.temp_i, data.temp_i2, data.hum_i, data.hum_i2,
 				 	data.lum_o, data.lum_i, Math.min(data.temp_o1, data.temp_o2), data.pres, data.hum_o,data.daylight, 
 				 	data.temp_o2, data.temp_i3, data.temp_i4, data.temp_i5, data.temp_o1]	 
 	};
@@ -233,6 +241,7 @@ var stats= [
 	{id:'3129',  name:'Madrid', vals: [ 'temp', 'pres', 'precip', 'sun', 'wind' ], freq:10, at:5, model:'es'},
 	{id:'0076',  name:'Barcelona', vals: [ 'temp', 'pres', 'precip', 'sun', 'wind' ], freq:10, at:4, model:'es'},	
 	{id:'5783',  name:'Sevilla', vals: [ 'temp', 'pres', 'precip', 'sun', 'wind' ], freq:10, at:6, model:'es'},
+	{id:'5973',  name:'Cádiz', vals: [ 'temp', 'pres', 'precip', 'sun', 'wind' ], freq:10, at:7, model:'es'},
 	{id:'07149', name:'Orly', vals: [ 'temp', 'hum', 'pres', 'precip', 'wind' ], freq:31, at:2, model:'fr'}
 ];  
 
@@ -290,6 +299,10 @@ function update(statid, what, value, table) {
 	
 	if (statid == 0) return;  // home data, not dwd
 
+	var today = new Date();
+	today.setHours(0);
+	today.setMinutes(0);
+
 	console.log("called update: " + what + " " + value);
 	
 	statid = pad(statid,5);
@@ -308,6 +321,8 @@ function update(statid, what, value, table) {
 				console.log('listing path ' + path);
 				var found = false;
 				for (var f in list) {
+					// if (list[f].date < today) next;
+					
 					if (list[f].name.indexOf('stundenwerte_'+value+'_'+statid) >= 0) {
   			    	    
 						found = true;
@@ -400,14 +415,16 @@ async function updateEsp(statid) {
 	
 	console.log('since: ' +fechaIni);
 	
+	var n = 0; 
+	
 	while (fechaIni < now) {
 		var fechaFin = new Date(fechaIni.valueOf() + (fourY-1000));
 		
 		if (fechaFin > now) {
 			fechaFin = now;
-			fechaFin.setMilliseconds(0);
 		}
 		
+		fechaFin.setMilliseconds(0);
 		var fechaIniStr = fechaIni.toISOString().replace('.000Z', 'UTC').replace(/:/g, '%3A');
 		var fechaFinStr = fechaFin.toISOString().replace('.000Z', 'UTC').replace(/:/g, '%3A');
 		
@@ -443,11 +460,11 @@ async function updateEsp(statid) {
 				reject(err);
 				return null;
 			 })
-			.then( (body) => {
+			.then( async (body) => {
 			   if (body != null) {
 				   var result = JSON.parse(body);
-				   storeDB(result, datatabEsp, insertEsp);
-				   resolve();
+				   var m = await storeDB(result, datatabEsp, insertEsp);
+				   resolve(m);
 			   }
 		     }, (err) => {
 			   console.log("error in second get: " + err);
@@ -456,15 +473,16 @@ async function updateEsp(statid) {
 		});
 		
 		try {
- 		  await prom;
+ 		  n += await prom;
 		} catch (e) {
 		  console.log("error in esp-update: " + e);
 		}
 	    fechaIni = new Date(fechaFin.valueOf()+1000);
 	}	
+	return n;
 }
 
-async function updateFr(statid) {
+async function updateFr(statid, mode) {
 	
 	console.log("import france");
 	
@@ -475,8 +493,9 @@ async function updateFr(statid) {
 		fechaIni = new Date('1996-01-01');
 	}
 	fechaIni = new Date(fechaIni.getTime()+24*60*60*1000);
-	
-	
+
+	var n = 0;
+
 	while (fechaIni < now) {
 
 		var mon = fechaIni.getFullYear() + String(fechaIni.getMonth()+1).padStart(2, '0');
@@ -499,7 +518,7 @@ async function updateFr(statid) {
 					  };
 			
 			request(options)
-			.then( (body) => {
+			.then( async (body) => {
 				var lines = body.toString('ascii').split('\n');
 				var colNames = lines[0].split(';');
 				var table = [];
@@ -509,7 +528,7 @@ async function updateFr(statid) {
 					for (ifn in colNames) {
 						f[colNames[ifn]] = colsOfLine[ifn];
 					}
-					if (f.numer_sta == '07149') {
+					if (f.numer_sta == statid) {
 						f.mtime = f.date.substr(0,4) + '-' + f.date.substr(4,2) + '-' + f.date.substr(6,2) + 'T' + 
 						    f.date.substr(8,2) + ':' + f.date.substr(10,2) + ':' + f.date.substr(12,2) + 'Z';
 						if (f.pmer == 'mq') f.pmer = null; else f.pmer = f.pmer / 100.0;
@@ -519,10 +538,10 @@ async function updateFr(statid) {
 						if (f.ff == 'mq') f.ff = null;
 						if (f.dd == 'mq') f.dd = null;
 						table.push(f); 
-						}
+					}
 				}
-				storeDB(table, datatab, insertFr);
-				resolve();
+				var m = await storeDB(table, (mode === 'recent' ? datatabrecent : datatab), insertFr);
+				resolve(m);
 			 }, (err) => {
 				console.log("error in get: " + err);
 				reject(err);
@@ -531,13 +550,14 @@ async function updateFr(statid) {
 			 
 		});
 		try {
- 		  await prom;
+ 		  n += await prom;
 		} catch (e) {
 		  console.log("error in fr-update: " + e);
 		}
 		fechaIni.setMonth( fechaIni.getMonth() + 1, 1);
 		console.log("next month: " + fechaIni.toLocaleDateString());
-	}	
+	}
+	return n;	
 }
 
 module.exports = {
