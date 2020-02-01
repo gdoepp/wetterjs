@@ -3,6 +3,8 @@
 "certfile": "/path/to/client-cert.pem",
 "keyfile": "/path/to/client-key.pem",
 "pw": "keypassword",
+"mqttpw": "mqtt-password",
+"mqttuser": "mquser",
 "cacertfiles": ["/path/to/first-ca-chain.pem",
 				"/path/to/nth-ca-chain.pem"]
 }

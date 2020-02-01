@@ -227,7 +227,7 @@ var paths = {'RR': 'precipitation', 'TU' : 'air_temperature', 'P0': 'pressure',
 			 'N': 'cloudiness', 'FF': 'wind', 'SD': 'sun'};
 
 var stats= [
-	{id:'00000', name: '####', vals: [ 'temp', 'hum', 'pres', 'lum'], freq:1, at:99, model:'i'},
+	{id:'00000', name: '####', vals: [ 'temp', 'hum', 'pres', 'lum', 'daylen'], freq:1, at:99, model:'i'},
 	{id:'04928', name:'Stuttgart', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:1, at:0, model:'o'},
 	{id:'01420', name:'Frankfurt', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:10, at:2, model:'o'}, 
 	{id:'05705', name:'Würzburg', vals: [ 'temp', 'hum', 'pres', 'precip', 'cloud', 'sun', 'wind' ], freq:1, at:0, model:'o'},

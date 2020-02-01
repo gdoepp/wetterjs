@@ -27,6 +27,16 @@ CREATE FUNCTION arc_accum(agg_state double precision[], el double precision[]) R
 	end;
 $$;
 
+
+
+CREATE AGGREGATE taglen(wetter_home.data) (                                                                                                      
+    SFUNC = tag_accum,
+    STYPE = tag_state,
+    INITCOND = '(0,''2000-01-01 00:00+00'',''2000-01-01 00:00+00'',0 )',
+    FINALFUNC = tag_final
+);
+
+
 --
 -- Name: arc_avg2_final(double precision[]); Type: FUNCTION; Schema: public; Owner: gd
 --
@@ -85,6 +95,85 @@ CREATE AGGREGATE arc_avg2(double precision[]) (
     STYPE = double precision[],
     INITCOND = '{0,0,0}',
     FINALFUNC = arc_avg2_final
+);
+
+
+--
+-- calculate daylight: morning, evening
+--
+
+
+create type tag_state as (state integer, morgen timestamp with time zone, abend timestamp with time zone, lum double precision);
+
+CREATE FUNCTION tag_accum(agg_state tag_state, el wetter_home.data) RETURNS tag_state                                                                                                 LANGUAGE plpgsql IMMUTABLE
+  AS $$ 
+  begin                                                               
+    if (agg_state.state = 0) -- init
+    then 
+      agg_state.morgen = el.mtime; 
+      agg_state.abend = el.mtime; 
+      agg_state.state=1; 
+    end if; 
+    if (el.lum_o is null) -- skip
+    then 
+      return agg_state; 
+    end if; 
+    if (agg_state.state = 1) then -- pre dawn                   
+        if (el.lum_o < 10) 
+        then
+          agg_state.morgen = el.mtime; 
+          agg_state.abend = el.mtime;
+          agg_state.lum = el.lum_o;
+        else  -- dawn
+	      agg_state.state = 2;
+	      agg_state.morgen = agg_state.morgen + (el.mtime - agg_state.morgen)*((10-agg_state.lum)/(el.lum_o-agg_state.lum));
+	      agg_state.abend = agg_state.morgen; 
+	    end if;
+    else 
+      if (agg_state.state = 2)  -- day
+	  then
+	    if (el.lum_o > 10)
+	    then
+	      agg_state.abend = el.mtime;
+	      agg_state.lum = el.lum_o;
+	    else   -- dusk
+	      agg_state.state = 3;
+	      agg_state.abend = agg_state.abend + (el.mtime - agg_state.abend)*((10-agg_state.lum)/(el.lum_o-agg_state.lum));
+	    end if;
+	  end if;
+    end if; 
+    return agg_state; 
+  end;
+$$;
+
+CREATE FUNCTION tag_final(agg_state tag_state) RETURNS timestamp with time zone[2]
+    LANGUAGE plpgsql IMMUTABLE
+    AS $$
+    begin
+        return ARRAY[agg_state.morgen, agg_state.abend]; 
+	end;
+$$;
+
+CREATE FUNCTION taglen_final(agg_state tag_state) RETURNS interval                                                                    
+    LANGUAGE plpgsql IMMUTABLE
+    AS $$             
+    begin                                                               
+        return agg_state.abend- agg_state.morgen; 
+ end;
+$$;
+
+CREATE AGGREGATE daylen(wetter_home.data) (
+    SFUNC = tag_accum,
+    STYPE = tag_state,
+    INITCOND = '(0,''2000-01-01 00:00+00'',''2000-01-01 00:00+00'',0 )',
+    FINALFUNC = taglen_final
+);
+
+CREATE AGGREGATE dawndusk(wetter_home.data) (
+    SFUNC = tag_accum,
+    STYPE = tag_state,
+    INITCOND = '(0,''2000-01-01 00:00+00'',''2000-01-01 00:00+00'',0 )',
+    FINALFUNC = tag_final
 );
 
 -- Tables:

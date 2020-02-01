@@ -87,5 +87,23 @@ amqp.connect(queue.addr, opts, function(err, conn) {
   }
 });
 
+var mqtt = require('mqtt')
+var client  = mqtt.connect('mqtt://cloud.gdoeppert.de', {username: queue.mqttuser, password: queue.mqttpw})
+ 
+client.on('connect', function () {
+  client.subscribe('wetter.data', function (err) {
+    if (err) {
+    	console.log(err);
+    }
+  })
+});
+
+client.on('message', function (topic, message) {
+	  // message is Buffer
+	  var msg = { content: message.toString() };
+//	  console.log(msg.content)
+	  controller.insertHomeMq(msg);
+	//  client.end()
+	});
 
 
