@@ -161,7 +161,7 @@ CREATE OR REPLACE FUNCTION tag_final(agg_state tag_state) RETURNS timestamp with
 	end;
 $$;
 
-CREATE FUNCTION taglen_final(agg_state tag_state) RETURNS interval                                                                    
+CREATE OR REPLACE FUNCTION taglen_final(agg_state tag_state) RETURNS interval                                                                    
     LANGUAGE plpgsql IMMUTABLE
     AS $$             
     begin      
@@ -177,14 +177,14 @@ $$;
 CREATE AGGREGATE daylen(wetter_home.data) (
     SFUNC = tag_accum,
     STYPE = tag_state,
-    INITCOND = '(0,null,null,0 )',
+    INITCOND = '(0,''2000-01-01 00:00:00+0'',''2000-01-01 00:00:00+0'',0 )',
     FINALFUNC = taglen_final
 );
 
 CREATE AGGREGATE dawndusk(wetter_home.data) (
     SFUNC = tag_accum,
     STYPE = tag_state,
-    INITCOND = '(0,null,null,0 )',
+    INITCOND = '(0,''2000-01-01 00:00:00+0'',''2000-01-01 00:00:00+0'',0 )',
     FINALFUNC = tag_final
 );
 
