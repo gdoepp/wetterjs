@@ -105,29 +105,27 @@ CREATE AGGREGATE arc_avg2(double precision[]) (
 
 create type tag_state as (state integer, morgen timestamp with time zone, abend timestamp with time zone, lum double precision);
 
-CREATE FUNCTION tag_accum(agg_state tag_state, el wetter_home.data) RETURNS tag_state                                                                                                 LANGUAGE plpgsql IMMUTABLE
+CREATE OR REPLACE FUNCTION tag_accum(agg_state tag_state, el wetter_home.data) RETURNS tag_state                                                                                                 LANGUAGE plpgsql IMMUTABLE
   AS $$ 
   begin                                                               
-    if (agg_state.state = 0) -- init
-    then 
-      agg_state.morgen = el.mtime; 
-      agg_state.abend = el.mtime; 
-      agg_state.state=1; 
-    end if; 
     if (el.lum_o is null) -- skip
     then 
       return agg_state; 
+    end if; 
+    if (agg_state.state = 0 and el.lum_o < 10) -- init
+    then 
+      agg_state.morgen = el.mtime; 
+      agg_state.abend = null; 
+      agg_state.state=1; 
     end if; 
     if (agg_state.state = 1) then -- pre dawn                   
         if (el.lum_o < 10) 
         then
           agg_state.morgen = el.mtime; 
-          agg_state.abend = el.mtime;
           agg_state.lum = el.lum_o;
         else  -- dawn
 	      agg_state.state = 2;
 	      agg_state.morgen = agg_state.morgen + (el.mtime - agg_state.morgen)*((10-agg_state.lum)/(el.lum_o-agg_state.lum));
-	      agg_state.abend = agg_state.morgen; 
 	    end if;
     else 
       if (agg_state.state = 2)  -- day
@@ -146,33 +144,47 @@ CREATE FUNCTION tag_accum(agg_state tag_state, el wetter_home.data) RETURNS tag_
   end;
 $$;
 
-CREATE FUNCTION tag_final(agg_state tag_state) RETURNS timestamp with time zone[2]
+CREATE OR REPLACE FUNCTION tag_final(agg_state tag_state) RETURNS timestamp with time zone[2]
     LANGUAGE plpgsql IMMUTABLE
     AS $$
     begin
-        return ARRAY[agg_state.morgen, agg_state.abend]; 
+	    if (agg_state.state = 3)
+	    then 
+          return ARRAY[agg_state.morgen, agg_state.abend];
+        else
+	        if (agg_state.state = 2)
+	        then
+	          return ARRAY[agg_state.morgen, null];
+	        end if;
+        end if;
+        return ARRAY[null, null];
 	end;
 $$;
 
 CREATE FUNCTION taglen_final(agg_state tag_state) RETURNS interval                                                                    
     LANGUAGE plpgsql IMMUTABLE
     AS $$             
-    begin                                                               
-        return agg_state.abend- agg_state.morgen; 
+    begin      
+	    if (agg_state.state = 3)
+	    then
+          return agg_state.abend- agg_state.morgen;
+        else
+          return null;
+        end if;        
  end;
 $$;
 
 CREATE AGGREGATE daylen(wetter_home.data) (
     SFUNC = tag_accum,
     STYPE = tag_state,
-    INITCOND = '(0,''2000-01-01 00:00+00'',''2000-01-01 00:00+00'',0 )',
+    INITCOND = '(0,null,null,0 )',
     FINALFUNC = taglen_final
 );
 
 CREATE AGGREGATE dawndusk(wetter_home.data) (
     SFUNC = tag_accum,
     STYPE = tag_state,
-    INITCOND = '(0,''2000-01-01 00:00+00'',''2000-01-01 00:00+00'',0 )',
+    INITCOND = '(0,null,null,0 )',
     FINALFUNC = tag_final
 );
 
