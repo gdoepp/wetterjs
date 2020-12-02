@@ -501,13 +501,17 @@ function insertHome(req, res) {
 
 	updater.insertHome(req.body)
 	.then( (p) => { res.send('ok'); },
-  		 (err) => {  res.status(500).send('nok'); }
+  		 (err) => {  res.status(500).send('nok '+err); }
   		 );
 }
 
 function insertHomeMq(msg) {
-	msg = JSON.parse(msg.content);
-	updater.insertHome(msg);
+	try {
+	  var msgcont = JSON.parse(msg.content);
+	  updater.insertHome(msgcont);
+        } catch(ex) { 
+		console.log("JSON error: " + msg.content);
+	}
 }
 
 function updateRecentAll() {  // update stations

@@ -30,7 +30,12 @@ cron.scheduleJob('32 12 * * *', () => {
 app.use(express.static('dist'));
 
 app.use('/v2/api-docs', (req, res, next) => {
-	res.sendFile('openapi.yaml', {root: __dirname+'/../api'});
+	res.sendFile('openapi.yaml', {root: __dirname+'/../api', 
+		headers: {'Access-Control-Allow-Headers': 'Content-Type, api_key, Authorization',
+			  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+			  'Access-Control-Allow-Origin': '*'
+		  }
+	});
 });
 
 app.all('/*;*', function(req, res, next) {
