@@ -52,6 +52,31 @@ app.listen(1337, function() {
 	console.log('Server listening on port 1337'); // apache2 acts as proxy
 });
 
+
+
+const { Kafka } = require('kafkajs');
+
+const kafka = new Kafka({
+    clientId: 'wetterjs',
+    brokers: ['10.66.66.1:9092']
+});
+
+const kafkaconsume = async() => {
+
+const homeConsumer = kafka.consumer({groupId: 'wetter-home'});
+await homeConsumer.connect();
+await homeConsumer.subscribe({ topic: 'wetter' });
+await homeConsumer.run({
+        eachMessage: async ({ topic, partition, message }) => {
+         //   console.log('received json: ' + message.value);
+            message.content = message.value;
+            controller.insertHomeMq(message);
+        },
+      });
+};
+
+kafkaconsume();
+/*
 var amqp = require('amqplib/callback_api');  // for collecting locale weather data 
 
 const queue = require('./queue-'+env+'.json')
@@ -111,4 +136,4 @@ client.on('message', function (topic, message) {
 	//  client.end()
 	});
 
-
+*/
