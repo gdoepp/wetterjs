@@ -55,7 +55,7 @@ function insertHome(data) {
 	const q = {
 			 name: 'insert-home',
 			 text: 'insert into '+datatab+' (stat, mtime, temp_i, temp_o, pres, hum_o) values($1, $2, $3, $4, $5, $6) ',
-			 values: ['00000', data.time, data.temp_i2a, Math.min(data.temp_o, data.temp_o2), data.pres, data.hum_o]	 
+			 values: ['00000', data.time, data.temp_i2a, Math.min(data.temp_o1, data.temp_o2), data.pres, data.hum_o]	 
 	};
 
 	const q2 = {
