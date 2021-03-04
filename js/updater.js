@@ -9,6 +9,8 @@ const ReadlineStream = require('readline-stream');
 const StreamBuffers = require('stream-buffers');
 
 const FTP = require('ftp');
+const redis = require("redis");
+const redisclient = redis.createClient();
 
 const request = require("request-promise-native");
 
@@ -21,6 +23,10 @@ const statstab = 'wetter_retro.stats';
 var pool = null;
 
 var api_key_aemet = null;
+
+redisclient.on("error", function(error) {
+  console.error(error);
+});
 
 function pad (s, size) {
     while (s.length < (size || 2)) {s = "0" + s;}
@@ -55,7 +61,7 @@ function insertHome(data) {
 	const q = {
 			 name: 'insert-home',
 			 text: 'insert into '+datatab+' (stat, mtime, temp_i, temp_o, pres, hum_o) values($1, $2, $3, $4, $5, $6) ',
-			 values: ['00000', data.time, data.temp_i2a, Math.min(data.temp_o1, data.temp_o2), data.pres, data.hum_o]	 
+			 values: ['00000', data.time, data.temp_i2a, Math.min(data.temp_o, data.temp_o2), data.pres, data.hum_o]	 
 	};
 
 	const q2 = {
@@ -67,6 +73,8 @@ function insertHome(data) {
 				 	data.lum_o, data.lum_i, Math.min(data.temp_o1, data.temp_o2), data.pres, data.hum_o,data.daylight, 
 				 	data.temp_o2, data.temp_i3, data.temp_i4, data.temp_i5, data.temp_o1]	 
 	};
+
+	redisclient.set('wetter_aktuell', JSON.stringify(data));
 
 	return pool.query(q).then( ()=> { return pool.query(q2);});
 }

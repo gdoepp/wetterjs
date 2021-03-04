@@ -58,7 +58,12 @@ const { Kafka } = require('kafkajs');
 
 const kafka = new Kafka({
     clientId: 'wetterjs',
-    brokers: ['10.66.66.1:9092']
+    brokers: ['10.66.66.1:9092'],
+    retry: {
+      retries: 10,
+      initialRetryTime: 1000
+    },
+    connectionTimeout: 15000
 });
 
 const kafkaconsume = async() => {
@@ -69,7 +74,7 @@ await homeConsumer.subscribe({ topic: 'wetter' });
 await homeConsumer.run({
         eachMessage: async ({ topic, partition, message }) => {
          //   console.log('received json: ' + message.value);
-            message.content = message.value;
+	    message.content = message.value;
             controller.insertHomeMq(message);
         },
       });
@@ -77,7 +82,7 @@ await homeConsumer.run({
 
 kafkaconsume();
 /*
-var amqp = require('amqplib/callback_api');  // for collecting locale weather data 
+var amqp = require('amqplib/callback_api');  // for collecting local weather data 
 
 const queue = require('./queue-'+env+'.json')
 
@@ -126,6 +131,14 @@ client.on('connect', function () {
     	console.log(err);
     }
   })
+});
+ 
+client.on('message', function (topic, message) {
+  // message is Buffer
+  var msg = { content: message.toString() };
+  console.log(msg.content)
+  controller.insertHomeMq(msg);
+//  client.end()
 });
 
 client.on('message', function (topic, message) {
